@@ -1,14 +1,104 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { KPICard } from "@/components/KPICard";
+import { LNGChart } from "@/components/LNGChart";
+import { LNGMap } from "@/components/LNGMap";
+import { AppSidebar } from "@/components/AppSidebar";
+import {
+  BarChart3,
+  Ship,
+  DollarSign,
+  Zap,
+  LayoutDashboard,
+  MapPin,
+  LineChart,
+  Gauge,
+  Settings,
+} from "lucide-react";
 
-const Index = () => {
+export const sidebarItems = [
+  {
+    title: "Dashboard",
+    icon: LayoutDashboard,
+    url: "#",
+  },
+  {
+    title: "LNG Terminals",
+    icon: MapPin,
+    url: "#terminals",
+  },
+  {
+    title: "Import Statistics",
+    icon: BarChart3,
+    url: "#imports",
+  },
+  {
+    title: "Pricing Metrics",
+    icon: LineChart,
+    url: "#pricing",
+  },
+  {
+    title: "Generation Metrics",
+    icon: Gauge,
+    url: "#generation",
+  },
+  {
+    title: "Settings",
+    icon: Settings,
+    url: "#settings",
+  },
+];
+
+export default function Index() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
-};
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <main className="flex-1 p-8 overflow-auto">
+          <div className="space-y-8 animate-fade-in">
+            <h1 className="text-3xl font-bold">LNG Dashboard</h1>
 
-export default Index;
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <KPICard
+                title="Total LNG Imports"
+                value="2.5M MMBTU"
+                icon={<Ship className="h-4 w-4 text-muted-foreground" />}
+                trend={{ value: 12, isPositive: true }}
+              />
+              <KPICard
+                title="Total Cargoes"
+                value="24"
+                icon={<BarChart3 className="h-4 w-4 text-muted-foreground" />}
+                trend={{ value: 4, isPositive: true }}
+              />
+              <KPICard
+                title="Avg Contract Price"
+                value="$14.5/MMBTU"
+                icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
+                trend={{ value: 2.5, isPositive: false }}
+              />
+              <KPICard
+                title="Power Gen Share"
+                value="18.5%"
+                icon={<Zap className="h-4 w-4 text-muted-foreground" />}
+                trend={{ value: 1.2, isPositive: true }}
+              />
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="p-6 bg-dashboard-navy/50 backdrop-blur-sm rounded-lg">
+                <h2 className="text-lg font-semibold mb-4">
+                  LNG Import Volumes (MMBTU)
+                </h2>
+                <LNGChart />
+              </div>
+              <div className="p-6 bg-dashboard-navy/50 backdrop-blur-sm rounded-lg">
+                <h2 className="text-lg font-semibold mb-4">LNG Terminals</h2>
+                <LNGMap />
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </SidebarProvider>
+  );
+}
