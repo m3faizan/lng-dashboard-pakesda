@@ -19,8 +19,12 @@ export function LNGMap() {
       zoom: 4,
     });
 
-    // Sample LNG terminals
-    const terminals = [
+    // Sample LNG terminals with properly typed coordinates
+    const terminals: Array<{
+      name: string;
+      coordinates: [number, number]; // Explicitly typed as tuple
+      capacity: string;
+    }> = [
       {
         name: "Port Qasim LNG Terminal",
         coordinates: [67.3451, 24.7731],
