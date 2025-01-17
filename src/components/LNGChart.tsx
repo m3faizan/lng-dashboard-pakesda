@@ -7,7 +7,7 @@ import {
   YAxis,
   Brush,
 } from "recharts";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 // Extended sample data for demonstration
 const generateData = (months: number) => {
@@ -39,6 +39,13 @@ export function LNGChart() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
   const data = generateData(selectedTimeframe);
 
+  const trendColor = useMemo(() => {
+    if (data.length < 2) return "#4ADE80";
+    const startValue = data[0].volume;
+    const endValue = data[data.length - 1].volume;
+    return endValue >= startValue ? "#4ADE80" : "#ef4444";
+  }, [data]);
+
   return (
     <div className="space-y-4">
       <div className="flex gap-2">
@@ -61,8 +68,8 @@ export function LNGChart() {
         <AreaChart data={data}>
           <defs>
             <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#4ADE80" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#4ADE80" stopOpacity={0} />
+              <stop offset="5%" stopColor={trendColor} stopOpacity={0.3} />
+              <stop offset="95%" stopColor={trendColor} stopOpacity={0} />
             </linearGradient>
           </defs>
           <XAxis
@@ -89,14 +96,14 @@ export function LNGChart() {
           <Area
             type="monotone"
             dataKey="volume"
-            stroke="#4ADE80"
+            stroke={trendColor}
             fillOpacity={1}
             fill="url(#colorVolume)"
           />
           <Brush
             dataKey="month"
             height={30}
-            stroke="#4ADE80"
+            stroke={trendColor}
             fill="#1A1E2D"
             travellerWidth={8}
             className="mt-4"
