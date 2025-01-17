@@ -26,7 +26,7 @@ export default {
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--foreground))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -49,8 +49,9 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         dashboard: {
-          dark: "#1a1f2c",
-          navy: "#2a3142",
+          dark: "#0F1117",
+          navy: "#1A1E2D",
+          green: "#4ADE80",
           teal: "#4fd1c5",
         },
       },

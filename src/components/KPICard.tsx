@@ -14,20 +14,22 @@ interface KPICardProps {
 
 export function KPICard({ title, value, icon, trend, className }: KPICardProps) {
   return (
-    <Card className={cn("bg-dashboard-navy/50 backdrop-blur-sm", className)}>
+    <Card className={cn("bg-dashboard-navy border-0", className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
         </CardTitle>
-        {icon}
+        <div className="h-8 w-8 rounded-full bg-dashboard-dark/50 flex items-center justify-center">
+          {icon}
+        </div>
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
         {trend && (
           <p
             className={cn(
-              "mt-2 text-xs",
-              trend.isPositive ? "text-green-500" : "text-red-500"
+              "mt-2 text-xs flex items-center gap-1",
+              trend.isPositive ? "text-dashboard-green" : "text-red-500"
             )}
           >
             {trend.isPositive ? "+" : "-"}

@@ -22,8 +22,8 @@ export function LNGChart() {
       <AreaChart data={data}>
         <defs>
           <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#4fd1c5" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#4fd1c5" stopOpacity={0} />
+            <stop offset="5%" stopColor="#4ADE80" stopOpacity={0.3} />
+            <stop offset="95%" stopColor="#4ADE80" stopOpacity={0} />
           </linearGradient>
         </defs>
         <XAxis
@@ -42,7 +42,7 @@ export function LNGChart() {
         />
         <Tooltip
           contentStyle={{
-            backgroundColor: "#1a1f2c",
+            backgroundColor: "#1A1E2D",
             border: "none",
             borderRadius: "8px",
           }}
@@ -50,7 +50,7 @@ export function LNGChart() {
         <Area
           type="monotone"
           dataKey="volume"
-          stroke="#4fd1c5"
+          stroke="#4ADE80"
           fillOpacity={1}
           fill="url(#colorVolume)"
         />
