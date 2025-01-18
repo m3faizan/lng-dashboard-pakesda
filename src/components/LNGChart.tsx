@@ -5,7 +5,6 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-  Brush,
 } from "recharts";
 import { useState, useMemo } from "react";
 
@@ -39,29 +38,48 @@ export function LNGChart() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
   const data = generateData(selectedTimeframe);
 
-  const trendColor = useMemo(() => {
-    if (data.length < 2) return "#4ADE80";
+  const { trendColor, percentageChange, currentValue } = useMemo(() => {
+    if (data.length < 2) return { trendColor: "#4ADE80", percentageChange: 0, currentValue: 0 };
     const startValue = data[0].volume;
     const endValue = data[data.length - 1].volume;
-    return endValue >= startValue ? "#4ADE80" : "#ef4444";
+    const change = ((endValue - startValue) / startValue) * 100;
+    return {
+      trendColor: endValue >= startValue ? "#4ADE80" : "#ef4444",
+      percentageChange: change,
+      currentValue: endValue
+    };
   }, [data]);
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
-        {timeframes.map((tf) => (
-          <button
-            key={tf.label}
-            onClick={() => setSelectedTimeframe(tf.months)}
-            className={`px-3 py-1 rounded-md text-sm ${
-              selectedTimeframe === tf.months
-                ? "bg-dashboard-green text-black"
-                : "bg-dashboard-dark/50 text-muted-foreground hover:bg-dashboard-dark"
-            }`}
-          >
-            {tf.label}
-          </button>
-        ))}
+      <div className="flex justify-between items-center">
+        <div className="flex gap-2">
+          {timeframes.map((tf) => (
+            <button
+              key={tf.label}
+              onClick={() => setSelectedTimeframe(tf.months)}
+              className={`px-3 py-1 rounded-md text-sm ${
+                selectedTimeframe === tf.months
+                  ? "bg-dashboard-green text-black"
+                  : "bg-dashboard-dark/50 text-muted-foreground hover:bg-dashboard-dark"
+              }`}
+            >
+              {tf.label}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="text-right">
+            <div className="text-lg font-semibold">{currentValue}M</div>
+            <div 
+              className={`text-sm ${
+                percentageChange >= 0 ? "text-dashboard-green" : "text-red-500"
+              }`}
+            >
+              {percentageChange >= 0 ? "+" : ""}{percentageChange.toFixed(2)}%
+            </div>
+          </div>
+        </div>
       </div>
       
       <ResponsiveContainer width="100%" height={350}>
@@ -99,14 +117,6 @@ export function LNGChart() {
             stroke={trendColor}
             fillOpacity={1}
             fill="url(#colorVolume)"
-          />
-          <Brush
-            dataKey="month"
-            height={30}
-            stroke={trendColor}
-            fill="#1A1E2D"
-            travellerWidth={8}
-            className="mt-4"
           />
         </AreaChart>
       </ResponsiveContainer>
