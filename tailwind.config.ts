@@ -53,6 +53,8 @@ export default {
           navy: "#1A1E2D",
           green: "#4ADE80",
           teal: "#4fd1c5",
+          blue: "#0EA5E9",
+          coral: "#FEC6A1",
         },
       },
       borderRadius: {
