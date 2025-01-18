@@ -1,6 +1,7 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { KPICard } from "@/components/KPICard";
 import { LNGChart } from "@/components/LNGChart";
+import { LNGBarChart } from "@/components/LNGBarChart";
 import { AppSidebar } from "@/components/AppSidebar";
 import {
   BarChart3,
@@ -93,11 +94,17 @@ export default function Index() {
               />
             </div>
 
-            <div className="p-6 bg-dashboard-navy rounded-lg border-0">
-              <h2 className="text-lg font-semibold mb-4">
-                LNG Import Volumes (MMBTU)
-              </h2>
-              <LNGChart />
+            <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+              <div className="p-6 bg-dashboard-navy rounded-lg border-0">
+                <h2 className="text-lg font-semibold mb-4">
+                  LNG Import Volumes (MMBTU)
+                </h2>
+                <LNGChart />
+              </div>
+              
+              <div className="p-6 bg-dashboard-navy rounded-lg border-0">
+                <LNGBarChart />
+              </div>
             </div>
           </div>
         </main>
