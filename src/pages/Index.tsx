@@ -94,7 +94,7 @@ export default function Index() {
               />
             </div>
 
-            <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+            <div className="space-y-6">
               <div className="p-6 bg-dashboard-navy rounded-lg border-0">
                 <h2 className="text-lg font-semibold mb-4">
                   LNG Import Volumes (MMBTU)

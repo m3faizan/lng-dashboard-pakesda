@@ -17,7 +17,6 @@ import {
 
 type Period = "monthly" | "quarterly" | "yearly";
 
-// Sample data generation for demonstration
 const generateData = (period: Period) => {
   const currentDate = new Date();
   const data = [];
@@ -59,15 +58,12 @@ export function LNGBarChart() {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("monthly");
   const data = useMemo(() => generateData(selectedPeriod), [selectedPeriod]);
 
-  const { trendColor, percentageChange, currentValue } = useMemo(() => {
-    if (data.length < 2) return { trendColor: "#4ADE80", percentageChange: 0, currentValue: 0 };
+  const { trendColor } = useMemo(() => {
+    if (data.length < 2) return { trendColor: "#4ADE80" };
     const startValue = data[0].volume;
     const endValue = data[data.length - 1].volume;
-    const change = ((endValue - startValue) / startValue) * 100;
     return {
       trendColor: endValue >= startValue ? "#4ADE80" : "#ef4444",
-      percentageChange: change,
-      currentValue: endValue
     };
   }, [data]);
 
@@ -75,31 +71,19 @@ export function LNGBarChart() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold">LNG Import Volume</h2>
-        <div className="flex items-center gap-4">
-          <Select
-            value={selectedPeriod}
-            onValueChange={(value: Period) => setSelectedPeriod(value)}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select period" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="monthly">Monthly</SelectItem>
-              <SelectItem value="quarterly">Quarterly</SelectItem>
-              <SelectItem value="yearly">Yearly</SelectItem>
-            </SelectContent>
-          </Select>
-          <div className="text-right">
-            <div className="text-lg font-semibold">{currentValue}M</div>
-            <div 
-              className={`text-sm ${
-                percentageChange >= 0 ? "text-dashboard-green" : "text-red-500"
-              }`}
-            >
-              {percentageChange >= 0 ? "+" : ""}{percentageChange.toFixed(2)}%
-            </div>
-          </div>
-        </div>
+        <Select
+          value={selectedPeriod}
+          onValueChange={(value: Period) => setSelectedPeriod(value)}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select period" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="monthly">Monthly</SelectItem>
+            <SelectItem value="quarterly">Quarterly</SelectItem>
+            <SelectItem value="yearly">Yearly</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
       <ResponsiveContainer width="100%" height={350}>
