@@ -4,6 +4,7 @@ import { KPICard } from "@/components/KPICard";
 import { DollarSign, Droplet, Ship } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { ContractVolumesChart } from "@/components/ContractVolumesChart";
 
 export default function ImportStatistics() {
   return (
@@ -35,8 +36,14 @@ export default function ImportStatistics() {
               />
             </div>
 
-            <ImportVolumeChart />
-            <LNGBarChart />
+            <div className="grid gap-6 lg:grid-cols-2">
+              <ImportVolumeChart />
+              <ContractVolumesChart />
+            </div>
+            
+            <div className="w-full">
+              <LNGBarChart />
+            </div>
           </div>
         </main>
       </div>
