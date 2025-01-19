@@ -3,11 +3,10 @@ import { KPICard } from "@/components/KPICard";
 import { LNGChart } from "@/components/LNGChart";
 import { LNGBarChart } from "@/components/LNGBarChart";
 import { CargoTypesChart } from "@/components/CargoTypesChart";
+import { ContractVolumesChart } from "@/components/ContractVolumesChart";
 import { AppSidebar } from "@/components/AppSidebar";
 import {
-  BarChart3,
   Ship,
-  DollarSign,
   Zap,
   LayoutDashboard,
   MapPin,
@@ -78,13 +77,13 @@ export default function Index() {
               <KPICard
                 title="Total Cargoes"
                 value="24"
-                icon={<BarChart3 className="h-4 w-4 text-dashboard-green" />}
+                icon={<LineChartIcon className="h-4 w-4 text-dashboard-green" />}
                 trend={{ value: 4, isPositive: true }}
               />
               <KPICard
                 title="Avg Contract Price"
                 value="$14.5/MMBTU"
-                icon={<DollarSign className="h-4 w-4 text-dashboard-green" />}
+                icon={<Ship className="h-4 w-4 text-dashboard-green" />}
                 trend={{ value: 2.5, isPositive: false }}
               />
               <KPICard
@@ -104,9 +103,7 @@ export default function Index() {
               </div>
               
               <div className="grid gap-6 md:grid-cols-2">
-                <div className="p-6 bg-dashboard-navy rounded-lg border-0">
-                  <LNGBarChart />
-                </div>
+                <ContractVolumesChart />
                 <CargoTypesChart />
               </div>
             </div>
