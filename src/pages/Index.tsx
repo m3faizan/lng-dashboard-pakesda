@@ -13,6 +13,7 @@ import {
   LineChart as LineChartIcon,
   Gauge as GaugeIcon,
   Settings as SettingsIcon,
+  BarChart3,
 } from "lucide-react";
 
 export const sidebarItems = [
@@ -77,7 +78,7 @@ export default function Index() {
               <KPICard
                 title="Total Cargoes"
                 value="24"
-                icon={<LineChartIcon className="h-4 w-4 text-dashboard-green" />}
+                icon={<BarChart3 className="h-4 w-4 text-dashboard-green" />}
                 trend={{ value: 4, isPositive: true }}
               />
               <KPICard
