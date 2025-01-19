@@ -11,16 +11,13 @@ import {
   Zap,
   LayoutDashboard,
   MapPin,
-  LineChart,
-  Gauge,
-  Settings,
 } from "lucide-react";
 
 export const sidebarItems = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,
-    url: "#",
+    url: "/",
   },
   {
     title: "LNG Terminals",
@@ -30,7 +27,7 @@ export const sidebarItems = [
   {
     title: "Import Statistics",
     icon: BarChart3,
-    url: "#imports",
+    url: "/import-statistics",
   },
   {
     title: "Pricing Metrics",
@@ -63,7 +60,7 @@ export default function Index() {
                   <Ship className="h-5 w-5 text-muted-foreground" />
                 </button>
                 <button className="p-2 rounded-full bg-dashboard-navy">
-                  <Settings className="h-5 w-5 text-muted-foreground" />
+                  <Zap className="h-5 w-5 text-muted-foreground" />
                 </button>
               </div>
             </div>
