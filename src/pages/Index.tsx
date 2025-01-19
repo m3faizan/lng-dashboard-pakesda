@@ -11,6 +11,9 @@ import {
   Zap,
   LayoutDashboard,
   MapPin,
+  LineChart as LineChartIcon,
+  Gauge as GaugeIcon,
+  Settings as SettingsIcon,
 } from "lucide-react";
 
 export const sidebarItems = [
@@ -31,17 +34,17 @@ export const sidebarItems = [
   },
   {
     title: "Pricing Metrics",
-    icon: LineChart,
+    icon: LineChartIcon,
     url: "#pricing",
   },
   {
     title: "Generation Metrics",
-    icon: Gauge,
+    icon: GaugeIcon,
     url: "#generation",
   },
   {
     title: "Settings",
-    icon: Settings,
+    icon: SettingsIcon,
     url: "#settings",
   },
 ];
