@@ -32,21 +32,22 @@ const data = [
   { month: "Dec", "2020": 4, "2021": 7, "2022": null },
 ];
 
-const years = ["2020", "2021", "2022"];
-const yearColors = {
+const years = ["2020", "2021", "2022"] as const;
+const yearColors: Record<string, string> = {
   "2020": "#0EA5E9", // Ocean Blue
   "2021": "#4ADE80", // Dashboard Green
   "2022": "#FEC6A1", // Coral
 };
 
 export function ImportVolumeChart() {
-  const [selectedYears, setSelectedYears] = useState(years);
+  const [selectedYears, setSelectedYears] = useState<string[]>(years);
 
-  const toggleYear = (year: string) => {
+  const toggleYear = (year: string | number) => {
+    const yearString = year.toString();
     setSelectedYears((prev) =>
-      prev.includes(year)
-        ? prev.filter((y) => y !== year)
-        : [...prev, year]
+      prev.includes(yearString)
+        ? prev.filter((y) => y !== yearString)
+        : [...prev, yearString]
     );
   };
 
@@ -83,7 +84,7 @@ export function ImportVolumeChart() {
                 formatter={(value, entry) => (
                   <span
                     style={{
-                      color: selectedYears.includes(value)
+                      color: selectedYears.includes(value.toString())
                         ? "#fff"
                         : "#4b5563",
                     }}
