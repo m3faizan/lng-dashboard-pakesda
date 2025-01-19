@@ -32,7 +32,7 @@ const data = [
   { month: "Dec", "2020": 4, "2021": 7, "2022": null },
 ];
 
-const years = ["2020", "2021", "2022"] as const;
+const years = ["2020", "2021", "2022"];
 const yearColors: Record<string, string> = {
   "2020": "#0EA5E9", // Ocean Blue
   "2021": "#4ADE80", // Dashboard Green
@@ -40,9 +40,10 @@ const yearColors: Record<string, string> = {
 };
 
 export function ImportVolumeChart() {
-  const [selectedYears, setSelectedYears] = useState<string[]>(years);
+  const [selectedYears, setSelectedYears] = useState<string[]>([...years]);
 
-  const toggleYear = (year: string | number) => {
+  const toggleYear = (year: string | number | ((obj: any) => any)) => {
+    if (typeof year === "function") return;
     const yearString = year.toString();
     setSelectedYears((prev) =>
       prev.includes(yearString)
