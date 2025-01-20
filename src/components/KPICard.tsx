@@ -24,7 +24,7 @@ export function KPICard({ title, value, icon, trend, className }: KPICardProps) 
         </div>
       </CardHeader>
       <CardContent className="flex flex-col justify-between min-h-[80px]">
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="text-xl font-bold text-right">{value}</div>
         {trend && (
           <p
             className={cn(
