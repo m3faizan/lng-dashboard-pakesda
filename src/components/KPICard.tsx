@@ -16,7 +16,7 @@ export function KPICard({ title, value, icon, trend, className }: KPICardProps) 
   return (
     <Card className={cn("bg-dashboard-navy border-0", className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+        <CardTitle className="text-sm font-medium text-muted-foreground text-left">
           {title}
         </CardTitle>
         <div className="h-8 w-8 rounded-full bg-dashboard-dark/50 flex items-center justify-center">
