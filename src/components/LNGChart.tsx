@@ -112,7 +112,7 @@ export function LNGChart() {
             }}
           />
           <Area
-            type="monotone"
+            type="linear"
             dataKey="volume"
             stroke={trendColor}
             fillOpacity={1}
