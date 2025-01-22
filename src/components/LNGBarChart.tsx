@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 
 type Period = "monthly" | "quarterly" | "yearly";
 
@@ -68,54 +69,71 @@ export function LNGBarChart() {
   }, [data]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">LNG Import Volume</h2>
-        <Select
-          value={selectedPeriod}
-          onValueChange={(value: Period) => setSelectedPeriod(value)}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select period" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="monthly">Monthly</SelectItem>
-            <SelectItem value="quarterly">Quarterly</SelectItem>
-            <SelectItem value="yearly">Yearly</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      
-      <ResponsiveContainer width="100%" height={350}>
-        <BarChart data={data}>
-          <XAxis
-            dataKey="period"
-            stroke="#525252"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-          />
-          <YAxis
-            stroke="#525252"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={(value) => `${value}M`}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "#1A1E2D",
-              border: "none",
-              borderRadius: "8px",
-            }}
-          />
-          <Bar
-            dataKey="volume"
-            fill={trendColor}
-            radius={[4, 4, 0, 0]}
-          />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
+    <Card className="bg-dashboard-navy border-0">
+      <CardContent className="space-y-4">
+        <div className="flex justify-between items-center pt-6">
+          <h2 className="text-lg font-semibold">LNG Import Volume</h2>
+          <Select
+            value={selectedPeriod}
+            onValueChange={(value: Period) => setSelectedPeriod(value)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select period" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="monthly">Monthly</SelectItem>
+              <SelectItem value="quarterly">Quarterly</SelectItem>
+              <SelectItem value="yearly">Yearly</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <ResponsiveContainer width="100%" height={350}>
+          <BarChart data={data}>
+            <XAxis
+              dataKey="period"
+              stroke="#525252"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis
+              stroke="#525252"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => `${value}M`}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#1A1E2D",
+                border: "none",
+                borderRadius: "8px",
+              }}
+            />
+            <Bar
+              dataKey="volume"
+              fill={trendColor}
+              radius={[4, 4, 0, 0]}
+              style={{ cursor: "pointer" }}
+              onMouseOver={(data, index) => {
+                document.querySelectorAll(".recharts-bar-rectangle").forEach((rect: any) => {
+                  if (rect.getAttribute("index") === index.toString()) {
+                    rect.style.fill = "#66E99D";
+                  }
+                });
+              }}
+              onMouseOut={(data, index) => {
+                document.querySelectorAll(".recharts-bar-rectangle").forEach((rect: any) => {
+                  if (rect.getAttribute("index") === index.toString()) {
+                    rect.style.fill = trendColor;
+                  }
+                });
+              }}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
   );
 }
