@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import ImportStatistics from "./pages/ImportStatistics";
+import PricingMetrics from "./pages/PricingMetrics";
 import "./App.css";
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/import-statistics" element={<ImportStatistics />} />
+        <Route path="/pricing-metrics" element={<PricingMetrics />} />
       </Routes>
     </Router>
   );
