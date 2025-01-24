@@ -35,7 +35,7 @@ export const sidebarItems = [
   {
     title: "Pricing Metrics",
     icon: LineChartIcon,
-    url: "#pricing",
+    url: "/pricing-metrics",
   },
   {
     title: "Generation Metrics",
