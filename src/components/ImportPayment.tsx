@@ -4,6 +4,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function ImportPayment() {
   return (
@@ -18,12 +25,18 @@ export function ImportPayment() {
             LNG makes 80% of the total import payment
           </p>
           <div className="relative pt-4">
-            <div className="w-full h-4 bg-dashboard-dark rounded-full">
-              <div
-                className="absolute h-full rounded-full bg-dashboard-teal"
-                style={{ width: "80%" }}
-              />
-            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="w-full">
+                    <Progress value={80} className="h-4 bg-dashboard-dark" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>80% of total import payment</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </CardContent>
