@@ -25,7 +25,7 @@ export const sidebarItems = [
   {
     title: "LNG Terminals",
     icon: MapPin,
-    url: "#terminals",
+    url: "/lng-terminals",
   },
   {
     title: "Import Statistics",
