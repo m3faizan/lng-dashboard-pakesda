@@ -65,24 +65,23 @@ export function CargoActivityChart() {
 
   return (
     <Card className="bg-dashboard-navy border-0">
-      <CardContent className="space-y-4">
-        <div className="flex justify-between items-center pt-6">
-          <h2 className="text-lg font-semibold">Cargo Activity by Terminal</h2>
-          <Select
-            value={selectedPeriod}
-            onValueChange={(value: Period) => setSelectedPeriod(value)}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select period" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="monthly">Monthly</SelectItem>
-              <SelectItem value="quarterly">Quarterly</SelectItem>
-              <SelectItem value="yearly">Yearly</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
+      <div className="flex flex-col items-center pt-6 px-6">
+        <h2 className="text-lg font-semibold mb-2">Cargo Activity by Terminal</h2>
+        <Select
+          value={selectedPeriod}
+          onValueChange={(value: Period) => setSelectedPeriod(value)}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select period" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="monthly">Monthly</SelectItem>
+            <SelectItem value="quarterly">Quarterly</SelectItem>
+            <SelectItem value="yearly">Yearly</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <CardContent className="mt-4">
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={data}>
             <XAxis

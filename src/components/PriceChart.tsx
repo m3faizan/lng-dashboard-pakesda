@@ -31,7 +31,7 @@ const data = [
 export function PriceChart() {
   return (
     <Card className="bg-dashboard-navy border-0">
-      <CardHeader>
+      <CardHeader className="text-center pb-2">
         <CardTitle className="text-lg font-semibold">LNG DES Price</CardTitle>
       </CardHeader>
       <CardContent>

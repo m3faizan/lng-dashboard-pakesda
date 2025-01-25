@@ -16,7 +16,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-// Sample data - each year's monthly import volumes
 const data = [
   { month: "Jan", "2020": 4, "2021": 3, "2022": 6 },
   { month: "Feb", "2020": 5, "2021": 7, "2022": 8 },
@@ -34,9 +33,9 @@ const data = [
 
 const years = ["2020", "2021", "2022"];
 const yearColors: Record<string, string> = {
-  "2020": "#0EA5E9", // Ocean Blue
-  "2021": "#4ADE80", // Dashboard Green
-  "2022": "#FEC6A1", // Coral
+  "2020": "#0EA5E9",
+  "2021": "#4ADE80",
+  "2022": "#FEC6A1",
 };
 
 export function ImportVolumeChart() {
@@ -54,7 +53,7 @@ export function ImportVolumeChart() {
 
   return (
     <Card className="bg-dashboard-navy border-0">
-      <CardHeader>
+      <CardHeader className="text-center pb-2">
         <CardTitle className="text-lg font-semibold">
           Import Volume (MMBtu)
         </CardTitle>

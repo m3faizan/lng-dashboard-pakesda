@@ -27,7 +27,7 @@ const data = [
 export function ContractVolumesChart() {
   return (
     <Card className="bg-dashboard-navy border-0">
-      <CardHeader>
+      <CardHeader className="text-center pb-2">
         <CardTitle className="text-lg font-semibold">
           Contract Volumes (MMBtu)
         </CardTitle>

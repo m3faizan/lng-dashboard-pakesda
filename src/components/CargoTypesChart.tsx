@@ -60,7 +60,7 @@ export function CargoTypesChart() {
 
   return (
     <Card className="bg-dashboard-navy border-0">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className="text-center pb-2">
         <CardTitle className="text-lg font-semibold">
           Cargo Types Distribution
         </CardTitle>
@@ -68,7 +68,7 @@ export function CargoTypesChart() {
           value={selectedYear}
           onValueChange={(value) => setSelectedYear(value)}
         >
-          <SelectTrigger className="w-[100px]">
+          <SelectTrigger className="w-[100px] mt-2">
             <SelectValue placeholder="Select year" />
           </SelectTrigger>
           <SelectContent>
