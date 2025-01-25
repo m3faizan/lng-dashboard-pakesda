@@ -40,7 +40,7 @@ export const sidebarItems = [
   {
     title: "Generation Metrics",
     icon: GaugeIcon,
-    url: "#generation",
+    url: "/generation-metrics",
   },
   {
     title: "Settings",

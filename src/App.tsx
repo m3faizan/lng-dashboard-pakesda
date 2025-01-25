@@ -3,6 +3,7 @@ import Index from "./pages/Index";
 import ImportStatistics from "./pages/ImportStatistics";
 import PricingMetrics from "./pages/PricingMetrics";
 import LNGTerminals from "./pages/LNGTerminals";
+import GenerationMetrics from "./pages/GenerationMetrics";
 import "./App.css";
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Route path="/import-statistics" element={<ImportStatistics />} />
         <Route path="/pricing-metrics" element={<PricingMetrics />} />
         <Route path="/lng-terminals" element={<LNGTerminals />} />
+        <Route path="/generation-metrics" element={<GenerationMetrics />} />
       </Routes>
     </Router>
   );
