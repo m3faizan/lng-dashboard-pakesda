@@ -13,7 +13,7 @@ export default function Landing() {
         },
         {
           label: "Start Free",
-          href: "/",
+          href: "/dashboard",
           variant: "default"
         }
       ]}
