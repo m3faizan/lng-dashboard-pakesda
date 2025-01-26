@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { useState, useMemo } from "react";
 import {
   LineChart,
@@ -41,8 +41,8 @@ export function TotalCargoesChart() {
   return (
     <Card className="bg-dashboard-navy border-0">
       <CardContent className="space-y-4">
-        <div className="flex justify-between items-center pt-6">
-          <h2 className="text-lg font-semibold">Total Number of Cargoes</h2>
+        <div className="flex flex-col items-center pt-6 pb-2">
+          <CardTitle className="text-lg font-semibold mb-4">Total Number of Cargoes</CardTitle>
           <div className="flex gap-2">
             {timeframes.map((tf) => (
               <button
@@ -59,38 +59,39 @@ export function TotalCargoesChart() {
             ))}
           </div>
         </div>
-        
-        <ResponsiveContainer width="100%" height={350}>
-          <LineChart data={data}>
-            <XAxis
-              dataKey="month"
-              stroke="#525252"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
-            />
-            <YAxis
-              stroke="#525252"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1A1E2D",
-                border: "none",
-                borderRadius: "8px",
-              }}
-            />
-            <Line
-              type="monotone"
-              dataKey="cargoes"
-              stroke="#4ADE80"
-              strokeWidth={2}
-              dot={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+        <CardContent className="h-[350px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data}>
+              <XAxis
+                dataKey="month"
+                stroke="#525252"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis
+                stroke="#525252"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#1A1E2D",
+                  border: "none",
+                  borderRadius: "8px",
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="cargoes"
+                stroke="#4ADE80"
+                strokeWidth={2}
+                dot={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </CardContent>
       </CardContent>
     </Card>
   );

@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import {
   LineChart,
   Line,
@@ -29,12 +29,11 @@ export function PortChargesChart() {
 
   return (
     <Card className="bg-dashboard-navy border-0">
-      <CardContent className="space-y-4">
-        <div className="flex justify-between items-center pt-6">
-          <h2 className="text-lg font-semibold">Port Charges ($/MMBtu)</h2>
-        </div>
-        
-        <ResponsiveContainer width="100%" height={350}>
+      <div className="flex flex-col items-center pt-6 pb-2">
+        <CardTitle className="text-lg font-semibold mb-4">Port Charges ($/MMBtu)</CardTitle>
+      </div>
+      <CardContent className="h-[350px]">
+        <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
             <XAxis
               dataKey="month"
