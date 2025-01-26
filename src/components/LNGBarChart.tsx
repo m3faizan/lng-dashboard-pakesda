@@ -70,13 +70,13 @@ export function LNGBarChart() {
 
   return (
     <Card className="bg-dashboard-navy border-0">
-      <CardHeader className="text-center pb-2">
-        <CardTitle className="text-lg font-semibold">LNG Import Volume</CardTitle>
+      <div className="flex flex-col items-center pt-6 pb-2">
+        <CardTitle className="text-lg font-semibold mb-4">LNG Import Volume</CardTitle>
         <Select
           value={selectedPeriod}
           onValueChange={(value: Period) => setSelectedPeriod(value)}
         >
-          <SelectTrigger className="w-[180px] mt-2">
+          <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select period" />
           </SelectTrigger>
           <SelectContent>
@@ -85,7 +85,7 @@ export function LNGBarChart() {
             <SelectItem value="yearly">Yearly</SelectItem>
           </SelectContent>
         </Select>
-      </CardHeader>
+      </div>
       <CardContent>
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={data}>

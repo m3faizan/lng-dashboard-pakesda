@@ -12,7 +12,6 @@ import {
 import {
   Card,
   CardContent,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import {
@@ -23,7 +22,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Sample data for different years
 const yearlyData = {
   "2024": [
     { month: "Jan", longTerm: 4, spot: 1 },
@@ -60,15 +58,15 @@ export function CargoTypesChart() {
 
   return (
     <Card className="bg-dashboard-navy border-0">
-      <CardHeader className="text-center pb-2">
-        <CardTitle className="text-lg font-semibold">
+      <div className="flex flex-col items-center pt-6 pb-2">
+        <CardTitle className="text-lg font-semibold mb-4">
           Cargo Types Distribution
         </CardTitle>
         <Select
           value={selectedYear}
           onValueChange={(value) => setSelectedYear(value)}
         >
-          <SelectTrigger className="w-[100px] mt-2">
+          <SelectTrigger className="w-[100px]">
             <SelectValue placeholder="Select year" />
           </SelectTrigger>
           <SelectContent>
@@ -76,7 +74,7 @@ export function CargoTypesChart() {
             <SelectItem value="2023">2023</SelectItem>
           </SelectContent>
         </Select>
-      </CardHeader>
+      </div>
       <CardContent>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart
