@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Landing from "./pages/Landing";
 import Index from "./pages/Index";
 import ImportStatistics from "./pages/ImportStatistics";
 import PricingMetrics from "./pages/PricingMetrics";
@@ -10,7 +11,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Index />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/dashboard" element={<Index />} />
         <Route path="/import-statistics" element={<ImportStatistics />} />
         <Route path="/pricing-metrics" element={<PricingMetrics />} />
         <Route path="/lng-terminals" element={<LNGTerminals />} />
