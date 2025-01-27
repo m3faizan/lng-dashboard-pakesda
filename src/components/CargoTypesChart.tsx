@@ -57,7 +57,7 @@ export function CargoTypesChart() {
   const [selectedYear, setSelectedYear] = useState("2024");
 
   return (
-    <Card className="bg-dashboard-navy border-0 h-[480px] transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
+    <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
       <div className="flex flex-col items-center pt-6">
         <CardTitle className="text-xl font-semibold mb-4 text-center">
           Cargo Types Distribution
@@ -75,12 +75,12 @@ export function CargoTypesChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent className="h-[400px]">
+      <CardContent className="h-[400px] px-4">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={yearlyData[selectedYear]}
             layout="vertical"
-            margin={{ top: 5, right: 30, left: 60, bottom: 45 }}
+            margin={{ top: 20, right: 30, left: 60, bottom: 40 }}
           >
             <CartesianGrid strokeDasharray="3 3" horizontal={true} />
             <XAxis type="number" />
@@ -98,7 +98,7 @@ export function CargoTypesChart() {
               cursor={{ fill: "rgba(255, 255, 255, 0.1)" }}
             />
             <Legend 
-              verticalAlign="bottom" 
+              verticalAlign="bottom"
               height={36}
               wrapperStyle={{
                 paddingTop: "12px",
