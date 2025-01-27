@@ -1,22 +1,20 @@
-import { KPICard } from "@/components/KPICard";
-import { PriceChart } from "@/components/PriceChart";
-import { SlopeChart } from "@/components/SlopeChart";
-import { TopProducts } from "@/components/TopProducts";
-import { ImportPayment } from "@/components/ImportPayment";
-import { BrentChart } from "@/components/BrentChart";
-import { DollarSign, TrendingUp, ShoppingBag, Users } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { PriceChart } from "@/components/PriceChart";
+import { KPICard } from "@/components/KPICard";
+import { DollarSign, TrendingUp, ShoppingBag, Users } from "lucide-react";
 
-export default function PricingMetrics() {
+export default function PriceMetrics() {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
-        <div className="flex-1 bg-dashboard-dark p-8">
-          <div className="max-w-[1400px] mx-auto space-y-6">
-            <h1 className="text-2xl font-bold mb-6">Price Metrics</h1>
-            
+        <main className="flex-1 p-8 overflow-auto">
+          <div className="space-y-8 animate-fade-in max-w-[1400px] mx-auto">
+            <div className="flex justify-between items-center">
+              <h1 className="text-3xl font-bold">Price Metrics</h1>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <KPICard
                 title="LNG Price"
@@ -44,22 +42,11 @@ export default function PricingMetrics() {
               />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid gap-6">
               <PriceChart />
-              <SlopeChart />
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <TopProducts />
-              <SlopeChart title="Price Slope" showPrice />
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <ImportPayment />
-              <BrentChart />
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </SidebarProvider>
   );
