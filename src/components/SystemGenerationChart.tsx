@@ -6,6 +6,7 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
 import {
   Select,
@@ -51,6 +52,17 @@ export function SystemGenerationChart() {
               backgroundColor: "#1A1E2D",
               border: "none",
               borderRadius: "8px",
+            }}
+          />
+          <Legend 
+            verticalAlign="top" 
+            height={36}
+            formatter={(value) => {
+              const labels = {
+                rlng: "RLNG",
+                other: "Other Sources"
+              };
+              return labels[value as keyof typeof labels];
             }}
           />
           <Bar dataKey="rlng" stackId="a" fill="#4ADE80" />
