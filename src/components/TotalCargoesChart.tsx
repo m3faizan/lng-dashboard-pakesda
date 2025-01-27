@@ -7,6 +7,7 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
 
 const timeframes = [
@@ -39,10 +40,10 @@ export function TotalCargoesChart() {
   const data = useMemo(() => generateData(selectedTimeframe), [selectedTimeframe]);
 
   return (
-    <Card className="bg-dashboard-navy border-0">
+    <Card className="bg-dashboard-navy border-0 h-[480px] transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
       <CardContent className="space-y-4">
         <div className="flex flex-col items-center pt-6 pb-2">
-          <CardTitle className="text-lg font-semibold mb-4">Total Number of Cargoes</CardTitle>
+          <CardTitle className="text-xl font-semibold mb-4">Total Number of Cargoes</CardTitle>
           <div className="flex gap-2">
             {timeframes.map((tf) => (
               <button
@@ -59,21 +60,26 @@ export function TotalCargoesChart() {
             ))}
           </div>
         </div>
-        <CardContent className="h-[350px]">
+        <CardContent className="h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
+            <LineChart 
+              data={data}
+              margin={{ top: 5, right: 30, left: 60, bottom: 45 }}
+            >
               <XAxis
                 dataKey="month"
                 stroke="#525252"
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
+                width={50}
               />
               <YAxis
                 stroke="#525252"
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
+                width={50}
               />
               <Tooltip
                 contentStyle={{
@@ -82,9 +88,21 @@ export function TotalCargoesChart() {
                   borderRadius: "8px",
                 }}
               />
+              <Legend
+                verticalAlign="bottom"
+                height={36}
+                wrapperStyle={{
+                  paddingTop: "12px",
+                  fontSize: "12px",
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "1rem"
+                }}
+              />
               <Line
                 type="monotone"
                 dataKey="cargoes"
+                name="Total Cargoes"
                 stroke="#4ADE80"
                 strokeWidth={2}
                 dot={false}
