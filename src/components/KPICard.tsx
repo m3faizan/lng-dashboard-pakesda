@@ -14,7 +14,7 @@ interface KPICardProps {
 
 export function KPICard({ title, value, icon, trend, className }: KPICardProps) {
   return (
-    <Card className={cn("bg-dashboard-navy border-0 min-h-[160px]", className)}>
+    <Card className={cn("bg-dashboard-navy border-0", className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground text-left">
           {title}
@@ -23,8 +23,8 @@ export function KPICard({ title, value, icon, trend, className }: KPICardProps) 
           {icon}
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col justify-between h-[100px]">
-        <div className="text-2xl font-bold text-left">{value}</div>
+      <CardContent className="h-[100px] flex flex-col">
+        <div className="text-2xl font-bold text-left mb-auto">{value}</div>
         {trend && (
           <div className="mt-auto">
             <p
