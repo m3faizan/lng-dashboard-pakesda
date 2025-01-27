@@ -64,9 +64,9 @@ export function CargoActivityChart() {
   const data = useMemo(() => generateData(selectedPeriod), [selectedPeriod]);
 
   return (
-    <Card className="bg-dashboard-navy border-0 h-[400px]">
-      <div className="flex flex-col items-center pt-6 pb-2">
-        <CardTitle className="text-lg font-semibold mb-4">Cargo Activity by Terminal</CardTitle>
+    <Card className="bg-dashboard-navy border-0">
+      <div className="flex items-center justify-between px-6 pt-6">
+        <CardTitle className="text-lg font-semibold">Cargo Activity by Terminal</CardTitle>
         <Select
           value={selectedPeriod}
           onValueChange={(value: Period) => setSelectedPeriod(value)}
@@ -81,9 +81,12 @@ export function CargoActivityChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent className="h-[320px]">
+      <CardContent className="h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data}>
+          <BarChart
+            data={data}
+            margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+          >
             <XAxis
               dataKey="period"
               stroke="#525252"
@@ -104,9 +107,14 @@ export function CargoActivityChart() {
                 borderRadius: "8px",
               }}
             />
-            <Legend />
-            <Bar dataKey="EETL" stackId="a" fill="#4ADE80" />
-            <Bar dataKey="PGPCL" stackId="a" fill="#0EA5E9" />
+            <Legend
+              wrapperStyle={{
+                fontSize: "12px",
+                paddingTop: "20px",
+              }}
+            />
+            <Bar dataKey="EETL" fill="#4ADE80" />
+            <Bar dataKey="PGPCL" fill="#0EA5E9" />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
