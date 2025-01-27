@@ -29,7 +29,7 @@ export function KPICard({ title, value, icon, trend, className }: KPICardProps) 
           <div className="mt-auto">
             <p
               className={cn(
-                "text-xs flex items-center gap-1",
+                "text-xs flex items-center gap-1 absolute bottom-6",
                 trend.isPositive ? "text-dashboard-green" : "text-red-500"
               )}
             >
