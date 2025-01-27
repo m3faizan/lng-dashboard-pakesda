@@ -2,7 +2,6 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { TerminalKPICards } from "@/components/TerminalKPICards";
 import { CargoActivityChart } from "@/components/CargoActivityChart";
-import { TotalCargoesChart } from "@/components/TotalCargoesChart";
 import { PortChargesChart } from "@/components/PortChargesChart";
 import { CargoCalendar } from "@/components/CargoCalendar";
 import { TerminalsTable } from "@/components/TerminalsTable";
@@ -21,12 +20,11 @@ export default function LNGTerminals() {
             <TerminalKPICards />
 
             <div className="grid gap-6 md:grid-cols-2">
-              <TotalCargoesChart />
               <CargoActivityChart />
+              <PortChargesChart />
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
-              <PortChargesChart />
               <CargoCalendar />
             </div>
 
