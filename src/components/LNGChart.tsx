@@ -8,15 +8,8 @@ import {
 } from "recharts";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-
-const timeframes = [
-  { label: "3M", months: 3 },
-  { label: "6M", months: 6 },
-  { label: "YTD", months: new Date().getMonth() },
-  { label: "1Y", months: 12 },
-  { label: "5Y", months: 60 },
-  { label: "Max", months: 120 },
-] as const;
+import { timeframes, formatChartDate, getStartDate } from "@/utils/chartUtils";
+import { CHART_COLORS, DEFAULT_CHART_HEIGHT } from "@/constants/dashboard";
 
 export function LNGChart() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
@@ -26,8 +19,7 @@ export function LNGChart() {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const startDate = new Date();
-      startDate.setMonth(startDate.getMonth() - selectedTimeframe);
+      const startDate = getStartDate(selectedTimeframe);
       
       const { data: lngData, error } = await supabase
         .from('lng')
@@ -41,7 +33,7 @@ export function LNGChart() {
       }
 
       const formattedData = lngData.map(item => ({
-        month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
+        month: formatChartDate(new Date(item.date)),
         volume: item.import_Volume
       }));
 
@@ -81,8 +73,8 @@ export function LNGChart() {
           <AreaChart data={data}>
             <defs>
               <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#4ADE80" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#4ADE80" stopOpacity={0} />
+                <stop offset="5%" stopColor={CHART_COLORS.green} stopOpacity={0.3} />
+                <stop offset="95%" stopColor={CHART_COLORS.green} stopOpacity={0} />
               </linearGradient>
             </defs>
             <XAxis
@@ -109,7 +101,7 @@ export function LNGChart() {
             <Area
               type="linear"
               dataKey="volume"
-              stroke="#4ADE80"
+              stroke={CHART_COLORS.green}
               fillOpacity={1}
               fill="url(#colorVolume)"
             />
