@@ -30,12 +30,12 @@ const data = [
 
 export function BrentChart() {
   return (
-    <Card className="bg-dashboard-navy border-0">
+    <Card className="bg-dashboard-navy border-0 h-[400px]">
       <CardHeader className="text-center pb-2">
         <CardTitle className="text-lg font-semibold">3M Avg. Brent</CardTitle>
       </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
+      <CardContent className="h-[320px]">
+        <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>
             <defs>
               <linearGradient id="colorBrent" x1="0" y1="0" x2="0" y2="1">

@@ -29,11 +29,11 @@ interface SlopeChartProps {
 
 export function SlopeChart({ title = "Slope", showPrice = false }: SlopeChartProps) {
   return (
-    <Card className="bg-dashboard-navy border-0">
+    <Card className="bg-dashboard-navy border-0 h-[400px]">
       <CardHeader>
         <CardTitle className="text-lg font-semibold">{title}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="h-[320px]">
         <div className="mb-4 flex items-center gap-6">
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-dashboard-teal"></div>
@@ -51,7 +51,7 @@ export function SlopeChart({ title = "Slope", showPrice = false }: SlopeChartPro
             </div>
           )}
         </div>
-        <ResponsiveContainer width="100%" height={250}>
+        <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
             <XAxis
               dataKey="month"

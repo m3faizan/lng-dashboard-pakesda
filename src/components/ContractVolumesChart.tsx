@@ -26,15 +26,14 @@ const data = [
 
 export function ContractVolumesChart() {
   return (
-    <Card className="bg-dashboard-navy border-0">
+    <Card className="bg-dashboard-navy border-0 h-[400px]">
       <CardHeader className="text-center pb-2">
         <CardTitle className="text-lg font-semibold">
           Contract Volumes (MMBtu)
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="h-[400px]">
-          <ResponsiveContainer width="100%" height="100%">
+      <CardContent className="h-[320px]">
+        <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={data}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
@@ -71,8 +70,7 @@ export function ContractVolumesChart() {
                 dot={{ fill: "#0EA5E9" }}
               />
             </LineChart>
-          </ResponsiveContainer>
-        </div>
+        </ResponsiveContainer>
       </CardContent>
     </Card>
   );

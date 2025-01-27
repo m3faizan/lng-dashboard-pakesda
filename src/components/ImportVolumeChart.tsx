@@ -52,63 +52,59 @@ export function ImportVolumeChart() {
   };
 
   return (
-    <Card className="bg-dashboard-navy border-0">
+    <Card className="bg-dashboard-navy border-0 h-[400px]">
       <CardHeader className="text-center pb-2">
-        <CardTitle className="text-lg font-semibold">
-          Import Volume (MMBtu)
-        </CardTitle>
+        <CardTitle className="text-lg font-semibold">Import Volume</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="h-[400px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={data}
-              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis
-                dataKey="month"
-                stroke="#94a3b8"
-                tick={{ fill: "#94a3b8" }}
-              />
-              <YAxis stroke="#94a3b8" tick={{ fill: "#94a3b8" }} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1A1E2D",
-                  border: "none",
-                  borderRadius: "8px",
-                }}
-              />
-              <Legend
-                onClick={(e) => toggleYear(e.dataKey)}
-                formatter={(value, entry) => (
-                  <span
-                    style={{
-                      color: selectedYears.includes(value.toString())
-                        ? "#fff"
-                        : "#4b5563",
-                    }}
-                  >
-                    {value}
-                  </span>
-                )}
-              />
-              {years.map((year) => (
-                selectedYears.includes(year) && (
-                  <Line
-                    key={year}
-                    type="monotone"
-                    dataKey={year}
-                    stroke={yearColors[year]}
-                    strokeWidth={2}
-                    dot={{ fill: yearColors[year] }}
-                    activeDot={{ r: 6 }}
-                  />
-                )
-              ))}
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+      <CardContent className="h-[320px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={data}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <XAxis
+              dataKey="month"
+              stroke="#94a3b8"
+              tick={{ fill: "#94a3b8" }}
+            />
+            <YAxis stroke="#94a3b8" tick={{ fill: "#94a3b8" }} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#1A1E2D",
+                border: "none",
+                borderRadius: "8px",
+              }}
+            />
+            <Legend
+              onClick={(e) => toggleYear(e.dataKey)}
+              formatter={(value, entry) => (
+                <span
+                  style={{
+                    color: selectedYears.includes(value.toString())
+                      ? "#fff"
+                      : "#4b5563",
+                  }}
+                >
+                  {value}
+                </span>
+              )}
+            />
+            {years.map((year) => (
+              selectedYears.includes(year) && (
+                <Line
+                  key={year}
+                  type="monotone"
+                  dataKey={year}
+                  stroke={yearColors[year]}
+                  strokeWidth={2}
+                  dot={{ fill: yearColors[year] }}
+                  activeDot={{ r: 6 }}
+                />
+              )
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
       </CardContent>
     </Card>
   );
