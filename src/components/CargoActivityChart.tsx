@@ -109,19 +109,14 @@ export function CargoActivityChart() {
             />
             <Legend 
               verticalAlign="bottom"
-              align="center"
               height={36}
               wrapperStyle={{
-                bottom: 0,
                 paddingTop: "12px",
                 fontSize: "12px",
-                display: "flex",
-                justifyContent: "center",
-                gap: "1rem"
               }}
             />
-            <Bar dataKey="EETL" stackId="a" fill="#4ADE80" />
-            <Bar dataKey="PGPCL" stackId="a" fill="#0EA5E9" />
+            <Bar dataKey="EETL" stackId="a" fill="#4ADE80" name="EETL Terminal" />
+            <Bar dataKey="PGPCL" stackId="a" fill="#0EA5E9" name="PGPCL Terminal" />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
