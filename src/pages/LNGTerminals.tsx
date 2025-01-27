@@ -20,12 +20,12 @@ export default function LNGTerminals() {
 
             <TerminalKPICards />
 
-            <div className="grid gap-8 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2">
               <TotalCargoesChart />
               <CargoActivityChart />
             </div>
 
-            <div className="grid gap-8 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2">
               <PortChargesChart />
               <CargoCalendar />
             </div>
