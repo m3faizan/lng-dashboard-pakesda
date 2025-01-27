@@ -33,9 +33,9 @@ export const sidebarItems = [
     url: "/import-statistics",
   },
   {
-    title: "Pricing Metrics",
+    title: "Price Metrics",
     icon: LineChartIcon,
-    url: "/pricing-metrics",
+    url: "/price-metrics",
   },
   {
     title: "Generation Metrics",
