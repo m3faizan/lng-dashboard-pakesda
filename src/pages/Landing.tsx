@@ -14,7 +14,7 @@ export default function Landing() {
         {
           label: "Start Free",
           href: "/dashboard",
-          variant: "default"
+          variant: "secondary"
         }
       ]}
       titleClassName="text-5xl md:text-6xl font-extrabold"
