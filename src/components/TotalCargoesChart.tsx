@@ -7,7 +7,6 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
 
 const timeframes = [
@@ -84,19 +83,6 @@ export function TotalCargoesChart() {
                   backgroundColor: "#1A1E2D",
                   border: "none",
                   borderRadius: "8px",
-                }}
-              />
-              <Legend
-                verticalAlign="bottom"
-                align="center"
-                height={36}
-                wrapperStyle={{
-                  bottom: 0,
-                  paddingTop: "12px",
-                  fontSize: "12px",
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: "1rem"
                 }}
               />
               <Line

@@ -27,10 +27,10 @@ export function CargoCalendar() {
   };
 
   return (
-    <Card className="bg-dashboard-navy border-0">
-      <CardContent className="pt-6">
+    <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
+      <CardContent className="pt-6 flex flex-col items-center">
         <h2 className="text-lg font-semibold mb-4">Cargo Arrivals Calendar</h2>
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col items-center space-y-4">
           <Calendar
             mode="single"
             selected={date}

@@ -1,4 +1,3 @@
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import {
   LineChart,
   Line,
@@ -6,8 +5,8 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
 const generateData = () => {
   const data = [];
@@ -59,23 +58,9 @@ export function PortChargesChart() {
                 borderRadius: "8px",
               }}
             />
-            <Legend
-              verticalAlign="bottom"
-              align="center"
-              height={36}
-              wrapperStyle={{
-                bottom: 0,
-                paddingTop: "12px",
-                fontSize: "12px",
-                display: "flex",
-                justifyContent: "center",
-                gap: "1rem"
-              }}
-            />
             <Line
               type="monotone"
               dataKey="charges"
-              name="Port Charges"
               stroke="#4fd1c5"
               strokeWidth={2}
               dot={false}
