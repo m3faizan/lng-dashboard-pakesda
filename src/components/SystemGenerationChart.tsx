@@ -28,8 +28,8 @@ export function SystemGenerationChart() {
   const [period, setPeriod] = useState("monthly");
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
+    <div className="space-y-6">
+      <div className="flex flex-col items-center space-y-5">
         <h2 className="text-lg font-semibold">Total System Generation</h2>
         <Select value={period} onValueChange={setPeriod}>
           <SelectTrigger className="w-[180px]">
