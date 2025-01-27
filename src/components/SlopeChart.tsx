@@ -57,7 +57,10 @@ export function SlopeChart({ title = "Contract Slope", showPrice = false }: Slop
       </CardHeader>
       <CardContent className="h-[320px] p-5">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
+          <LineChart 
+            data={data}
+            margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
+          >
             <XAxis
               dataKey="month"
               stroke="#DDD"
@@ -83,7 +86,8 @@ export function SlopeChart({ title = "Contract Slope", showPrice = false }: Slop
               }}
             />
             <Legend 
-              verticalAlign="top"
+              verticalAlign="bottom"
+              align="center"
               height={36}
             />
             {selectedYears.includes("thisYear") && (

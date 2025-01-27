@@ -36,7 +36,10 @@ export function PriceChart() {
       </CardHeader>
       <CardContent className="h-[320px] p-5">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data}>
+          <AreaChart 
+            data={data}
+            margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
+          >
             <defs>
               <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#4fd1c5" stopOpacity={0.3} />
@@ -75,6 +78,7 @@ export function PriceChart() {
               stroke="#4fd1c5"
               fill="url(#colorPrice)"
               strokeWidth={2}
+              name="Price"
             />
           </AreaChart>
         </ResponsiveContainer>
