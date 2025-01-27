@@ -66,7 +66,7 @@ export function CargoActivityChart() {
   return (
     <Card className="bg-dashboard-navy border-0 h-[400px]">
       <div className="flex flex-col items-center pt-6 pb-2">
-        <CardTitle className="text-lg font-semibold mb-4">Cargo Activity by Terminal</CardTitle>
+        <CardTitle className="text-lg font-semibold mb-4 text-center">Cargo Activity by Terminal</CardTitle>
         <Select
           value={selectedPeriod}
           onValueChange={(value: Period) => setSelectedPeriod(value)}

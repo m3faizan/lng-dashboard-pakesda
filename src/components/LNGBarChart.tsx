@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
 type Period = "monthly" | "quarterly" | "yearly";
 
@@ -59,19 +59,10 @@ export function LNGBarChart() {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("monthly");
   const data = useMemo(() => generateData(selectedPeriod), [selectedPeriod]);
 
-  const { trendColor } = useMemo(() => {
-    if (data.length < 2) return { trendColor: "#4ADE80" };
-    const startValue = data[0].volume;
-    const endValue = data[data.length - 1].volume;
-    return {
-      trendColor: endValue >= startValue ? "#4ADE80" : "#ef4444",
-    };
-  }, [data]);
-
   return (
     <Card className="bg-dashboard-navy border-0">
       <div className="flex flex-col items-center pt-6 pb-2">
-        <CardTitle className="text-lg font-semibold mb-4">LNG Import Volume</CardTitle>
+        <CardTitle className="text-lg font-semibold mb-4 text-center">LNG Import Volume</CardTitle>
         <Select
           value={selectedPeriod}
           onValueChange={(value: Period) => setSelectedPeriod(value)}
@@ -86,8 +77,8 @@ export function LNGBarChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={350}>
+      <CardContent className="h-[320px]">
+        <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>
             <XAxis
               dataKey="period"
@@ -112,23 +103,8 @@ export function LNGBarChart() {
             />
             <Bar
               dataKey="volume"
-              fill={trendColor}
+              fill="#4ADE80"
               radius={[4, 4, 0, 0]}
-              style={{ cursor: "pointer" }}
-              onMouseOver={(data, index) => {
-                document.querySelectorAll(".recharts-bar-rectangle").forEach((rect: any) => {
-                  if (rect.getAttribute("index") === index.toString()) {
-                    rect.style.fill = "#66E99D";
-                  }
-                });
-              }}
-              onMouseOut={(data, index) => {
-                document.querySelectorAll(".recharts-bar-rectangle").forEach((rect: any) => {
-                  if (rect.getAttribute("index") === index.toString()) {
-                    rect.style.fill = trendColor;
-                  }
-                });
-              }}
             />
           </BarChart>
         </ResponsiveContainer>

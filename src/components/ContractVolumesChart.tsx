@@ -4,9 +4,9 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  ResponsiveContainer,
   Tooltip,
   Legend,
-  ResponsiveContainer,
 } from "recharts";
 import {
   Card,
@@ -34,42 +34,42 @@ export function ContractVolumesChart() {
       </CardHeader>
       <CardContent className="h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={data}
-              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis
-                dataKey="month"
-                stroke="#94a3b8"
-                tick={{ fill: "#94a3b8" }}
-              />
-              <YAxis stroke="#94a3b8" tick={{ fill: "#94a3b8" }} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1A1E2D",
-                  border: "none",
-                  borderRadius: "8px",
-                }}
-              />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="longTerm"
-                name="Long Term"
-                stroke="#4ADE80"
-                strokeWidth={2}
-                dot={{ fill: "#4ADE80" }}
-              />
-              <Line
-                type="monotone"
-                dataKey="shortTerm"
-                name="Short Term"
-                stroke="#0EA5E9"
-                strokeWidth={2}
-                dot={{ fill: "#0EA5E9" }}
-              />
-            </LineChart>
+          <LineChart
+            data={data}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <XAxis
+              dataKey="month"
+              stroke="#94a3b8"
+              tick={{ fill: "#94a3b8" }}
+            />
+            <YAxis stroke="#94a3b8" tick={{ fill: "#94a3b8" }} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#1A1E2D",
+                border: "none",
+                borderRadius: "8px",
+              }}
+            />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="longTerm"
+              name="Long Term"
+              stroke="#4ADE80"
+              strokeWidth={2}
+              dot={{ fill: "#4ADE80" }}
+            />
+            <Line
+              type="monotone"
+              dataKey="shortTerm"
+              name="Short Term"
+              stroke="#0EA5E9"
+              strokeWidth={2}
+              dot={{ fill: "#0EA5E9" }}
+            />
+          </LineChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
