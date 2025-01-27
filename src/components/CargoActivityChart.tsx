@@ -64,7 +64,7 @@ export function CargoActivityChart() {
   const data = useMemo(() => generateData(selectedPeriod), [selectedPeriod]);
 
   return (
-    <Card className="bg-dashboard-navy border-0 h-[400px]">
+    <Card className="bg-dashboard-navy border-0 h-[480px] w-[600px] overflow-hidden">
       <div className="flex flex-col items-center pt-6 pb-2">
         <CardTitle className="text-lg font-semibold mb-4">Cargo Activity by Terminal</CardTitle>
         <Select
@@ -81,9 +81,12 @@ export function CargoActivityChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent className="h-[320px]">
+      <CardContent className="h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data}>
+          <BarChart 
+            data={data}
+            margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+          >
             <XAxis
               dataKey="period"
               stroke="#525252"
@@ -104,7 +107,15 @@ export function CargoActivityChart() {
                 borderRadius: "8px",
               }}
             />
-            <Legend />
+            <Legend 
+              verticalAlign="bottom"
+              align="center"
+              height={36}
+              wrapperStyle={{
+                paddingTop: "12px",
+                fontSize: "12px",
+              }}
+            />
             <Bar dataKey="EETL" stackId="a" fill="#4ADE80" />
             <Bar dataKey="PGPCL" stackId="a" fill="#0EA5E9" />
           </BarChart>
