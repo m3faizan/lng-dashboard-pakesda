@@ -57,7 +57,7 @@ export function CargoTypesChart() {
   const [selectedYear, setSelectedYear] = useState("2024");
 
   return (
-    <Card className="bg-dashboard-navy border-0 h-[400px] transition-all hover:ring-1 hover:ring-dashboard-blue/20">
+    <Card className="bg-dashboard-navy border-0 h-[480px] transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
       <div className="flex flex-col items-center pt-6">
         <CardTitle className="text-xl font-semibold mb-4 text-center">
           Cargo Types Distribution
@@ -75,12 +75,12 @@ export function CargoTypesChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent className="h-[320px]">
+      <CardContent className="h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={yearlyData[selectedYear]}
             layout="vertical"
-            margin={{ top: 5, right: 30, left: 60, bottom: 5 }}
+            margin={{ top: 5, right: 30, left: 60, bottom: 45 }}
           >
             <CartesianGrid strokeDasharray="3 3" horizontal={true} />
             <XAxis type="number" />
@@ -88,6 +88,7 @@ export function CargoTypesChart() {
               type="category"
               dataKey="month"
               tick={{ fill: "#94a3b8" }}
+              width={50}
             />
             <Tooltip
               contentStyle={{
@@ -96,7 +97,17 @@ export function CargoTypesChart() {
               }}
               cursor={{ fill: "rgba(255, 255, 255, 0.1)" }}
             />
-            <Legend />
+            <Legend 
+              verticalAlign="bottom" 
+              height={36}
+              wrapperStyle={{
+                paddingTop: "12px",
+                fontSize: "12px",
+                display: "flex",
+                justifyContent: "center",
+                gap: "1rem"
+              }}
+            />
             <Bar
               dataKey="longTerm"
               name="Long Term"

@@ -5,6 +5,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  Legend,
 } from "recharts";
 import { useState, useMemo } from "react";
 import {
@@ -69,7 +70,7 @@ export function LNGBarChart() {
   }, [data]);
 
   return (
-    <Card className="bg-dashboard-navy border-0 h-[400px] transition-all hover:ring-1 hover:ring-dashboard-blue/20">
+    <Card className="bg-dashboard-navy border-0 h-[480px] transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
       <div className="flex flex-col items-center pt-6">
         <CardTitle className="text-xl font-semibold mb-4 text-center">
           LNG Import Volume
@@ -88,9 +89,12 @@ export function LNGBarChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent className="h-[320px]">
+      <CardContent className="h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data}>
+          <BarChart 
+            data={data}
+            margin={{ top: 5, right: 30, left: 60, bottom: 45 }}
+          >
             <XAxis
               dataKey="period"
               stroke="#525252"
@@ -104,6 +108,7 @@ export function LNGBarChart() {
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `${value}M`}
+              width={50}
             />
             <Tooltip
               contentStyle={{
@@ -112,8 +117,20 @@ export function LNGBarChart() {
                 borderRadius: "8px",
               }}
             />
+            <Legend 
+              verticalAlign="bottom"
+              height={36}
+              wrapperStyle={{
+                paddingTop: "12px",
+                fontSize: "12px",
+                display: "flex",
+                justifyContent: "center",
+                gap: "1rem"
+              }}
+            />
             <Bar
               dataKey="volume"
+              name="Import Volume"
               fill={trendColor}
               radius={[4, 4, 0, 0]}
               style={{ cursor: "pointer" }}
