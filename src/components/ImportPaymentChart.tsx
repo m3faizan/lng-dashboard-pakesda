@@ -5,12 +5,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Line,
   LineChart,
-  ResponsiveContainer,
-  Tooltip,
+  Line,
   XAxis,
   YAxis,
+  Tooltip,
+  ResponsiveContainer,
   Legend,
 } from "recharts";
 
@@ -33,7 +33,10 @@ export function ImportPaymentChart() {
   return (
     <Card className="bg-dashboard-navy border-0 h-[400px]">
       <CardHeader className="flex flex-col items-center pb-2">
-        <CardTitle className="text-lg font-semibold text-center">Import Payment Trend</CardTitle>
+        <CardTitle className="text-lg font-semibold text-center">
+          Import Payment Trend
+        </CardTitle>
+        <div className="h-[44px]"></div> {/* Spacer to match height of charts with dropdowns */}
       </CardHeader>
       <CardContent className="h-[320px] p-5">
         <ResponsiveContainer width="100%" height="100%">
