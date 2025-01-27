@@ -57,16 +57,16 @@ export function CargoTypesChart() {
   const [selectedYear, setSelectedYear] = useState("2024");
 
   return (
-    <Card className="bg-dashboard-navy border-0">
-      <div className="flex flex-col items-center pt-6 pb-2">
-        <CardTitle className="text-lg font-semibold mb-4">
+    <Card className="bg-dashboard-navy border-0 h-[400px] transition-all hover:ring-1 hover:ring-dashboard-blue/20">
+      <div className="flex flex-col items-center pt-6">
+        <CardTitle className="text-xl font-semibold mb-4 text-center">
           Cargo Types Distribution
         </CardTitle>
         <Select
           value={selectedYear}
           onValueChange={(value) => setSelectedYear(value)}
         >
-          <SelectTrigger className="w-[100px]">
+          <SelectTrigger className="w-[180px] mb-4 hover:bg-dashboard-navy/80">
             <SelectValue placeholder="Select year" />
           </SelectTrigger>
           <SelectContent>
@@ -75,8 +75,8 @@ export function CargoTypesChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={400}>
+      <CardContent className="h-[320px]">
+        <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={yearlyData[selectedYear]}
             layout="vertical"

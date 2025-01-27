@@ -97,16 +97,14 @@ export default function Index() {
 
             <div className="space-y-6">
               <div className="p-6 bg-dashboard-navy rounded-lg border-0">
-                <h2 className="text-lg font-semibold mb-4">
+                <h2 className="text-xl font-semibold mb-4 text-center">
                   LNG Import Volumes (MMBTU)
                 </h2>
                 <LNGChart />
               </div>
               
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="p-6 bg-dashboard-navy rounded-lg border-0">
-                  <LNGBarChart />
-                </div>
+              <div className="grid md:grid-cols-2 gap-8">
+                <LNGBarChart />
                 <CargoTypesChart />
               </div>
             </div>

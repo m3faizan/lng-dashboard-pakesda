@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
 type Period = "monthly" | "quarterly" | "yearly";
 
@@ -69,14 +69,16 @@ export function LNGBarChart() {
   }, [data]);
 
   return (
-    <Card className="bg-dashboard-navy border-0">
-      <div className="flex flex-col items-center pt-6 pb-2">
-        <CardTitle className="text-lg font-semibold mb-4">LNG Import Volume</CardTitle>
+    <Card className="bg-dashboard-navy border-0 h-[400px] transition-all hover:ring-1 hover:ring-dashboard-blue/20">
+      <div className="flex flex-col items-center pt-6">
+        <CardTitle className="text-xl font-semibold mb-4 text-center">
+          LNG Import Volume
+        </CardTitle>
         <Select
           value={selectedPeriod}
           onValueChange={(value: Period) => setSelectedPeriod(value)}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px] mb-4 hover:bg-dashboard-navy/80">
             <SelectValue placeholder="Select period" />
           </SelectTrigger>
           <SelectContent>
@@ -86,8 +88,8 @@ export function LNGBarChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={350}>
+      <CardContent className="h-[320px]">
+        <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>
             <XAxis
               dataKey="period"
