@@ -3,6 +3,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { PriceChart } from "@/components/PriceChart";
 import { PriceKPICards } from "@/components/PriceKPICards";
 import { SlopeChart } from "@/components/SlopeChart";
+import { ImportPaymentChart } from "@/components/ImportPaymentChart";
 
 export default function PriceMetrics() {
   return (
@@ -19,12 +20,12 @@ export default function PriceMetrics() {
 
             <div className="grid gap-6 md:grid-cols-2">
               <PriceChart />
-              <SlopeChart showPrice={true} />
+              <SlopeChart />
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
-              <SlopeChart title="Contract Slope" />
-              <SlopeChart title="Price Trend" />
+              <SlopeChart title="Price Trend" showPrice={true} />
+              <ImportPaymentChart />
             </div>
           </div>
         </main>

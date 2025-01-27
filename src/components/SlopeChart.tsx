@@ -11,7 +11,10 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  Legend,
 } from "recharts";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useState } from "react";
 
 const data = [
   { month: "Jan", thisYear: 10.25, lastYear: 9.5 },
@@ -20,6 +23,12 @@ const data = [
   { month: "Apr", thisYear: 9.9, lastYear: 9.3 },
   { month: "May", thisYear: 10.3, lastYear: 9.7 },
   { month: "Jun", thisYear: 10.0, lastYear: 9.4 },
+  { month: "Jul", thisYear: 10.2, lastYear: 9.6 },
+  { month: "Aug", thisYear: 10.4, lastYear: 9.8 },
+  { month: "Sep", thisYear: 10.1, lastYear: 9.5 },
+  { month: "Oct", thisYear: 10.3, lastYear: 9.7 },
+  { month: "Nov", thisYear: 10.2, lastYear: 9.4 },
+  { month: "Dec", thisYear: 10.25, lastYear: 9.5 },
 ];
 
 interface SlopeChartProps {
@@ -27,42 +36,40 @@ interface SlopeChartProps {
   showPrice?: boolean;
 }
 
-export function SlopeChart({ title = "Slope", showPrice = false }: SlopeChartProps) {
+export function SlopeChart({ title = "Contract Slope", showPrice = false }: SlopeChartProps) {
+  const [selectedYears, setSelectedYears] = useState<string[]>(["thisYear", "lastYear"]);
+
   return (
     <Card className="bg-dashboard-navy border-0 h-[400px]">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+      <CardHeader className="flex flex-col items-center pb-2">
+        <CardTitle className="text-lg font-semibold text-center">{title}</CardTitle>
+        <ToggleGroup 
+          type="multiple" 
+          value={selectedYears}
+          onValueChange={(value) => {
+            if (value.length > 0) setSelectedYears(value);
+          }}
+          className="mt-4"
+        >
+          <ToggleGroupItem value="thisYear">This Year</ToggleGroupItem>
+          <ToggleGroupItem value="lastYear">Last Year</ToggleGroupItem>
+        </ToggleGroup>
       </CardHeader>
-      <CardContent className="h-[320px]">
-        <div className="mb-4 flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-dashboard-teal"></div>
-            <span className="text-sm text-muted-foreground">This Year</span>
-            <span className="text-sm font-semibold">10.25%</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-[#E879F9]"></div>
-            <span className="text-sm text-muted-foreground">Last Year</span>
-            <span className="text-sm font-semibold">9.5%</span>
-          </div>
-          {showPrice && (
-            <div className="flex items-center gap-2 ml-auto">
-              <span className="text-xs text-muted-foreground">Price ($/MMBtu)</span>
-            </div>
-          )}
-        </div>
+      <CardContent className="h-[320px] p-5">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
             <XAxis
               dataKey="month"
-              stroke="#525252"
+              stroke="#DDD"
               fontSize={12}
+              fontFamily="Arial"
               tickLine={false}
               axisLine={false}
             />
             <YAxis
-              stroke="#525252"
+              stroke="#DDD"
               fontSize={12}
+              fontFamily="Arial"
               tickLine={false}
               axisLine={false}
             />
@@ -71,22 +78,34 @@ export function SlopeChart({ title = "Slope", showPrice = false }: SlopeChartPro
                 backgroundColor: "#1A1E2D",
                 border: "none",
                 borderRadius: "8px",
+                fontFamily: "Arial",
+                fontSize: "12px",
               }}
             />
-            <Line
-              type="linear"
-              dataKey="thisYear"
-              stroke="#4fd1c5"
-              strokeWidth={2}
-              dot={{ fill: "#4fd1c5" }}
+            <Legend 
+              verticalAlign="top"
+              height={36}
             />
-            <Line
-              type="linear"
-              dataKey="lastYear"
-              stroke="#E879F9"
-              strokeWidth={2}
-              dot={{ fill: "#E879F9" }}
-            />
+            {selectedYears.includes("thisYear") && (
+              <Line
+                type="linear"
+                dataKey="thisYear"
+                stroke="#4fd1c5"
+                strokeWidth={2}
+                dot={{ fill: "#4fd1c5" }}
+                name="2024"
+              />
+            )}
+            {selectedYears.includes("lastYear") && (
+              <Line
+                type="linear"
+                dataKey="lastYear"
+                stroke="#222222"
+                strokeWidth={2}
+                dot={{ fill: "#222222" }}
+                name="2023"
+              />
+            )}
           </LineChart>
         </ResponsiveContainer>
       </CardContent>
