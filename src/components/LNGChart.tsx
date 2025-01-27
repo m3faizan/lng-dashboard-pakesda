@@ -6,23 +6,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useState } from "react";
-
-const generateData = (months: number) => {
-  const data = [];
-  const startDate = new Date();
-  startDate.setMonth(startDate.getMonth() - months);
-
-  for (let i = 0; i <= months; i++) {
-    const currentDate = new Date(startDate);
-    currentDate.setMonth(startDate.getMonth() + i);
-    data.push({
-      month: currentDate.toLocaleString('default', { month: 'short', year: '2-digit' }),
-      volume: Math.floor(Math.random() * (600 - 300) + 300)
-    });
-  }
-  return data;
-};
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const timeframes = [
   { label: "3M", months: 3 },
@@ -35,7 +20,41 @@ const timeframes = [
 
 export function LNGChart() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
-  const data = generateData(selectedTimeframe);
+  const [data, setData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const startDate = new Date();
+      startDate.setMonth(startDate.getMonth() - selectedTimeframe);
+      
+      const { data: lngData, error } = await supabase
+        .from('lng')
+        .select('date, import_Volume')
+        .gte('date', startDate.toISOString())
+        .order('date', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching data:', error);
+        return;
+      }
+
+      const formattedData = lngData.map(item => ({
+        month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
+        volume: item.import_Volume
+      }));
+
+      setData(formattedData);
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, [selectedTimeframe]);
+
+  if (isLoading) {
+    return <div className="h-[320px] flex items-center justify-center">Loading...</div>;
+  }
 
   return (
     <div className="space-y-6">
