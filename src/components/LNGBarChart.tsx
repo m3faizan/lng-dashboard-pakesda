@@ -1,63 +1,11 @@
-import {
-  Bar,
-  BarChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  Legend,
-  Cell,
-  ComposedChart,
-  Line,
-} from "recharts";
 import { useState, useMemo, useEffect } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { PeriodSelector } from "./chart/PeriodSelector";
+import { LNGVolumeChart } from "./chart/LNGVolumeChart";
+import { formatDate, generateEmptyPeriods, calculateAverage } from "@/utils/chartUtils";
 
 type Period = "monthly" | "quarterly" | "yearly";
-
-const formatDate = (date: Date, period: Period) => {
-  switch (period) {
-    case "monthly":
-      return date.toLocaleString('default', { month: 'short', year: '2-digit' });
-    case "quarterly":
-      return `Q${Math.floor(date.getMonth() / 3) + 1} '${date.getFullYear().toString().slice(-2)}`;
-    case "yearly":
-      return date.getFullYear().toString();
-  }
-};
-
-const generateEmptyPeriods = (startDate: Date, endDate: Date, period: Period) => {
-  const periods = [];
-  const currentDate = new Date(startDate);
-
-  while (currentDate <= endDate) {
-    periods.push({
-      period: formatDate(new Date(currentDate), period),
-      volume: 0
-    });
-
-    switch (period) {
-      case "monthly":
-        currentDate.setMonth(currentDate.getMonth() + 1);
-        break;
-      case "quarterly":
-        currentDate.setMonth(currentDate.getMonth() + 3);
-        break;
-      case "yearly":
-        currentDate.setFullYear(currentDate.getFullYear() + 1);
-        break;
-    }
-  }
-  return periods;
-};
 
 export function LNGBarChart() {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("monthly");
@@ -69,14 +17,8 @@ export function LNGBarChart() {
     return ["all", ...yearList];
   }, []);
 
-  // Calculate average based on period
-  const averageValue = useMemo(() => {
-    if (!data.length) return 0;
-    const sum = data.reduce((acc, curr) => acc + curr.volume, 0);
-    return sum / data.length;
-  }, [data]);
+  const averageValue = useMemo(() => calculateAverage(data), [data]);
 
-  // Add average to each data point
   const dataWithAverage = useMemo(() => {
     return data.map(item => ({
       ...item,
@@ -155,113 +97,22 @@ export function LNGBarChart() {
         <CardTitle className="text-xl font-semibold mb-4 text-center">
           LNG Import Volume
         </CardTitle>
-        <div className="flex gap-4 mb-4">
-          <Select
-            value={selectedPeriod}
-            onValueChange={(value: Period) => setSelectedPeriod(value)}
-          >
-            <SelectTrigger className="w-[180px] hover:bg-dashboard-navy/80">
-              <SelectValue placeholder="Select period" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="monthly">Monthly</SelectItem>
-              <SelectItem value="quarterly">Quarterly</SelectItem>
-              <SelectItem value="yearly">Yearly</SelectItem>
-            </SelectContent>
-          </Select>
-          {showYearFilter && (
-            <Select
-              value={selectedYear}
-              onValueChange={setSelectedYear}
-            >
-              <SelectTrigger className="w-[120px] hover:bg-dashboard-navy/80">
-                <SelectValue placeholder="Select year" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Years</SelectItem>
-                {years.filter(year => year !== "all").map((year) => (
-                  <SelectItem key={year} value={year}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </div>
+        <PeriodSelector
+          selectedPeriod={selectedPeriod}
+          selectedYear={selectedYear}
+          onPeriodChange={setSelectedPeriod}
+          onYearChange={setSelectedYear}
+          showYearFilter={showYearFilter}
+          years={years}
+        />
       </div>
       <CardContent className="h-[400px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart 
-            data={dataWithAverage}
-            margin={{ top: 5, right: 30, left: 60, bottom: 45 }}
-          >
-            <XAxis
-              dataKey="period"
-              stroke="#525252"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
-            />
-            <YAxis
-              stroke="#525252"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
-              width={50}
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1A1E2D",
-                border: "none",
-                borderRadius: "8px",
-              }}
-              formatter={(value: number, name: string) => [
-                name === "Average" 
-                  ? `${value.toLocaleString()} MMBtu (Avg)`
-                  : `${value.toLocaleString()} MMBtu`,
-                name
-              ]}
-            />
-            <Legend 
-              verticalAlign="bottom"
-              height={36}
-              wrapperStyle={{
-                paddingTop: "12px",
-                fontSize: "12px",
-                display: "flex",
-                justifyContent: "center",
-                gap: "1rem"
-              }}
-            />
-            <Bar
-              dataKey="volume"
-              name="Import Volume"
-              fill={trendColor}
-              radius={[4, 4, 0, 0]}
-              style={{ cursor: "pointer" }}
-            >
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fillOpacity={
-                    selectedYear === "all" || !showYearFilter || entry.year === selectedYear
-                      ? 1
-                      : 0.3
-                  }
-                />
-              ))}
-            </Bar>
-            <Line
-              type="monotone"
-              dataKey="average"
-              stroke="#FFB86C"
-              strokeWidth={3}
-              dot={false}
-              name="Average"
-            />
-          </ComposedChart>
-        </ResponsiveContainer>
+        <LNGVolumeChart
+          data={dataWithAverage}
+          selectedYear={selectedYear}
+          showYearFilter={showYearFilter}
+          trendColor={trendColor}
+        />
       </CardContent>
     </Card>
   );
