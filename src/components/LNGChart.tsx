@@ -27,8 +27,11 @@ export function LNGChart() {
       // Calculate the date range based on selected timeframe
       const endDate = new Date();
       const startDate = new Date();
-      startDate.setMonth(startDate.getMonth() - selectedTimeframe);
-
+      
+      // Adjust the calculation to ensure we get the full period
+      startDate.setMonth(endDate.getMonth() - selectedTimeframe + 1);
+      startDate.setDate(1); // Start from beginning of the month
+      
       // Ensure we don't go before Jan 2019
       const minDate = new Date('2019-01-01');
       const actualStartDate = startDate < minDate ? minDate : startDate;
@@ -37,7 +40,7 @@ export function LNGChart() {
         .from('LNG Information')
         .select('date, import_Volume')
         .gte('date', actualStartDate.toISOString())
-        .lte('date', '2024-12-31')
+        .lte('date', endDate.toISOString())
         .order('date', { ascending: true });
 
       if (error) {
@@ -103,7 +106,7 @@ export function LNGChart() {
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+              tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
             />
             <Tooltip
               contentStyle={{
@@ -111,7 +114,7 @@ export function LNGChart() {
                 border: "none",
                 borderRadius: "8px",
               }}
-              formatter={(value: number) => [`${(value / 1000).toFixed(1)}k`, "Volume"]}
+              formatter={(value: number) => [`${(value / 1000000).toFixed(2)}M MMBtu`, "Volume"]}
             />
             <Area
               type="monotone"
