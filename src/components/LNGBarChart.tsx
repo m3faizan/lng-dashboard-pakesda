@@ -7,7 +7,7 @@ import {
   YAxis,
   Legend,
 } from "recharts";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -16,49 +16,79 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
 
 type Period = "monthly" | "quarterly" | "yearly";
 
-const generateData = (period: Period) => {
-  const currentDate = new Date();
-  const data = [];
-  
+const formatDate = (date: Date, period: Period) => {
   switch (period) {
     case "monthly":
-      for (let i = 11; i >= 0; i--) {
-        const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-        data.push({
-          period: date.toLocaleString('default', { month: 'short', year: '2-digit' }),
-          volume: Math.floor(Math.random() * (600 - 300) + 300)
-        });
-      }
-      break;
+      return date.toLocaleString('default', { month: 'short', year: '2-digit' });
     case "quarterly":
-      for (let i = 3; i >= 0; i--) {
-        const quarterMonth = Math.floor((currentDate.getMonth() - (i * 3)) / 3) * 3;
-        const date = new Date(currentDate.getFullYear(), quarterMonth, 1);
-        data.push({
-          period: `Q${Math.floor(date.getMonth() / 3) + 1} '${date.getFullYear().toString().slice(-2)}`,
-          volume: Math.floor(Math.random() * (1800 - 900) + 900)
-        });
-      }
-      break;
+      return `Q${Math.floor(date.getMonth() / 3) + 1} '${date.getFullYear().toString().slice(-2)}`;
     case "yearly":
-      for (let i = 4; i >= 0; i--) {
-        const year = currentDate.getFullYear() - i;
-        data.push({
-          period: year.toString(),
-          volume: Math.floor(Math.random() * (7200 - 3600) + 3600)
-        });
-      }
-      break;
+      return date.getFullYear().toString();
   }
-  return data;
 };
 
 export function LNGBarChart() {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("monthly");
-  const data = useMemo(() => generateData(selectedPeriod), [selectedPeriod]);
+  const [data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const currentDate = new Date();
+      let query = supabase
+        .from('LNG Information')
+        .select('date, import_Volume')
+        .order('date', { ascending: true });
+
+      // Calculate the start date based on the selected period
+      const startDate = new Date();
+      switch (selectedPeriod) {
+        case "monthly":
+          startDate.setMonth(currentDate.getMonth() - 11);
+          break;
+        case "quarterly":
+          startDate.setMonth(currentDate.getMonth() - 12);
+          break;
+        case "yearly":
+          startDate.setFullYear(currentDate.getFullYear() - 4);
+          break;
+      }
+
+      // Add date filter
+      query = query.gte('date', startDate.toISOString());
+
+      const { data: response, error } = await query;
+
+      if (error) {
+        console.error('Error fetching data:', error);
+        return;
+      }
+
+      // Process the data based on the selected period
+      const processedData = response.reduce((acc: any[], curr: any) => {
+        const date = new Date(curr.date);
+        const period = formatDate(date, selectedPeriod);
+        
+        const existingEntry = acc.find(item => item.period === period);
+        if (existingEntry) {
+          existingEntry.volume += Number(curr.import_Volume || 0);
+        } else {
+          acc.push({
+            period,
+            volume: Number(curr.import_Volume || 0)
+          });
+        }
+        return acc;
+      }, []);
+
+      setData(processedData);
+    };
+
+    fetchData();
+  }, [selectedPeriod]);
 
   const { trendColor } = useMemo(() => {
     if (data.length < 2) return { trendColor: "#4ADE80" };
@@ -107,7 +137,7 @@ export function LNGBarChart() {
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `${value}M`}
+              tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
               width={50}
             />
             <Tooltip
@@ -116,6 +146,7 @@ export function LNGBarChart() {
                 border: "none",
                 borderRadius: "8px",
               }}
+              formatter={(value: number) => [`${value.toLocaleString()} MMBtu`, "Import Volume"]}
             />
             <Legend 
               verticalAlign="bottom"
