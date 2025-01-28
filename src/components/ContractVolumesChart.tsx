@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -52,9 +52,6 @@ export function ContractVolumesChart() {
 
   const handleLegendClick = (e: any) => {
     const seriesName = e.dataKey;
-    if (hiddenSeries.length === 1 && hiddenSeries.includes(seriesName)) {
-      return; // Prevent hiding last visible series
-    }
     setHiddenSeries(
       hiddenSeries.includes(seriesName)
         ? hiddenSeries.filter((name) => name !== seriesName)
@@ -81,7 +78,7 @@ export function ContractVolumesChart() {
       </CardHeader>
       <CardContent className="h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart
+          <BarChart
             data={chartData}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
           >
@@ -109,25 +106,19 @@ export function ContractVolumesChart() {
               ]}
             />
             <Legend onClick={handleLegendClick} />
-            <Line
-              type="linear"
+            <Bar
               dataKey="Long Term"
-              stroke="#4ADE80"
-              strokeWidth={2}
-              dot={false}
+              stackId="a"
+              fill="#4ADE80"
               hide={hiddenSeries.includes("Long Term")}
-              opacity={hiddenSeries.length > 0 ? 0.5 : 1}
             />
-            <Line
-              type="linear"
+            <Bar
               dataKey="Spot"
-              stroke="#0EA5E9"
-              strokeWidth={2}
-              dot={false}
+              stackId="a"
+              fill="#0EA5E9"
               hide={hiddenSeries.includes("Spot")}
-              opacity={hiddenSeries.length > 0 ? 0.5 : 1}
             />
-          </LineChart>
+          </BarChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
