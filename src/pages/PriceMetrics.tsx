@@ -1,9 +1,9 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { PriceChart } from "@/components/PriceChart";
 import { PriceKPICards } from "@/components/PriceKPICards";
-import { SlopeChart } from "@/components/SlopeChart";
-import { ImportPaymentChart } from "@/components/ImportPaymentChart";
+import { LNGDESPriceChart } from "@/components/charts/LNGDESPriceChart";
+import { ContractSlopeChart } from "@/components/charts/ContractSlopeChart";
+import { PriceTrendChart } from "@/components/charts/PriceTrendChart";
 
 export default function PriceMetrics() {
   return (
@@ -19,13 +19,12 @@ export default function PriceMetrics() {
             <PriceKPICards />
 
             <div className="grid gap-6 md:grid-cols-2">
-              <PriceChart />
-              <SlopeChart />
+              <LNGDESPriceChart />
+              <ContractSlopeChart />
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <SlopeChart title="Price Trend" showPrice={true} />
-              <ImportPaymentChart />
+            <div className="grid gap-6">
+              <PriceTrendChart />
             </div>
           </div>
         </main>
