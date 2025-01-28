@@ -24,6 +24,7 @@ const CHART_MARGIN = { top: 10, right: 30, left: 60, bottom: 20 };
 
 export function PriceTrendChart() {
   const [selectedYear, setSelectedYear] = useState<string>("all");
+  const [hiddenSeries, setHiddenSeries] = useState<string[]>([]);
 
   const { data: rawData = [], isLoading } = useQuery({
     queryKey: ["price-trend"],
@@ -58,10 +59,22 @@ export function PriceTrendChart() {
     return rawData.map(item => ({
       ...item,
       date: item.formattedDate,
-      longTerm: selectedYear === "all" || item.year === selectedYear ? item.longTerm : item.longTerm * 0.3,
-      spot: selectedYear === "all" || item.year === selectedYear ? item.spot : item.spot * 0.3
+      longTerm: selectedYear === "all" || item.year === selectedYear 
+        ? hiddenSeries.includes("longTerm") ? 0 : item.longTerm 
+        : hiddenSeries.includes("longTerm") ? 0 : item.longTerm * 0.15,
+      spot: selectedYear === "all" || item.year === selectedYear 
+        ? hiddenSeries.includes("spot") ? 0 : item.spot 
+        : hiddenSeries.includes("spot") ? 0 : item.spot * 0.15
     }));
-  }, [rawData, selectedYear]);
+  }, [rawData, selectedYear, hiddenSeries]);
+
+  const handleLegendClick = (dataKey: string) => {
+    setHiddenSeries(prev => 
+      prev.includes(dataKey) 
+        ? prev.filter(key => key !== dataKey)
+        : [...prev, dataKey]
+    );
+  };
 
   if (isLoading) {
     return (
@@ -124,7 +137,17 @@ export function PriceTrendChart() {
               />
             )}
           />
-          <Legend />
+          <Legend 
+            onClick={(e) => handleLegendClick(e.dataKey)}
+            formatter={(value, entry) => {
+              const isHidden = hiddenSeries.includes(entry.dataKey);
+              return (
+                <span style={{ color: isHidden ? '#999' : '#333' }}>
+                  {value}
+                </span>
+              );
+            }}
+          />
           <Bar
             dataKey="longTerm"
             name="Long Term"
