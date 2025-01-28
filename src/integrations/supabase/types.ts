@@ -33,6 +33,39 @@ export type Database = {
         }
         Relationships: []
       }
+      "LNG Information": {
+        Row: {
+          date: string | null
+          id: number | null
+          import_Volume: number | null
+          LT_Volume: number | null
+          num_Long_Term_Cargoes: number | null
+          num_Spot_Cargoes: number | null
+          Spot_Volume: number | null
+          Total_Cargoes: number | null
+        }
+        Insert: {
+          date?: string | null
+          id?: number | null
+          import_Volume?: number | null
+          LT_Volume?: number | null
+          num_Long_Term_Cargoes?: number | null
+          num_Spot_Cargoes?: number | null
+          Spot_Volume?: number | null
+          Total_Cargoes?: number | null
+        }
+        Update: {
+          date?: string | null
+          id?: number | null
+          import_Volume?: number | null
+          LT_Volume?: number | null
+          num_Long_Term_Cargoes?: number | null
+          num_Spot_Cargoes?: number | null
+          Spot_Volume?: number | null
+          Total_Cargoes?: number | null
+        }
+        Relationships: []
+      }
       "LNG_import volume": {
         Row: {
           date: string
