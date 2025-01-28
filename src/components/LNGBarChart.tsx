@@ -6,6 +6,7 @@ import {
   XAxis,
   YAxis,
   Legend,
+  Cell,
 } from "recharts";
 import { useState, useMemo, useEffect } from "react";
 import {
@@ -217,25 +218,18 @@ export function LNGBarChart() {
               fill={trendColor}
               radius={[4, 4, 0, 0]}
               style={{ cursor: "pointer" }}
-              opacity={(entry) => {
-                if (selectedYear === "all" || !showYearFilter) return 1;
-                return entry.year === selectedYear ? 1 : 0.3;
-              }}
-              onMouseOver={(data, index) => {
-                document.querySelectorAll(".recharts-bar-rectangle").forEach((rect: any) => {
-                  if (rect.getAttribute("index") === index.toString()) {
-                    rect.style.fill = "#66E99D";
+            >
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fillOpacity={
+                    selectedYear === "all" || !showYearFilter || entry.year === selectedYear
+                      ? 1
+                      : 0.3
                   }
-                });
-              }}
-              onMouseOut={(data, index) => {
-                document.querySelectorAll(".recharts-bar-rectangle").forEach((rect: any) => {
-                  if (rect.getAttribute("index") === index.toString()) {
-                    rect.style.fill = trendColor;
-                  }
-                });
-              }}
-            />
+                />
+              ))}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
