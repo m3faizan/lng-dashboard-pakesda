@@ -2,12 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import {
   BarChart,
   Bar,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
+  ComposedChart,
 } from "recharts";
 import {
   Card,
@@ -34,7 +36,7 @@ export function ContractVolumesChart() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("LNG Information")
-        .select("date, LT_Volume, Spot_Volume")
+        .select("date, LT_Volume, Spot_Volume, import_Volume")
         .order("date");
 
       if (error) throw error;
@@ -46,6 +48,7 @@ export function ContractVolumesChart() {
         }),
         "Long Term": item.LT_Volume,
         Spot: item.Spot_Volume,
+        Total: item.import_Volume,
       }));
     },
   });
@@ -78,7 +81,7 @@ export function ContractVolumesChart() {
       </CardHeader>
       <CardContent className="h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
+          <ComposedChart
             data={chartData}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
           >
@@ -118,7 +121,15 @@ export function ContractVolumesChart() {
               fill="#0EA5E9"
               hide={hiddenSeries.includes("Spot")}
             />
-          </BarChart>
+            <Line
+              type="monotone"
+              dataKey="Total"
+              stroke="#FEF7CD"
+              strokeWidth={3}
+              dot={false}
+              hide={hiddenSeries.includes("Total")}
+            />
+          </ComposedChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
