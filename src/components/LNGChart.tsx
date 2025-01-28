@@ -28,9 +28,14 @@ export function LNGChart() {
       const endDate = new Date();
       const startDate = new Date();
       
-      // Adjust the calculation to ensure we get the full period
-      startDate.setMonth(endDate.getMonth() - selectedTimeframe + 1);
-      startDate.setDate(1); // Start from beginning of the month
+      // Set the start date to be exactly X months before the end date
+      startDate.setMonth(endDate.getMonth() - selectedTimeframe);
+      // Set to first day of the month to include full months
+      startDate.setDate(1);
+      startDate.setHours(0, 0, 0, 0);
+      
+      // Set end date to last moment of current month
+      endDate.setHours(23, 59, 59, 999);
       
       // Ensure we don't go before Jan 2019
       const minDate = new Date('2019-01-01');
