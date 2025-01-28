@@ -41,11 +41,15 @@ export function LNGChart() {
         return;
       }
 
-      // Transform the data to match the chart format
+      // Transform the data to match the chart format, using the actual date
       const transformedData = lngData.map(item => ({
         month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
+        date: new Date(item.date), // Keep the full date for sorting
         volume: item.import_Volume || 0
       }));
+
+      // Sort by date to ensure correct chronological order
+      transformedData.sort((a, b) => a.date.getTime() - b.date.getTime());
 
       setData(transformedData);
     };
@@ -94,7 +98,8 @@ export function LNGChart() {
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `${value}M`}
+              // Remove the "M" suffix and display actual values
+              tickFormatter={(value) => `${value}`}
             />
             <Tooltip
               contentStyle={{
