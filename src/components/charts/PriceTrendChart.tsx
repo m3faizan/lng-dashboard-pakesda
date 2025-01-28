@@ -68,12 +68,14 @@ export function PriceTrendChart() {
     }));
   }, [rawData, selectedYear, hiddenSeries]);
 
-  const handleLegendClick = (dataKey: string) => {
-    setHiddenSeries(prev => 
-      prev.includes(dataKey) 
-        ? prev.filter(key => key !== dataKey)
-        : [...prev, dataKey]
-    );
+  const handleLegendClick = (entry: any) => {
+    if (typeof entry.dataKey === 'string') {
+      setHiddenSeries(prev => 
+        prev.includes(entry.dataKey) 
+          ? prev.filter(key => key !== entry.dataKey)
+          : [...prev, entry.dataKey]
+      );
+    }
   };
 
   if (isLoading) {
@@ -138,9 +140,9 @@ export function PriceTrendChart() {
             )}
           />
           <Legend 
-            onClick={(e) => handleLegendClick(e.dataKey)}
+            onClick={(entry) => handleLegendClick(entry)}
             formatter={(value, entry) => {
-              const isHidden = hiddenSeries.includes(entry.dataKey);
+              const isHidden = entry.dataKey && hiddenSeries.includes(entry.dataKey.toString());
               return (
                 <span style={{ color: isHidden ? '#999' : '#333' }}>
                   {value}
