@@ -59,8 +59,8 @@ export function LNGVolumeChart({
           }}
           formatter={(value: number, name: string) => [
             name === "Moving Average" 
-              ? `${value.toLocaleString()} MMBtu (MA)`
-              : `${value.toLocaleString()} MMBtu`,
+              ? `${(value / 1000000).toFixed(2)}M MMBtu (MA)`
+              : `${(value / 1000000).toFixed(2)}M MMBtu`,
             name
           ]}
         />
@@ -96,7 +96,7 @@ export function LNGVolumeChart({
         <Line
           type="monotone"
           dataKey="average"
-          stroke="#FFB86C"
+          stroke="#4fd1c5"
           strokeWidth={3}
           dot={false}
           name="Moving Average"
