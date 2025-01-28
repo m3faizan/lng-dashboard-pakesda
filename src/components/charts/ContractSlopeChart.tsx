@@ -14,42 +14,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useState } from "react";
-
-const timeframes = [
-  { label: "All", value: "all" },
-  { label: "Last Year", value: "lastYear" },
-  { label: "This Year", value: "thisYear" },
-] as const;
 
 export function ContractSlopeChart() {
-  const [selectedTimeframe, setSelectedTimeframe] = useState<string>("all");
-
   const { data: chartData = [], isLoading } = useQuery({
-    queryKey: ["contract-slope", selectedTimeframe],
+    queryKey: ["contract-slope"],
     queryFn: async () => {
-      const currentYear = new Date().getFullYear();
-      let query = supabase
+      const { data, error } = await supabase
         .from("LNG Port_Price_Import")
         .select("date, DES_Slope")
         .order("date");
-
-      if (selectedTimeframe === "thisYear") {
-        query = query.gte("date", `${currentYear}-01-01`);
-      } else if (selectedTimeframe === "lastYear") {
-        query = query
-          .gte("date", `${currentYear - 1}-01-01`)
-          .lt("date", `${currentYear}-01-01`);
-      }
-
-      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -77,21 +50,6 @@ export function ContractSlopeChart() {
     <Card className="bg-dashboard-navy border-0">
       <CardHeader className="flex flex-col items-center pb-2">
         <CardTitle className="text-lg font-semibold mb-4">Contract Slope</CardTitle>
-        <Select
-          value={selectedTimeframe}
-          onValueChange={setSelectedTimeframe}
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {timeframes.map((tf) => (
-              <SelectItem key={tf.value} value={tf.value}>
-                {tf.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </CardHeader>
       <CardContent className="h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
