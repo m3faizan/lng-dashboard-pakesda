@@ -14,10 +14,11 @@ export function ChartTooltip({
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="bg-[#1A1E2D] border-none rounded-lg p-2 text-xs">
+    <div className="bg-[#1A1E2D] border border-gray-700 rounded-lg p-3 text-sm shadow-lg">
+      <div className="text-gray-400 mb-1">{payload[0].payload.date}</div>
       {payload.map((entry: any, index: number) => (
-        <div key={index} className="whitespace-nowrap">
-          <span className="text-muted-foreground">{labelFormatter(entry.name)}: </span>
+        <div key={index} className="whitespace-nowrap text-white">
+          <span>{labelFormatter(entry.name)}: </span>
           <span className="font-mono font-medium">
             {valueFormatter(entry.value)}
           </span>

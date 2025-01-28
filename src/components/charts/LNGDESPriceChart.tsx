@@ -5,6 +5,7 @@ import {
   ResponsiveContainer,
   XAxis,
   YAxis,
+  Tooltip,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { ChartContainer } from "./shared/ChartContainer";
@@ -65,9 +66,15 @@ export function LNGDESPriceChart() {
             tickFormatter={(value) => `$${value}`}
             width={50}
           />
-          <ChartTooltip 
-            valueFormatter={(value) => `$${value.toFixed(2)}/MMBtu`}
-            labelFormatter={() => "Price"}
+          <Tooltip
+            content={({ active, payload }) => (
+              <ChartTooltip 
+                active={active}
+                payload={payload}
+                valueFormatter={(value) => `$${value.toFixed(2)}/MMBtu`}
+                labelFormatter={() => "Price"}
+              />
+            )}
           />
           <Line
             type="linear"

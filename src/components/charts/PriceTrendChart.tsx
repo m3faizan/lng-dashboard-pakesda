@@ -6,6 +6,7 @@ import {
   XAxis,
   YAxis,
   Legend,
+  Tooltip,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useMemo } from "react";
@@ -115,8 +116,14 @@ export function PriceTrendChart() {
             axisLine={false}
             tickFormatter={(value) => `$${value}`}
           />
-          <ChartTooltip 
-            valueFormatter={(value) => `$${value.toFixed(2)}/MMBtu`}
+          <Tooltip
+            content={({ active, payload }) => (
+              <ChartTooltip 
+                active={active}
+                payload={payload}
+                valueFormatter={(value) => `$${value.toFixed(2)}/MMBtu`}
+              />
+            )}
           />
           <Legend />
           <Bar
@@ -124,16 +131,14 @@ export function PriceTrendChart() {
             name="Long Term"
             fill="#0EA5E9"
             stackId="stack"
-            fillOpacity={1}
-            style={{ opacity: "var(--opacity)" }}
+            opacity={(entry) => entry.opacity}
           />
           <Bar
             dataKey="spot"
             name="Spot"
             fill="#F59E0B"
             stackId="stack"
-            fillOpacity={1}
-            style={{ opacity: "var(--opacity)" }}
+            opacity={(entry) => entry.opacity}
           />
         </BarChart>
       </ResponsiveContainer>
