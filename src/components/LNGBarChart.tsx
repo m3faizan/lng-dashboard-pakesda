@@ -31,6 +31,31 @@ const formatDate = (date: Date, period: Period) => {
   }
 };
 
+const generateEmptyPeriods = (startDate: Date, endDate: Date, period: Period) => {
+  const periods = [];
+  const currentDate = new Date(startDate);
+
+  while (currentDate <= endDate) {
+    periods.push({
+      period: formatDate(new Date(currentDate), period),
+      volume: 0
+    });
+
+    switch (period) {
+      case "monthly":
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        break;
+      case "quarterly":
+        currentDate.setMonth(currentDate.getMonth() + 3);
+        break;
+      case "yearly":
+        currentDate.setFullYear(currentDate.getFullYear() + 1);
+        break;
+    }
+  }
+  return periods;
+};
+
 export function LNGBarChart() {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("monthly");
   const [data, setData] = useState<any[]>([]);
@@ -38,37 +63,49 @@ export function LNGBarChart() {
   useEffect(() => {
     const fetchData = async () => {
       const currentDate = new Date();
-      let query = supabase
-        .from('LNG Information')
-        .select('date, import_Volume')
-        .order('date', { ascending: true });
+      const startDate = new Date();
 
       // Calculate the start date based on the selected period
-      const startDate = new Date();
       switch (selectedPeriod) {
         case "monthly":
           startDate.setMonth(currentDate.getMonth() - 11);
           break;
         case "quarterly":
-          startDate.setMonth(currentDate.getMonth() - 12);
+          startDate.setMonth(currentDate.getMonth() - 15);
           break;
         case "yearly":
           startDate.setFullYear(currentDate.getFullYear() - 4);
           break;
       }
 
-      // Add date filter
-      query = query.gte('date', startDate.toISOString());
+      // Set to beginning of period
+      startDate.setDate(1);
+      if (selectedPeriod === "quarterly") {
+        startDate.setMonth(Math.floor(startDate.getMonth() / 3) * 3);
+      }
+      if (selectedPeriod === "yearly") {
+        startDate.setMonth(0);
+      }
 
-      const { data: response, error } = await query;
+      const { data: response, error } = await supabase
+        .from('LNG Information')
+        .select('date, import_Volume')
+        .gte('date', startDate.toISOString())
+        .lte('date', currentDate.toISOString())
+        .order('date', { ascending: true });
 
       if (error) {
         console.error('Error fetching data:', error);
         return;
       }
 
-      // Process the data based on the selected period
+      // Generate empty periods for the complete range
+      const emptyPeriods = generateEmptyPeriods(startDate, currentDate, selectedPeriod);
+
+      // Process the actual data
       const processedData = response.reduce((acc: any[], curr: any) => {
+        if (!curr.date) return acc;
+        
         const date = new Date(curr.date);
         const period = formatDate(date, selectedPeriod);
         
@@ -76,13 +113,13 @@ export function LNGBarChart() {
         if (existingEntry) {
           existingEntry.volume += Number(curr.import_Volume || 0);
         } else {
-          acc.push({
-            period,
-            volume: Number(curr.import_Volume || 0)
-          });
+          const emptyPeriodIndex = emptyPeriods.findIndex(ep => ep.period === period);
+          if (emptyPeriodIndex !== -1) {
+            emptyPeriods[emptyPeriodIndex].volume = Number(curr.import_Volume || 0);
+          }
         }
         return acc;
-      }, []);
+      }, emptyPeriods);
 
       setData(processedData);
     };
