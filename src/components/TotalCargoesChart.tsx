@@ -7,23 +7,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { useState } from "react";
-
-const generateData = (months: number) => {
-  const data = [];
-  const startDate = new Date();
-  startDate.setMonth(startDate.getMonth() - months);
-
-  for (let i = 0; i <= months; i++) {
-    const currentDate = new Date(startDate);
-    currentDate.setMonth(startDate.getMonth() + i);
-    data.push({
-      month: currentDate.toLocaleString('default', { month: 'short', year: '2-digit' }),
-      cargoes: Math.floor(Math.random() * (50 - 20) + 20)
-    });
-  }
-  return data;
-};
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const timeframes = [
   { label: "3M", months: 3 },
@@ -36,7 +21,47 @@ const timeframes = [
 
 export function TotalCargoesChart() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
-  const data = generateData(selectedTimeframe);
+  const [data, setData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const startDate = new Date();
+      startDate.setMonth(startDate.getMonth() - selectedTimeframe);
+
+      const { data: response, error } = await supabase
+        .from('LNG Information')
+        .select('date, Total_Cargoes')
+        .gte('date', startDate.toISOString())
+        .order('date', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching data:', error);
+        return;
+      }
+
+      const formattedData = response.map((item) => ({
+        month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
+        cargoes: item.Total_Cargoes || 0
+      }));
+
+      setData(formattedData);
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, [selectedTimeframe]);
+
+  if (isLoading) {
+    return (
+      <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all hover:ring-1 hover:ring-dashboard-blue/20">
+        <div className="flex items-center justify-center h-full">
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
@@ -83,6 +108,7 @@ export function TotalCargoesChart() {
                 border: "none",
                 borderRadius: "8px",
               }}
+              formatter={(value: number) => [`${value}`, 'LNG Cargoes']}
             />
             <Line
               type="monotone"
