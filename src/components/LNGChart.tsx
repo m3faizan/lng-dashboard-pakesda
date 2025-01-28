@@ -30,7 +30,7 @@ export function LNGChart() {
       startDate.setMonth(startDate.getMonth() - selectedTimeframe);
 
       const { data: lngData, error } = await supabase
-        .from('lng')
+        .from('LNG Information')
         .select('date, import_Volume')
         .gte('date', startDate.toISOString())
         .lte('date', endDate.toISOString())
@@ -41,15 +41,15 @@ export function LNGChart() {
         return;
       }
 
-      // Transform the data to match the chart format, using the actual date
-      const transformedData = lngData.map(item => ({
-        month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
-        date: new Date(item.date), // Keep the full date for sorting
-        volume: item.import_Volume || 0
-      }));
-
-      // Sort by date to ensure correct chronological order
-      transformedData.sort((a, b) => a.date.getTime() - b.date.getTime());
+      // Transform the data to match the chart format
+      const transformedData = lngData
+        .filter(item => item.date && item.import_Volume !== null)
+        .map(item => ({
+          month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
+          date: new Date(item.date),
+          volume: item.import_Volume
+        }))
+        .sort((a, b) => a.date.getTime() - b.date.getTime());
 
       setData(transformedData);
     };
@@ -98,8 +98,7 @@ export function LNGChart() {
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              // Remove the "M" suffix and display actual values
-              tickFormatter={(value) => `${value}`}
+              tickFormatter={(value) => value.toLocaleString()}
             />
             <Tooltip
               contentStyle={{
