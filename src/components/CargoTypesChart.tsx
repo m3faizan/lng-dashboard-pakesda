@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -21,40 +21,81 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
 
-const yearlyData = {
-  "2024": [
-    { month: "Jan", longTerm: 4, spot: 1 },
-    { month: "Feb", longTerm: 3, spot: 2 },
-    { month: "Mar", longTerm: 5, spot: 0 },
-    { month: "Apr", longTerm: 4, spot: 1 },
-    { month: "May", longTerm: 3, spot: 1 },
-    { month: "Jun", longTerm: 4, spot: 2 },
-    { month: "Jul", longTerm: 5, spot: 1 },
-    { month: "Aug", longTerm: 3, spot: 2 },
-    { month: "Sep", longTerm: 4, spot: 1 },
-    { month: "Oct", longTerm: 5, spot: 0 },
-    { month: "Nov", longTerm: 3, spot: 1 },
-    { month: "Dec", longTerm: 4, spot: 2 },
-  ],
-  "2023": [
-    { month: "Jan", longTerm: 3, spot: 2 },
-    { month: "Feb", longTerm: 4, spot: 1 },
-    { month: "Mar", longTerm: 3, spot: 1 },
-    { month: "Apr", longTerm: 5, spot: 0 },
-    { month: "May", longTerm: 4, spot: 2 },
-    { month: "Jun", longTerm: 3, spot: 1 },
-    { month: "Jul", longTerm: 4, spot: 1 },
-    { month: "Aug", longTerm: 5, spot: 0 },
-    { month: "Sep", longTerm: 3, spot: 2 },
-    { month: "Oct", longTerm: 4, spot: 1 },
-    { month: "Nov", longTerm: 5, spot: 1 },
-    { month: "Dec", longTerm: 3, spot: 2 },
-  ],
+type CargoData = {
+  month: string;
+  longTerm: number;
+  spot: number;
 };
 
 export function CargoTypesChart() {
-  const [selectedYear, setSelectedYear] = useState("2024");
+  const [selectedYear, setSelectedYear] = useState<string>("");
+  const [yearlyData, setYearlyData] = useState<{ [key: string]: CargoData[] }>({});
+  const [availableYears, setAvailableYears] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data, error } = await supabase
+        .from('LNG Information')
+        .select('date, num_Long_Term_Cargoes, num_Spot_Cargoes')
+        .order('date', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching data:', error);
+        return;
+      }
+
+      const processedData: { [key: string]: CargoData[] } = {};
+      const years = new Set<string>();
+
+      data.forEach((record) => {
+        if (!record.date) return;
+        
+        const date = new Date(record.date);
+        const year = date.getFullYear().toString();
+        const month = date.toLocaleString('default', { month: 'short' });
+        
+        years.add(year);
+
+        if (!processedData[year]) {
+          processedData[year] = [];
+        }
+
+        const existingMonth = processedData[year].find(m => m.month === month);
+        if (existingMonth) {
+          existingMonth.longTerm = (existingMonth.longTerm || 0) + (record.num_Long_Term_Cargoes || 0);
+          existingMonth.spot = (existingMonth.spot || 0) + (record.num_Spot_Cargoes || 0);
+        } else {
+          processedData[year].push({
+            month,
+            longTerm: record.num_Long_Term_Cargoes || 0,
+            spot: record.num_Spot_Cargoes || 0,
+          });
+        }
+      });
+
+      const sortedYears = Array.from(years).sort((a, b) => b.localeCompare(a));
+      setAvailableYears(sortedYears);
+      setYearlyData(processedData);
+      
+      if (sortedYears.length > 0 && !selectedYear) {
+        setSelectedYear(sortedYears[0]);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (!selectedYear || !yearlyData[selectedYear]) {
+    return (
+      <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all hover:ring-1 hover:ring-dashboard-blue/20">
+        <div className="flex items-center justify-center h-full">
+          <p className="text-gray-400">Loading data...</p>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
@@ -70,8 +111,11 @@ export function CargoTypesChart() {
             <SelectValue placeholder="Select year" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="2024">2024</SelectItem>
-            <SelectItem value="2023">2023</SelectItem>
+            {availableYears.map((year) => (
+              <SelectItem key={year} value={year}>
+                {year}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -96,6 +140,10 @@ export function CargoTypesChart() {
                 border: "1px solid #2D3748",
               }}
               cursor={{ fill: "rgba(255, 255, 255, 0.1)" }}
+              formatter={(value: number, name: string) => [
+                value,
+                name === "longTerm" ? "Long Term" : "Spot"
+              ]}
             />
             <Legend 
               verticalAlign="bottom"
