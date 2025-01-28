@@ -3,18 +3,14 @@ import {
   Bar,
   BarChart,
   ResponsiveContainer,
-  Tooltip,
   XAxis,
   YAxis,
   Legend,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { useState, useMemo } from "react";
+import { ChartContainer } from "./shared/ChartContainer";
+import { ChartTooltip } from "./shared/ChartTooltip";
 import {
   Select,
   SelectContent,
@@ -22,12 +18,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState, useMemo } from "react";
 
-type Series = "longTerm" | "spot" | "all";
+const CHART_MARGIN = { top: 10, right: 30, left: 60, bottom: 20 };
 
 export function PriceTrendChart() {
-  const [visibleSeries, setVisibleSeries] = useState<Series[]>(["all"]);
   const [selectedYear, setSelectedYear] = useState<string>("all");
 
   const { data: rawData = [], isLoading } = useQuery({
@@ -69,110 +63,74 @@ export function PriceTrendChart() {
     }));
   }, [rawData, selectedYear]);
 
-  const handleLegendClick = (series: Series) => {
-    if (series === "all") {
-      setVisibleSeries(["all"]);
-    } else {
-      const newSeries = visibleSeries.filter((s) => s !== "all");
-      if (newSeries.includes(series)) {
-        if (newSeries.length === 1) {
-          setVisibleSeries(["all"]);
-        } else {
-          setVisibleSeries(newSeries.filter((s) => s !== series));
-        }
-      } else {
-        setVisibleSeries([...newSeries, series]);
-      }
-    }
-  };
-
   if (isLoading) {
-    return (
-      <Card className="bg-dashboard-navy border-0">
-        <CardHeader className="text-center pb-2">
-          <CardTitle className="text-lg font-semibold">Loading...</CardTitle>
-        </CardHeader>
-      </Card>
-    );
+    return <ChartContainer title="Price Trend" />;
   }
 
+  const YearSelector = (
+    <Select
+      value={selectedYear}
+      onValueChange={setSelectedYear}
+    >
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Select year" />
+      </SelectTrigger>
+      <SelectContent>
+        {years.map((year) => (
+          <SelectItem key={year} value={year}>
+            {year === "all" ? "All Years" : year}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+
   return (
-    <Card className="bg-dashboard-navy border-0">
-      <CardHeader className="text-center pb-2">
-        <CardTitle className="text-lg font-semibold">Price Trend</CardTitle>
-        <Select
-          value={selectedYear}
-          onValueChange={setSelectedYear}
+    <ChartContainer 
+      title="Price Trend" 
+      headerContent={YearSelector}
+    >
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart 
+          data={chartData}
+          margin={CHART_MARGIN}
         >
-          <SelectTrigger className="w-[180px] mt-4">
-            <SelectValue placeholder="Select year" />
-          </SelectTrigger>
-          <SelectContent>
-            {years.map((year) => (
-              <SelectItem key={year} value={year}>
-                {year === "all" ? "All Years" : year}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </CardHeader>
-      <CardContent className="h-[320px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData}>
-            <XAxis
-              dataKey="date"
-              stroke="#525252"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
-            />
-            <YAxis
-              stroke="#525252"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value) => `$${value}`}
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1A1E2D",
-                border: "none",
-                borderRadius: "8px",
-              }}
-              formatter={(value: number, name: string) => [
-                `$${value.toFixed(2)}/MMBtu`,
-                name === "longTerm" ? "Long Term Price" : "Spot Price"
-              ]}
-            />
-            <Legend
-              onClick={(e) => {
-                const series = e.dataKey as Series;
-                handleLegendClick(series);
-              }}
-            />
-            {(visibleSeries.includes("all") || visibleSeries.includes("longTerm")) && (
-              <Bar
-                dataKey="longTerm"
-                name="Long Term"
-                fill="#0EA5E9"
-                stackId="stack"
-                fillOpacity={1}
-                style={{ opacity: "var(--opacity)" }}
-              />
-            )}
-            {(visibleSeries.includes("all") || visibleSeries.includes("spot")) && (
-              <Bar
-                dataKey="spot"
-                name="Spot"
-                fill="#F59E0B"
-                stackId="stack"
-                fillOpacity={1}
-                style={{ opacity: "var(--opacity)" }}
-              />
-            )}
-          </BarChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+          <XAxis
+            dataKey="date"
+            stroke="#525252"
+            fontSize={12}
+            tickLine={false}
+            axisLine={false}
+          />
+          <YAxis
+            stroke="#525252"
+            fontSize={12}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(value) => `$${value}`}
+          />
+          <ChartTooltip 
+            valueFormatter={(value) => `$${value.toFixed(2)}/MMBtu`}
+          />
+          <Legend />
+          <Bar
+            dataKey="longTerm"
+            name="Long Term"
+            fill="#0EA5E9"
+            stackId="stack"
+            fillOpacity={1}
+            style={{ opacity: "var(--opacity)" }}
+          />
+          <Bar
+            dataKey="spot"
+            name="Spot"
+            fill="#F59E0B"
+            stackId="stack"
+            fillOpacity={1}
+            style={{ opacity: "var(--opacity)" }}
+          />
+        </BarChart>
+      </ResponsiveContainer>
+    </ChartContainer>
   );
 }
