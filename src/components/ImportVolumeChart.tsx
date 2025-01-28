@@ -114,6 +114,25 @@ export function ImportVolumeChart() {
     );
   }
 
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload || !payload.length) return null;
+
+    const filteredPayload = payload.filter((entry: any) => 
+      selectedYears.includes(entry.dataKey)
+    );
+
+    return (
+      <div className="bg-dashboard-navy p-2 border border-gray-700 rounded-lg text-xs">
+        <p className="mb-1 font-medium">{label}</p>
+        {filteredPayload.map((entry: any) => (
+          <p key={entry.dataKey} style={{ color: yearColors[entry.dataKey] }}>
+            {entry.dataKey}: {(entry.value / 1000000).toFixed(2)}M MMBtu
+          </p>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <Card className="bg-dashboard-navy border-0 h-[400px]">
       <CardHeader className="text-center pb-2">
@@ -136,17 +155,7 @@ export function ImportVolumeChart() {
               tick={{ fill: "#94a3b8" }}
               tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
             />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1A1E2D",
-                border: "none",
-                borderRadius: "8px",
-              }}
-              formatter={(value: number) => [
-                `${(value / 1000000).toFixed(2)}M MMBtu`,
-                "Import Volume",
-              ]}
-            />
+            <Tooltip content={<CustomTooltip />} />
             <Legend
               onClick={(e) => toggleYear(e.value)}
               formatter={(value) => (
@@ -168,7 +177,7 @@ export function ImportVolumeChart() {
                 dataKey={year}
                 name={year}
                 stroke={yearColors[year]}
-                strokeWidth={2}
+                strokeWidth={year === "2024" ? 3 : 2}
                 dot={false}
                 opacity={selectedYears.includes(year) ? 1 : 0.2}
               />
