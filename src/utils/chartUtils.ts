@@ -38,8 +38,12 @@ export const generateEmptyPeriods = (
   return periods;
 };
 
-export const calculateAverage = (data: any[]) => {
-  if (!data.length) return 0;
-  const sum = data.reduce((acc, curr) => acc + curr.volume, 0);
-  return sum / data.length;
+export const calculateMovingAverage = (data: any[], windowSize: number = 3) => {
+  return data.map((item, index) => {
+    const start = Math.max(0, index - Math.floor(windowSize / 2));
+    const end = Math.min(data.length, start + windowSize);
+    const window = data.slice(start, end);
+    const sum = window.reduce((acc, curr) => acc + curr.volume, 0);
+    return sum / window.length;
+  });
 };

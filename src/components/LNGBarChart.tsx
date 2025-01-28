@@ -3,7 +3,7 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { PeriodSelector } from "./chart/PeriodSelector";
 import { LNGVolumeChart } from "./chart/LNGVolumeChart";
-import { formatDate, generateEmptyPeriods, calculateAverage } from "@/utils/chartUtils";
+import { formatDate, generateEmptyPeriods, calculateMovingAverage } from "@/utils/chartUtils";
 
 type Period = "monthly" | "quarterly" | "yearly";
 
@@ -17,14 +17,19 @@ export function LNGBarChart() {
     return ["all", ...yearList];
   }, []);
 
-  const averageValue = useMemo(() => calculateAverage(data), [data]);
+  const movingAverages = useMemo(() => {
+    const windowSize = selectedPeriod === "monthly" ? 3 : selectedPeriod === "quarterly" ? 4 : 2;
+    return calculateMovingAverage(data, windowSize);
+  }, [data, selectedPeriod]);
 
-  const dataWithAverage = useMemo(() => {
-    return data.map(item => ({
-      ...item,
-      average: averageValue
-    }));
-  }, [data, averageValue]);
+  const dataWithMovingAverage = useMemo(() => {
+    return data
+      .map((item, index) => ({
+        ...item,
+        average: movingAverages[index]
+      }))
+      .filter(item => selectedPeriod === "monthly" || item.volume > 0);
+  }, [data, movingAverages, selectedPeriod]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,7 +113,7 @@ export function LNGBarChart() {
       </div>
       <CardContent className="h-[400px]">
         <LNGVolumeChart
-          data={dataWithAverage}
+          data={dataWithMovingAverage}
           selectedYear={selectedYear}
           showYearFilter={showYearFilter}
           trendColor={trendColor}

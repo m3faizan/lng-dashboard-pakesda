@@ -58,8 +58,8 @@ export function LNGVolumeChart({
             borderRadius: "8px",
           }}
           formatter={(value: number, name: string) => [
-            name === "Average" 
-              ? `${value.toLocaleString()} MMBtu (Avg)`
+            name === "Moving Average" 
+              ? `${value.toLocaleString()} MMBtu (MA)`
               : `${value.toLocaleString()} MMBtu`,
             name
           ]}
@@ -99,7 +99,7 @@ export function LNGVolumeChart({
           stroke="#FFB86C"
           strokeWidth={3}
           dot={false}
-          name="Average"
+          name="Moving Average"
         />
       </ComposedChart>
     </ResponsiveContainer>
