@@ -116,7 +116,7 @@ export function ContractSlopeChart() {
                 border: "none",
                 borderRadius: "8px",
               }}
-              formatter={(value: number) => [`${value.toFixed(2}%`, "Slope"]}
+              formatter={(value: number) => [`${value.toFixed(2)}%`, "Slope"]}
             />
             <Line
               type="linear"
