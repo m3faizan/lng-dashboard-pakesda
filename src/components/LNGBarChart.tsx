@@ -58,17 +58,21 @@ const generateEmptyPeriods = (startDate: Date, endDate: Date, period: Period) =>
 
 export function LNGBarChart() {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("monthly");
+  const [selectedYear, setSelectedYear] = useState<string>("all");
   const [data, setData] = useState<any[]>([]);
+
+  const years = useMemo(() => {
+    const yearList = Array.from({ length: 6 }, (_, i) => (2019 + i).toString());
+    return ["all", ...yearList];
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
-      // Set fixed date range from 2019 to 2024
       const startDate = new Date('2019-01-01');
       const endDate = new Date('2024-12-31');
 
-      // Set to beginning of period
       if (selectedPeriod === "quarterly") {
-        startDate.setMonth(0); // Q1 starts in January
+        startDate.setMonth(0);
       }
       if (selectedPeriod === "yearly") {
         startDate.setMonth(0);
@@ -87,23 +91,24 @@ export function LNGBarChart() {
         return;
       }
 
-      // Generate empty periods for the complete range
       const emptyPeriods = generateEmptyPeriods(startDate, endDate, selectedPeriod);
 
-      // Process the actual data
       const processedData = response.reduce((acc: any[], curr: any) => {
         if (!curr.date) return acc;
         
         const date = new Date(curr.date);
         const period = formatDate(date, selectedPeriod);
+        const year = date.getFullYear().toString();
         
         const existingEntry = acc.find(item => item.period === period);
         if (existingEntry) {
           existingEntry.volume += Number(curr.import_Volume || 0);
+          existingEntry.year = year;
         } else {
           const emptyPeriodIndex = emptyPeriods.findIndex(ep => ep.period === period);
           if (emptyPeriodIndex !== -1) {
             emptyPeriods[emptyPeriodIndex].volume = Number(curr.import_Volume || 0);
+            emptyPeriods[emptyPeriodIndex].year = year;
           }
         }
         return acc;
@@ -124,25 +129,47 @@ export function LNGBarChart() {
     };
   }, [data]);
 
+  const showYearFilter = selectedPeriod !== "yearly";
+
   return (
     <Card className="bg-dashboard-navy border-0 h-[480px] transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
       <div className="flex flex-col items-center pt-6">
         <CardTitle className="text-xl font-semibold mb-4 text-center">
           LNG Import Volume
         </CardTitle>
-        <Select
-          value={selectedPeriod}
-          onValueChange={(value: Period) => setSelectedPeriod(value)}
-        >
-          <SelectTrigger className="w-[180px] mb-4 hover:bg-dashboard-navy/80">
-            <SelectValue placeholder="Select period" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="monthly">Monthly</SelectItem>
-            <SelectItem value="quarterly">Quarterly</SelectItem>
-            <SelectItem value="yearly">Yearly</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex gap-4 mb-4">
+          <Select
+            value={selectedPeriod}
+            onValueChange={(value: Period) => setSelectedPeriod(value)}
+          >
+            <SelectTrigger className="w-[180px] hover:bg-dashboard-navy/80">
+              <SelectValue placeholder="Select period" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="monthly">Monthly</SelectItem>
+              <SelectItem value="quarterly">Quarterly</SelectItem>
+              <SelectItem value="yearly">Yearly</SelectItem>
+            </SelectContent>
+          </Select>
+          {showYearFilter && (
+            <Select
+              value={selectedYear}
+              onValueChange={setSelectedYear}
+            >
+              <SelectTrigger className="w-[120px] hover:bg-dashboard-navy/80">
+                <SelectValue placeholder="Select year" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Years</SelectItem>
+                {years.filter(year => year !== "all").map((year) => (
+                  <SelectItem key={year} value={year}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
       </div>
       <CardContent className="h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -190,6 +217,10 @@ export function LNGBarChart() {
               fill={trendColor}
               radius={[4, 4, 0, 0]}
               style={{ cursor: "pointer" }}
+              opacity={(entry) => {
+                if (selectedYear === "all" || !showYearFilter) return 1;
+                return entry.year === selectedYear ? 1 : 0.3;
+              }}
               onMouseOver={(data, index) => {
                 document.querySelectorAll(".recharts-bar-rectangle").forEach((rect: any) => {
                   if (rect.getAttribute("index") === index.toString()) {
