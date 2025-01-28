@@ -9,30 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      lng: {
-        Row: {
-          date: string | null
-          id: number
-          import_Volume: number | null
-          LT_Volume: number | null
-          Spot_Volume: number | null
-        }
-        Insert: {
-          date?: string | null
-          id: number
-          import_Volume?: number | null
-          LT_Volume?: number | null
-          Spot_Volume?: number | null
-        }
-        Update: {
-          date?: string | null
-          id?: number
-          import_Volume?: number | null
-          LT_Volume?: number | null
-          Spot_Volume?: number | null
-        }
-        Relationships: []
-      }
       "LNG Information": {
         Row: {
           date: string | null
@@ -66,21 +42,45 @@ export type Database = {
         }
         Relationships: []
       }
-      "LNG_import volume": {
+      "LNG Port_Price_Import": {
         Row: {
-          date: string
+          date: string | null
+          DES_Slope: number | null
           id: number
-          "import volume": number | null
+          Long_Term_DES: number | null
+          Long_Term_Slope: number | null
+          PLL_DES: number | null
+          PSO_DES: number | null
+          Spot_DES: number | null
+          Spot_Slope: number | null
+          wAvg_DES: number | null
+          wAvg_Port_Charges: number | null
         }
         Insert: {
-          date: string
-          id?: number
-          "import volume"?: number | null
+          date?: string | null
+          DES_Slope?: number | null
+          id: number
+          Long_Term_DES?: number | null
+          Long_Term_Slope?: number | null
+          PLL_DES?: number | null
+          PSO_DES?: number | null
+          Spot_DES?: number | null
+          Spot_Slope?: number | null
+          wAvg_DES?: number | null
+          wAvg_Port_Charges?: number | null
         }
         Update: {
-          date?: string
+          date?: string | null
+          DES_Slope?: number | null
           id?: number
-          "import volume"?: number | null
+          Long_Term_DES?: number | null
+          Long_Term_Slope?: number | null
+          PLL_DES?: number | null
+          PSO_DES?: number | null
+          Spot_DES?: number | null
+          Spot_Slope?: number | null
+          wAvg_DES?: number | null
+          wAvg_Port_Charges?: number | null
         }
         Relationships: []
       }

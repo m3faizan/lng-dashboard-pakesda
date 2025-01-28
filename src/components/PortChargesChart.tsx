@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -7,25 +8,46 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-
-const generateData = () => {
-  const data = [];
-  const startDate = new Date();
-  startDate.setMonth(startDate.getMonth() - 12);
-
-  for (let i = 0; i <= 12; i++) {
-    const currentDate = new Date(startDate);
-    currentDate.setMonth(startDate.getMonth() + i);
-    data.push({
-      month: currentDate.toLocaleString('default', { month: 'short', year: '2-digit' }),
-      charges: (Math.random() * (0.6 - 0.3) + 0.3).toFixed(2)
-    });
-  }
-  return data;
-};
+import { supabase } from "@/integrations/supabase/client";
 
 export function PortChargesChart() {
-  const data = generateData();
+  const [data, setData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const { data: response, error } = await supabase
+        .from('LNG Port_Price_Import')
+        .select('date, wAvg_Port_Charges')
+        .order('date', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching port charges data:', error);
+        return;
+      }
+
+      const formattedData = response.map(item => ({
+        month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
+        charges: Number(item.wAvg_Port_Charges)
+      }));
+
+      setData(formattedData);
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <Card className="bg-dashboard-navy border-0 h-[480px] w-full">
+        <div className="flex flex-col items-center pt-6">
+          <CardTitle className="text-lg font-semibold">Loading...</CardTitle>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
@@ -57,6 +79,7 @@ export function PortChargesChart() {
                 border: "none",
                 borderRadius: "8px",
               }}
+              formatter={(value: number) => [`${value.toFixed(2)} $/MMBtu`, 'Port Charges']}
             />
             <Line
               type="monotone"
