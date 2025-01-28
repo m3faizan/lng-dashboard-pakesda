@@ -34,7 +34,13 @@ export function LNGDESPriceChart() {
   });
 
   if (isLoading) {
-    return <ChartContainer title="LNG DES Price" />;
+    return (
+      <ChartContainer title="LNG DES Price">
+        <div className="h-full w-full flex items-center justify-center">
+          <p className="text-gray-500">Loading...</p>
+        </div>
+      </ChartContainer>
+    );
   }
 
   return (

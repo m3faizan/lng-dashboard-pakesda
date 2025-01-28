@@ -34,7 +34,13 @@ export function ContractSlopeChart() {
   });
 
   if (isLoading) {
-    return <ChartContainer title="Contract Slope" />;
+    return (
+      <ChartContainer title="Contract Slope">
+        <div className="h-full w-full flex items-center justify-center">
+          <p className="text-gray-500">Loading...</p>
+        </div>
+      </ChartContainer>
+    );
   }
 
   return (

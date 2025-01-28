@@ -64,7 +64,13 @@ export function PriceTrendChart() {
   }, [rawData, selectedYear]);
 
   if (isLoading) {
-    return <ChartContainer title="Price Trend" />;
+    return (
+      <ChartContainer title="Price Trend">
+        <div className="h-full w-full flex items-center justify-center">
+          <p className="text-gray-500">Loading...</p>
+        </div>
+      </ChartContainer>
+    );
   }
 
   const YearSelector = (
