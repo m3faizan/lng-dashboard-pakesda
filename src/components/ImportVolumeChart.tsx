@@ -54,13 +54,12 @@ export function ImportVolumeChart() {
           const date = new Date(curr.date);
           const year = date.getFullYear().toString();
           const month = date.toLocaleString('default', { month: 'short' });
-          const key = `${month}-${year}`;
+          const key = month;
           
           if (!acc[key]) {
             acc[key] = {
               month: month,
               fullDate: date,
-              year: year,
             };
           }
           
@@ -149,11 +148,11 @@ export function ImportVolumeChart() {
               ]}
             />
             <Legend
-              onClick={(e) => toggleYear(e.dataKey)}
-              formatter={(value, entry) => (
+              onClick={(e) => toggleYear(e.value)}
+              formatter={(value) => (
                 <span
                   style={{
-                    color: selectedYears.includes(value.toString())
+                    color: selectedYears.includes(value)
                       ? "#fff"
                       : "#4b5563",
                   }}
@@ -163,18 +162,16 @@ export function ImportVolumeChart() {
               )}
             />
             {years.map((year) => (
-              selectedYears.includes(year) && (
-                <Line
-                  key={year}
-                  type="monotone"
-                  dataKey={year}
-                  name={year}
-                  stroke={yearColors[year]}
-                  strokeWidth={2}
-                  dot={{ fill: yearColors[year] }}
-                  activeDot={{ r: 6 }}
-                />
-              )
+              <Line
+                key={year}
+                type="linear"
+                dataKey={year}
+                name={year}
+                stroke={yearColors[year]}
+                strokeWidth={2}
+                dot={false}
+                opacity={selectedYears.includes(year) ? 1 : 0.2}
+              />
             ))}
           </LineChart>
         </ResponsiveContainer>
