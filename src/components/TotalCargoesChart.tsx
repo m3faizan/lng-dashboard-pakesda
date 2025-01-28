@@ -27,13 +27,25 @@ export function TotalCargoesChart() {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
+      
+      // Calculate the date range based on selected timeframe
+      const endDate = new Date();
       const startDate = new Date();
-      startDate.setMonth(startDate.getMonth() - selectedTimeframe);
+      
+      // Set the start date to be exactly X months before the end date
+      startDate.setMonth(endDate.getMonth() - selectedTimeframe);
+      // Set to first day of the month to include full months
+      startDate.setDate(1);
+      startDate.setHours(0, 0, 0, 0);
+      
+      // Set end date to last moment of current month
+      endDate.setHours(23, 59, 59, 999);
 
       const { data: response, error } = await supabase
         .from('LNG Information')
         .select('date, Total_Cargoes')
         .gte('date', startDate.toISOString())
+        .lte('date', endDate.toISOString())
         .order('date', { ascending: true });
 
       if (error) {
