@@ -7,6 +7,8 @@ import {
   YAxis,
   Legend,
   Cell,
+  ComposedChart,
+  Line,
 } from "recharts";
 import { useState, useMemo, useEffect } from "react";
 import {
@@ -66,6 +68,21 @@ export function LNGBarChart() {
     const yearList = Array.from({ length: 6 }, (_, i) => (2019 + i).toString());
     return ["all", ...yearList];
   }, []);
+
+  // Calculate average based on period
+  const averageValue = useMemo(() => {
+    if (!data.length) return 0;
+    const sum = data.reduce((acc, curr) => acc + curr.volume, 0);
+    return sum / data.length;
+  }, [data]);
+
+  // Add average to each data point
+  const dataWithAverage = useMemo(() => {
+    return data.map(item => ({
+      ...item,
+      average: averageValue
+    }));
+  }, [data, averageValue]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -174,8 +191,8 @@ export function LNGBarChart() {
       </div>
       <CardContent className="h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart 
-            data={data}
+          <ComposedChart 
+            data={dataWithAverage}
             margin={{ top: 5, right: 30, left: 60, bottom: 45 }}
           >
             <XAxis
@@ -199,7 +216,12 @@ export function LNGBarChart() {
                 border: "none",
                 borderRadius: "8px",
               }}
-              formatter={(value: number) => [`${value.toLocaleString()} MMBtu`, "Import Volume"]}
+              formatter={(value: number, name: string) => [
+                name === "Average" 
+                  ? `${value.toLocaleString()} MMBtu (Avg)`
+                  : `${value.toLocaleString()} MMBtu`,
+                name
+              ]}
             />
             <Legend 
               verticalAlign="bottom"
@@ -230,7 +252,15 @@ export function LNGBarChart() {
                 />
               ))}
             </Bar>
-          </BarChart>
+            <Line
+              type="monotone"
+              dataKey="average"
+              stroke="#FFB86C"
+              strokeWidth={3}
+              dot={false}
+              name="Average"
+            />
+          </ComposedChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
