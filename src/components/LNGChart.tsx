@@ -29,11 +29,15 @@ export function LNGChart() {
       const startDate = new Date();
       startDate.setMonth(startDate.getMonth() - selectedTimeframe);
 
+      // Ensure we don't go before Jan 2019
+      const minDate = new Date('2019-01-01');
+      const actualStartDate = startDate < minDate ? minDate : startDate;
+
       const { data: lngData, error } = await supabase
         .from('LNG Information')
         .select('date, import_Volume')
-        .gte('date', startDate.toISOString())
-        .lte('date', endDate.toISOString())
+        .gte('date', actualStartDate.toISOString())
+        .lte('date', '2024-12-31')
         .order('date', { ascending: true });
 
       if (error) {
@@ -92,13 +96,14 @@ export function LNGChart() {
               fontSize={12}
               tickLine={false}
               axisLine={false}
+              interval="preserveStartEnd"
             />
             <YAxis
               stroke="#525252"
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => value.toLocaleString()}
+              tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
             />
             <Tooltip
               contentStyle={{
@@ -106,10 +111,10 @@ export function LNGChart() {
                 border: "none",
                 borderRadius: "8px",
               }}
-              formatter={(value: number) => [value.toLocaleString(), "Volume"]}
+              formatter={(value: number) => [`${(value / 1000).toFixed(1)}k`, "Volume"]}
             />
             <Area
-              type="linear"
+              type="monotone"
               dataKey="volume"
               stroke="#4ADE80"
               fillOpacity={1}
