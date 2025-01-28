@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import {
   LineChart,
   Line,
@@ -14,17 +15,63 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 
-const data = [
-  { month: "Aug", longTerm: 1.2, shortTerm: 0.8 },
-  { month: "Sep", longTerm: 1.3, shortTerm: 0.7 },
-  { month: "Oct", longTerm: 1.4, shortTerm: 0.9 },
-  { month: "Nov", longTerm: 1.5, shortTerm: 1.1 },
-  { month: "Dec", longTerm: 1.8, shortTerm: 1.2 },
-  { month: "Jan", longTerm: 1.7, shortTerm: 1.0 },
-];
+const formatYAxis = (value: number) => {
+  return `${(value / 1000000).toFixed(1)}M`;
+};
+
+const formatTooltipValue = (value: number) => {
+  return `${value.toLocaleString()} MMBtu`;
+};
 
 export function ContractVolumesChart() {
+  const [hiddenSeries, setHiddenSeries] = useState<string[]>([]);
+
+  const { data: chartData = [], isLoading } = useQuery({
+    queryKey: ["lng-information"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("LNG Information")
+        .select("date, LT_Volume, Spot_Volume")
+        .order("date");
+
+      if (error) throw error;
+
+      return data.map((item) => ({
+        date: new Date(item.date as string).toLocaleDateString("en-US", {
+          month: "short",
+          year: "numeric",
+        }),
+        "Long Term": item.LT_Volume,
+        Spot: item.Spot_Volume,
+      }));
+    },
+  });
+
+  const handleLegendClick = (e: any) => {
+    const seriesName = e.dataKey;
+    if (hiddenSeries.length === 1 && hiddenSeries.includes(seriesName)) {
+      return; // Prevent hiding last visible series
+    }
+    setHiddenSeries(
+      hiddenSeries.includes(seriesName)
+        ? hiddenSeries.filter((name) => name !== seriesName)
+        : [...hiddenSeries, seriesName]
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <Card className="bg-dashboard-navy border-0 h-[400px]">
+        <CardHeader className="text-center pb-2">
+          <CardTitle className="text-lg font-semibold">Loading...</CardTitle>
+        </CardHeader>
+      </Card>
+    );
+  }
+
   return (
     <Card className="bg-dashboard-navy border-0 h-[400px]">
       <CardHeader className="text-center pb-2">
@@ -34,42 +81,53 @@ export function ContractVolumesChart() {
       </CardHeader>
       <CardContent className="h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={data}
-              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis
-                dataKey="month"
-                stroke="#94a3b8"
-                tick={{ fill: "#94a3b8" }}
-              />
-              <YAxis stroke="#94a3b8" tick={{ fill: "#94a3b8" }} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1A1E2D",
-                  border: "none",
-                  borderRadius: "8px",
-                }}
-              />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="longTerm"
-                name="Long Term"
-                stroke="#4ADE80"
-                strokeWidth={2}
-                dot={{ fill: "#4ADE80" }}
-              />
-              <Line
-                type="monotone"
-                dataKey="shortTerm"
-                name="Short Term"
-                stroke="#0EA5E9"
-                strokeWidth={2}
-                dot={{ fill: "#0EA5E9" }}
-              />
-            </LineChart>
+          <LineChart
+            data={chartData}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <XAxis
+              dataKey="date"
+              stroke="#94a3b8"
+              tick={{ fill: "#94a3b8" }}
+            />
+            <YAxis
+              stroke="#94a3b8"
+              tick={{ fill: "#94a3b8" }}
+              tickFormatter={formatYAxis}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#1A1E2D",
+                border: "none",
+                borderRadius: "8px",
+                fontSize: "12px",
+              }}
+              formatter={(value: number, name: string) => [
+                formatTooltipValue(value),
+                name,
+              ]}
+            />
+            <Legend onClick={handleLegendClick} />
+            <Line
+              type="linear"
+              dataKey="Long Term"
+              stroke="#4ADE80"
+              strokeWidth={2}
+              dot={false}
+              hide={hiddenSeries.includes("Long Term")}
+              opacity={hiddenSeries.length > 0 ? 0.5 : 1}
+            />
+            <Line
+              type="linear"
+              dataKey="Spot"
+              stroke="#0EA5E9"
+              strokeWidth={2}
+              dot={false}
+              hide={hiddenSeries.includes("Spot")}
+              opacity={hiddenSeries.length > 0 ? 0.5 : 1}
+            />
+          </LineChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
