@@ -62,36 +62,24 @@ export function LNGBarChart() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const currentDate = new Date();
-      const startDate = new Date();
-
-      // Calculate the start date based on the selected period
-      switch (selectedPeriod) {
-        case "monthly":
-          startDate.setMonth(currentDate.getMonth() - 11);
-          break;
-        case "quarterly":
-          startDate.setMonth(currentDate.getMonth() - 15);
-          break;
-        case "yearly":
-          startDate.setFullYear(currentDate.getFullYear() - 4);
-          break;
-      }
+      // Set fixed date range from 2019 to 2024
+      const startDate = new Date('2019-01-01');
+      const endDate = new Date('2024-12-31');
 
       // Set to beginning of period
-      startDate.setDate(1);
       if (selectedPeriod === "quarterly") {
-        startDate.setMonth(Math.floor(startDate.getMonth() / 3) * 3);
+        startDate.setMonth(0); // Q1 starts in January
       }
       if (selectedPeriod === "yearly") {
         startDate.setMonth(0);
+        startDate.setDate(1);
       }
 
       const { data: response, error } = await supabase
         .from('LNG Information')
         .select('date, import_Volume')
         .gte('date', startDate.toISOString())
-        .lte('date', currentDate.toISOString())
+        .lte('date', endDate.toISOString())
         .order('date', { ascending: true });
 
       if (error) {
@@ -100,7 +88,7 @@ export function LNGBarChart() {
       }
 
       // Generate empty periods for the complete range
-      const emptyPeriods = generateEmptyPeriods(startDate, currentDate, selectedPeriod);
+      const emptyPeriods = generateEmptyPeriods(startDate, endDate, selectedPeriod);
 
       // Process the actual data
       const processedData = response.reduce((acc: any[], curr: any) => {
