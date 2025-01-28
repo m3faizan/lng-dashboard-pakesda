@@ -75,8 +75,8 @@ export function ContractSlopeChart() {
 
   return (
     <Card className="bg-dashboard-navy border-0">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-lg font-semibold">Contract Slope</CardTitle>
+      <CardHeader className="flex flex-col items-center pb-2">
+        <CardTitle className="text-lg font-semibold mb-4">Contract Slope</CardTitle>
         <Select
           value={selectedTimeframe}
           onValueChange={setSelectedTimeframe}
@@ -116,7 +116,7 @@ export function ContractSlopeChart() {
                 border: "none",
                 borderRadius: "8px",
               }}
-              formatter={(value: number) => [`${value.toFixed(2)}%`, "Slope"]}
+              formatter={(value: number) => [`${value.toFixed(2}%`, "Slope"]}
             />
             <Line
               type="linear"

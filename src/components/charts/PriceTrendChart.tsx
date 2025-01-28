@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
-  Line,
-  LineChart,
+  Bar,
+  BarChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -77,7 +77,7 @@ export function PriceTrendChart() {
       </CardHeader>
       <CardContent className="h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
+          <BarChart data={chartData}>
             <XAxis
               dataKey="date"
               stroke="#525252"
@@ -110,26 +110,22 @@ export function PriceTrendChart() {
               }}
             />
             {(visibleSeries.includes("all") || visibleSeries.includes("longTerm")) && (
-              <Line
-                type="linear"
+              <Bar
                 dataKey="longTerm"
                 name="Long Term"
-                stroke="#0EA5E9"
-                strokeWidth={2}
-                dot={false}
+                fill="#0EA5E9"
+                stackId="stack"
               />
             )}
             {(visibleSeries.includes("all") || visibleSeries.includes("spot")) && (
-              <Line
-                type="linear"
+              <Bar
                 dataKey="spot"
                 name="Spot"
-                stroke="#F59E0B"
-                strokeWidth={2}
-                dot={false}
+                fill="#F59E0B"
+                stackId="stack"
               />
             )}
-          </LineChart>
+          </BarChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
