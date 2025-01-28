@@ -58,9 +58,8 @@ export function PriceTrendChart() {
     return rawData.map(item => ({
       ...item,
       date: item.formattedDate,
-      longTerm: item.longTerm,
-      spot: item.spot,
-      opacity: selectedYear === "all" || item.year === selectedYear ? 1 : 0.3
+      longTerm: selectedYear === "all" || item.year === selectedYear ? item.longTerm : item.longTerm * 0.3,
+      spot: selectedYear === "all" || item.year === selectedYear ? item.spot : item.spot * 0.3
     }));
   }, [rawData, selectedYear]);
 
@@ -131,14 +130,12 @@ export function PriceTrendChart() {
             name="Long Term"
             fill="#0EA5E9"
             stackId="stack"
-            opacity={(entry) => entry.opacity}
           />
           <Bar
             dataKey="spot"
             name="Spot"
             fill="#F59E0B"
             stackId="stack"
-            opacity={(entry) => entry.opacity}
           />
         </BarChart>
       </ResponsiveContainer>
