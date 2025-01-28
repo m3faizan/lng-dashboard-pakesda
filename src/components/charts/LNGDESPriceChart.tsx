@@ -51,9 +51,12 @@ export function LNGDESPriceChart() {
       <CardHeader className="text-center pb-2">
         <CardTitle className="text-lg font-semibold">LNG DES Price</CardTitle>
       </CardHeader>
-      <CardContent className="h-[320px]">
+      <CardContent className="h-[320px] pt-8">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
+          <LineChart 
+            data={chartData}
+            margin={{ top: 10, right: 30, left: 60, bottom: 20 }}
+          >
             <XAxis
               dataKey="date"
               stroke="#525252"
@@ -67,6 +70,7 @@ export function LNGDESPriceChart() {
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `$${value}`}
+              width={50}
             />
             <Tooltip
               contentStyle={{

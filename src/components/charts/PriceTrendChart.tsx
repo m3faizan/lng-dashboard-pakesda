@@ -15,14 +15,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState, useMemo } from "react";
 
 type Series = "longTerm" | "spot" | "all";
 
 export function PriceTrendChart() {
   const [visibleSeries, setVisibleSeries] = useState<Series[]>(["all"]);
+  const [selectedYear, setSelectedYear] = useState<string>("all");
 
-  const { data: chartData = [], isLoading } = useQuery({
+  const { data: rawData = [], isLoading } = useQuery({
     queryKey: ["price-trend"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -33,15 +41,33 @@ export function PriceTrendChart() {
       if (error) throw error;
 
       return data.map((item) => ({
-        date: new Date(item.date as string).toLocaleDateString("en-US", {
+        date: new Date(item.date as string),
+        formattedDate: new Date(item.date as string).toLocaleDateString("en-US", {
           month: "short",
           year: "numeric",
         }),
+        year: new Date(item.date as string).getFullYear().toString(),
         longTerm: item.Long_Term_DES,
         spot: item.Spot_DES,
       }));
     },
   });
+
+  const years = useMemo(() => {
+    if (!rawData.length) return ["all"];
+    const uniqueYears = [...new Set(rawData.map(item => item.year))];
+    return ["all", ...uniqueYears.sort((a, b) => b.localeCompare(a))];
+  }, [rawData]);
+
+  const chartData = useMemo(() => {
+    return rawData.map(item => ({
+      ...item,
+      date: item.formattedDate,
+      longTerm: item.longTerm,
+      spot: item.spot,
+      opacity: selectedYear === "all" || item.year === selectedYear ? 1 : 0.3
+    }));
+  }, [rawData, selectedYear]);
 
   const handleLegendClick = (series: Series) => {
     if (series === "all") {
@@ -74,6 +100,21 @@ export function PriceTrendChart() {
     <Card className="bg-dashboard-navy border-0">
       <CardHeader className="text-center pb-2">
         <CardTitle className="text-lg font-semibold">Price Trend</CardTitle>
+        <Select
+          value={selectedYear}
+          onValueChange={setSelectedYear}
+        >
+          <SelectTrigger className="w-[180px] mt-4">
+            <SelectValue placeholder="Select year" />
+          </SelectTrigger>
+          <SelectContent>
+            {years.map((year) => (
+              <SelectItem key={year} value={year}>
+                {year === "all" ? "All Years" : year}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </CardHeader>
       <CardContent className="h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -115,6 +156,8 @@ export function PriceTrendChart() {
                 name="Long Term"
                 fill="#0EA5E9"
                 stackId="stack"
+                fillOpacity={1}
+                style={{ opacity: "var(--opacity)" }}
               />
             )}
             {(visibleSeries.includes("all") || visibleSeries.includes("spot")) && (
@@ -123,6 +166,8 @@ export function PriceTrendChart() {
                 name="Spot"
                 fill="#F59E0B"
                 stackId="stack"
+                fillOpacity={1}
+                style={{ opacity: "var(--opacity)" }}
               />
             )}
           </BarChart>
