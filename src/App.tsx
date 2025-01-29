@@ -19,7 +19,7 @@ function App() {
         <Route path="/price-metrics" element={<PriceMetrics />} />
         <Route path="/lng-terminals" element={<LNGTerminals />} />
         <Route path="/generation-metrics" element={<GenerationMetrics />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );
