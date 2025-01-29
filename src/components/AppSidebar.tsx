@@ -14,8 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useCharacterLimit } from "@/hooks/use-character-limit";
-import { useImageUpload } from "@/hooks/use-image-upload";
+import { useCharacterLimit } from "@/components/hooks/use-character-limit";
+import { useImageUpload } from "@/components/hooks/use-image-upload";
 import { ImagePlus, X } from "lucide-react";
 import { useState } from "react";
 
