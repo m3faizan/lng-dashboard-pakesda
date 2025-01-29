@@ -15,6 +15,7 @@ interface HeroProps extends React.HTMLAttributes<HTMLElement> {
     label: string
     href: string
     variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"
+    onClick?: () => void // Added onClick handler support
   }>
   titleClassName?: string
   subtitleClassName?: string
@@ -143,9 +144,14 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
                   <Button
                     key={index}
                     variant={action.variant || "default"}
-                    asChild
+                    asChild={!action.onClick}
+                    onClick={action.onClick}
                   >
-                    <Link to={action.href}>{action.label}</Link>
+                    {action.onClick ? (
+                      <button>{action.label}</button>
+                    ) : (
+                      <Link to={action.href}>{action.label}</Link>
+                    )}
                   </Button>
                 ))}
               </div>
