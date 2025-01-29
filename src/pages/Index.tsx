@@ -4,6 +4,9 @@ import { LNGChart } from "@/components/LNGChart";
 import { LNGBarChart } from "@/components/LNGBarChart";
 import { CargoTypesChart } from "@/components/CargoTypesChart";
 import { AppSidebar } from "@/components/AppSidebar";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 import {
   BarChart3,
   Ship,
@@ -13,14 +16,15 @@ import {
   MapPin,
   LineChart as LineChartIcon,
   Gauge as GaugeIcon,
-  Settings as SettingsIcon,
+  UserCircle2,
+  LogOut,
 } from "lucide-react";
 
 export const sidebarItems = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,
-    url: "/",
+    url: "/dashboard",
   },
   {
     title: "LNG Terminals",
@@ -43,17 +47,44 @@ export const sidebarItems = [
     url: "/generation-metrics",
   },
   {
-    title: "Settings",
-    icon: SettingsIcon,
-    url: "#settings",
+    title: "Profile",
+    icon: UserCircle2,
+    url: "#profile",
+    isProfile: true,
+  },
+  {
+    title: "Logout",
+    icon: LogOut,
+    url: "#logout",
+    isLogout: true,
   },
 ];
 
 export default function Index() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Logged out successfully",
+      });
+      navigate("/");
+    }
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
-        <AppSidebar />
+        <AppSidebar onLogout={handleLogout} />
         <main className="flex-1 p-8 overflow-auto">
           <div className="space-y-8 animate-fade-in max-w-[1400px] mx-auto">
             <div className="flex justify-between items-center">
