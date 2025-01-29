@@ -8,6 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [company, setCompany] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
@@ -19,9 +21,24 @@ export default function Auth() {
 
     try {
       if (isSignUp) {
+        if (!fullName || !company) {
+          toast({
+            title: "Missing fields",
+            description: "Full Name and Company are required.",
+            variant: "destructive",
+          });
+          return;
+        }
+
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            data: {
+              full_name: fullName,
+              company: company,
+            },
+          },
         });
 
         if (signUpError) {
@@ -98,6 +115,28 @@ export default function Auth() {
             : "Enter your credentials to sign in"}
         </p>
         <form onSubmit={handleAuth} className="space-y-4">
+          {isSignUp && (
+            <>
+              <div className="space-y-2">
+                <Input
+                  type="text"
+                  placeholder="Full Name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Input
+                  type="text"
+                  placeholder="Company"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  required
+                />
+              </div>
+            </>
+          )}
           <div className="space-y-2">
             <Input
               type="email"
