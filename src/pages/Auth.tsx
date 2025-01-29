@@ -9,6 +9,7 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -17,25 +18,57 @@ export default function Auth() {
     setLoading(true);
 
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (signInError) {
-        // If sign in fails, try to sign up
+      if (isSignUp) {
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
         });
 
-        if (signUpError) throw signUpError;
+        if (signUpError) {
+          if (signUpError.message.includes("already registered")) {
+            toast({
+              title: "Account exists",
+              description: "This email is already registered. Please sign in instead.",
+              variant: "destructive",
+            });
+            setIsSignUp(false);
+          } else {
+            toast({
+              title: "Sign up failed",
+              description: signUpError.message,
+              variant: "destructive",
+            });
+          }
+          return;
+        }
         
         toast({
           title: "Welcome!",
           description: "Account created successfully. Please verify your email.",
         });
       } else {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (signInError) {
+          if (signInError.message.includes("Invalid login credentials")) {
+            toast({
+              title: "Invalid credentials",
+              description: "Please check your email and password and try again.",
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Sign in failed",
+              description: signInError.message,
+              variant: "destructive",
+            });
+          }
+          return;
+        }
+
         navigate("/dashboard");
         toast({
           title: "Welcome back!",
@@ -56,9 +89,13 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg">
-        <h2 className="text-3xl font-bold text-center">Welcome</h2>
+        <h2 className="text-3xl font-bold text-center">
+          {isSignUp ? "Create Account" : "Welcome Back"}
+        </h2>
         <p className="text-center text-muted-foreground">
-          Enter your email to sign in or create an account
+          {isSignUp 
+            ? "Enter your details to create an account" 
+            : "Enter your credentials to sign in"}
         </p>
         <form onSubmit={handleAuth} className="space-y-4">
           <div className="space-y-2">
@@ -84,9 +121,20 @@ export default function Auth() {
             className="w-full"
             disabled={loading}
           >
-            {loading ? "Processing..." : "Continue"}
+            {loading ? "Processing..." : (isSignUp ? "Sign Up" : "Sign In")}
           </Button>
         </form>
+        <div className="text-center">
+          <Button
+            variant="link"
+            onClick={() => setIsSignUp(!isSignUp)}
+            className="text-sm"
+          >
+            {isSignUp 
+              ? "Already have an account? Sign in" 
+              : "Don't have an account? Sign up"}
+          </Button>
+        </div>
       </div>
     </div>
   );
