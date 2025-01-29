@@ -5,6 +5,7 @@ import ImportStatistics from "./pages/ImportStatistics";
 import PriceMetrics from "./pages/PriceMetrics";
 import LNGTerminals from "./pages/LNGTerminals";
 import GenerationMetrics from "./pages/GenerationMetrics";
+import Auth from "./pages/Auth";
 import "./App.css";
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/auth" element={<Auth />} />
         <Route path="/dashboard" element={<Index />} />
         <Route path="/import-statistics" element={<ImportStatistics />} />
         <Route path="/price-metrics" element={<PriceMetrics />} />

@@ -1,25 +1,40 @@
-import { Hero } from "@/components/blocks/hero"
+import { Hero } from "@/components/blocks/hero";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Landing() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleGetStarted = async () => {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    
+    if (session) {
+      navigate("/dashboard");
+    } else {
+      navigate("/auth");
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to continue.",
+      });
+    }
+  };
+
   return (
-    <Hero
-      title="LNG."
-      subtitle="Navigate Pakistan's LNG Market with Confidence."
-      actions={[
-        {
-          label: "Try Demo",
-          href: "/",
-          variant: "outline"
-        },
-        {
-          label: "Start Free",
-          href: "/dashboard",
-          variant: "secondary"
-        }
-      ]}
-      titleClassName="text-5xl md:text-6xl font-extrabold"
-      subtitleClassName="text-lg md:text-xl max-w-[600px]"
-      actionsClassName="mt-8"
-    />
+    <div className="min-h-screen">
+      <Hero
+        title="LNG"
+        subtitle="Explore real-time LNG market insights and analytics"
+        actions={[
+          {
+            label: "Get Started",
+            href: "#",
+            variant: "default",
+            onClick: handleGetStarted,
+          },
+        ]}
+      />
+    </div>
   );
 }
