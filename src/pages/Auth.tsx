@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -37,6 +37,10 @@ export default function Auth() {
         });
       } else {
         navigate("/dashboard");
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully signed in.",
+        });
       }
     } catch (error: any) {
       toast({
@@ -53,6 +57,9 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg">
         <h2 className="text-3xl font-bold text-center">Welcome</h2>
+        <p className="text-center text-muted-foreground">
+          Enter your email to sign in or create an account
+        </p>
         <form onSubmit={handleAuth} className="space-y-4">
           <div className="space-y-2">
             <Input
