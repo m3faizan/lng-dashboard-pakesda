@@ -1,10 +1,14 @@
-import { LNGChart } from "@/components/LNGChart";
+import { ChartContainer } from "@/components/charts/shared/ChartContainer";
+import { PowerGenChart } from "@/components/PowerGenChart";
 
 export function CostChart() {
   return (
-    <div>
-      <h2 className="text-lg font-semibold text-center mb-5">RLNG Gen Cost (PKR/kWh)</h2>
-      <LNGChart />
-    </div>
+    <ChartContainer title="RLNG Gen Cost (PKR/kWh)">
+      <PowerGenChart 
+        dataKey="powerGenCost"
+        color="#0EA5E9"
+        valueFormatter={(value: number) => `${value.toFixed(2)} PKR/kWh`}
+      />
+    </ChartContainer>
   );
 }

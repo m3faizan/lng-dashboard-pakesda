@@ -9,7 +9,7 @@ interface ChartContainerProps {
 
 export function ChartContainer({ title, children, headerContent }: ChartContainerProps) {
   return (
-    <Card className="bg-dashboard-navy border-0">
+    <Card className="bg-dashboard-navy border-0 h-[450px]">
       <CardHeader className="flex flex-col items-center pb-2">
         <CardTitle className="text-lg font-semibold mb-4">{title}</CardTitle>
         {headerContent}

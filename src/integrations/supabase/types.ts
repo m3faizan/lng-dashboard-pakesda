@@ -84,6 +84,36 @@ export type Database = {
         }
         Relationships: []
       }
+      "LNG Power Gen": {
+        Row: {
+          brentAvg: number | null
+          date: string | null
+          id: number
+          importPayment: number | null
+          powerGenCost: number | null
+          powerGeneration: number | null
+          rlngShare: number | null
+        }
+        Insert: {
+          brentAvg?: number | null
+          date?: string | null
+          id: number
+          importPayment?: number | null
+          powerGenCost?: number | null
+          powerGeneration?: number | null
+          rlngShare?: number | null
+        }
+        Update: {
+          brentAvg?: number | null
+          date?: string | null
+          id?: number
+          importPayment?: number | null
+          powerGenCost?: number | null
+          powerGeneration?: number | null
+          rlngShare?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

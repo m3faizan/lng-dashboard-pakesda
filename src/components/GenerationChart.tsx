@@ -1,10 +1,14 @@
-import { LNGChart } from "@/components/LNGChart";
+import { ChartContainer } from "@/components/charts/shared/ChartContainer";
+import { PowerGenChart } from "@/components/PowerGenChart";
 
 export function GenerationChart() {
   return (
-    <div>
-      <h2 className="text-lg font-semibold text-center mb-5">RLNG Power Generation (GWh)</h2>
-      <LNGChart />
-    </div>
+    <ChartContainer title="RLNG Power Generation (GWh)">
+      <PowerGenChart 
+        dataKey="powerGeneration"
+        color="#4ADE80"
+        valueFormatter={(value: number) => `${value.toFixed(2)} GWh`}
+      />
+    </ChartContainer>
   );
 }
