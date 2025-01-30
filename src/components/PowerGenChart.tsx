@@ -78,10 +78,10 @@ export function PowerGenChart({ dataKey, color, valueFormatter }: PowerGenChartP
             <button
               key={tf.label}
               onClick={() => setSelectedTimeframe(tf.months)}
-              className={`px-3 py-1 rounded-md text-sm font-medium ${
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                 selectedTimeframe === tf.months
                   ? `bg-[${color}] text-black`
-                  : "bg-dashboard-dark/50 text-muted-foreground hover:bg-dashboard-dark"
+                  : "bg-dashboard-dark text-muted-foreground hover:bg-dashboard-dark/80"
               }`}
             >
               {tf.label}
@@ -123,7 +123,7 @@ export function PowerGenChart({ dataKey, color, valueFormatter }: PowerGenChartP
               formatter={(value: number) => [valueFormatter(value), ""]}
             />
             <Area
-              type="linear"
+              type="monotone"
               dataKey="value"
               stroke={color}
               fillOpacity={1}
