@@ -16,8 +16,8 @@ export function TimeFrameSelector({ selectedTimeframe, onTimeframeChange, color 
             onClick={() => onTimeframeChange(tf.months)}
             className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
               selectedTimeframe === tf.months
-                ? `bg-[${color}] text-black`
-                : "bg-dashboard-dark text-muted-foreground hover:bg-dashboard-dark/80"
+                ? `bg-${color} text-white shadow-sm`
+                : "bg-dashboard-navy text-muted-foreground hover:bg-dashboard-navy/80 hover:text-white"
             }`}
           >
             {tf.label}
