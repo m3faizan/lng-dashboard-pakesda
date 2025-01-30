@@ -100,6 +100,7 @@ export function PowerGenChart({ dataKey, color, valueFormatter }: PowerGenChartP
                 borderRadius: "8px",
               }}
               formatter={(value: number) => [valueFormatter(value), ""]}
+              labelFormatter={(label) => label}
             />
             <Area
               type="monotone"
