@@ -8,16 +8,7 @@ import {
 } from "recharts";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { PeriodSelector } from "@/components/chart/PeriodSelector";
-
-const timeframes = [
-  { label: "3M", months: 3 },
-  { label: "6M", months: 6 },
-  { label: "YTD", months: new Date().getMonth() },
-  { label: "1Y", months: 12 },
-  { label: "5Y", months: 60 },
-  { label: "Max", months: 120 },
-] as const;
+import { TimeFrameSelector } from "@/components/charts/TimeFrameSelector";
 
 interface PowerGenChartProps {
   dataKey: "powerGeneration" | "powerGenCost" | "rlngShare";
@@ -72,23 +63,11 @@ export function PowerGenChart({ dataKey, color, valueFormatter }: PowerGenChartP
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col items-center space-y-5">
-        <div className="flex gap-2">
-          {timeframes.map((tf) => (
-            <button
-              key={tf.label}
-              onClick={() => setSelectedTimeframe(tf.months)}
-              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                selectedTimeframe === tf.months
-                  ? `bg-[${color}] text-black`
-                  : "bg-dashboard-dark text-muted-foreground hover:bg-dashboard-dark/80"
-              }`}
-            >
-              {tf.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      <TimeFrameSelector 
+        selectedTimeframe={selectedTimeframe}
+        onTimeframeChange={setSelectedTimeframe}
+        color={color}
+      />
       
       <div className="h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
