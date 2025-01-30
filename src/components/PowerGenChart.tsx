@@ -20,47 +20,75 @@ interface PowerGenChartProps {
 export function PowerGenChart({ dataKey, color, valueFormatter, label }: PowerGenChartProps) {
   const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
   const [data, setData] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const endDate = new Date();
-      const startDate = new Date();
-      
-      startDate.setMonth(endDate.getMonth() - selectedTimeframe);
-      startDate.setDate(1);
-      startDate.setHours(0, 0, 0, 0);
-      
-      endDate.setHours(23, 59, 59, 999);
-      
-      const minDate = new Date('2019-01-01');
-      const actualStartDate = startDate < minDate ? minDate : startDate;
+      try {
+        const endDate = new Date();
+        const startDate = new Date();
+        
+        startDate.setMonth(endDate.getMonth() - selectedTimeframe);
+        startDate.setDate(1);
+        startDate.setHours(0, 0, 0, 0);
+        
+        endDate.setHours(23, 59, 59, 999);
+        
+        const minDate = new Date('2019-01-01');
+        const actualStartDate = startDate < minDate ? minDate : startDate;
 
-      const { data: powerGenData, error } = await supabase
-        .from('LNG Power Gen')
-        .select(`date, ${dataKey}`)
-        .gte('date', actualStartDate.toISOString())
-        .lte('date', endDate.toISOString())
-        .order('date', { ascending: true });
+        const { data: powerGenData, error: supabaseError } = await supabase
+          .from('LNG Power Gen')
+          .select(`date, ${dataKey}`)
+          .gte('date', actualStartDate.toISOString())
+          .lte('date', endDate.toISOString())
+          .order('date', { ascending: true });
 
-      if (error) {
-        console.error('Error fetching data:', error);
-        return;
+        if (supabaseError) {
+          console.error('Error fetching data:', supabaseError);
+          setError('Failed to load data');
+          return;
+        }
+
+        if (!powerGenData) {
+          setError('No data available');
+          return;
+        }
+
+        const transformedData = powerGenData
+          .filter(item => item.date && item[dataKey] !== null)
+          .map(item => ({
+            month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
+            date: new Date(item.date),
+            value: Number(item[dataKey])
+          }))
+          .sort((a, b) => a.date.getTime() - b.date.getTime());
+
+        setData(transformedData);
+        setError(null);
+      } catch (err) {
+        console.error('Error in fetchData:', err);
+        setError('An unexpected error occurred');
       }
-
-      const transformedData = powerGenData
-        .filter(item => item.date && item[dataKey] !== null)
-        .map(item => ({
-          month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
-          date: new Date(item.date),
-          value: Number(item[dataKey])
-        }))
-        .sort((a, b) => a.date.getTime() - b.date.getTime());
-
-      setData(transformedData);
     };
 
     fetchData();
   }, [selectedTimeframe, dataKey]);
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <TimeFrameSelector 
+          selectedTimeframe={selectedTimeframe}
+          onTimeframeChange={setSelectedTimeframe}
+          color={color}
+        />
+        <div className="h-[320px] flex items-center justify-center text-red-500">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
