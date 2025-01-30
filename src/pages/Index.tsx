@@ -200,6 +200,7 @@ export default function Index() {
                   value: Math.abs(kpiData?.imports.trend || 0), 
                   isPositive: (kpiData?.imports.trend || 0) > 0 
                 }}
+                type="imports"
               />
               <KPICard
                 title="Total Cargoes"
@@ -209,6 +210,7 @@ export default function Index() {
                   value: Math.abs(kpiData?.cargoes.trend || 0), 
                   isPositive: (kpiData?.cargoes.trend || 0) > 0 
                 }}
+                type="cargoes"
               />
               <KPICard
                 title="Avg Contract Price"
@@ -218,6 +220,7 @@ export default function Index() {
                   value: Math.abs(kpiData?.price.trend || 0), 
                   isPositive: (kpiData?.price.trend || 0) > 0 
                 }}
+                type="price"
               />
               <KPICard
                 title="Power Gen Share"
@@ -227,6 +230,7 @@ export default function Index() {
                   value: Math.abs(kpiData?.share.trend || 0), 
                   isPositive: (kpiData?.share.trend || 0) > 0 
                 }}
+                type="share"
               />
             </div>
 

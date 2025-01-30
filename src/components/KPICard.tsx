@@ -10,9 +10,22 @@ interface KPICardProps {
     isPositive: boolean;
   };
   className?: string;
+  type?: 'imports' | 'cargoes' | 'price' | 'share';
 }
 
-export function KPICard({ title, value, icon, trend, className }: KPICardProps) {
+export function KPICard({ title, value, icon, trend, className, type = 'share' }: KPICardProps) {
+  const getTrendColor = (isPositive: boolean, type: string) => {
+    switch (type) {
+      case 'imports':
+      case 'cargoes':
+      case 'price':
+        return !isPositive ? "text-dashboard-green" : "text-red-500";
+      case 'share':
+      default:
+        return isPositive ? "text-dashboard-green" : "text-red-500";
+    }
+  };
+
   return (
     <Card className={cn("bg-dashboard-navy border-0", className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -26,15 +39,15 @@ export function KPICard({ title, value, icon, trend, className }: KPICardProps) 
       <CardContent className="h-[100px] flex flex-col">
         <div className="text-2xl font-bold text-left mb-auto">{value}</div>
         {trend && (
-          <div className="mt-auto">
+          <div className="mt-auto text-left">
             <p
               className={cn(
                 "text-xs flex items-center gap-1",
-                trend.isPositive ? "text-dashboard-green" : "text-red-500"
+                getTrendColor(trend.isPositive, type)
               )}
             >
               {trend.isPositive ? "+" : "-"}
-              {trend.value}% from last month
+              {trend.value.toFixed(1)}% from last month
             </p>
           </div>
         )}
