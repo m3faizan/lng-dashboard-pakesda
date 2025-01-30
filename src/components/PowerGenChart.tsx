@@ -14,9 +14,10 @@ interface PowerGenChartProps {
   dataKey: "powerGeneration" | "powerGenCost" | "rlngShare";
   color: string;
   valueFormatter: (value: number) => string;
+  label: string;
 }
 
-export function PowerGenChart({ dataKey, color, valueFormatter }: PowerGenChartProps) {
+export function PowerGenChart({ dataKey, color, valueFormatter, label }: PowerGenChartProps) {
   const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
   const [data, setData] = useState<any[]>([]);
 
@@ -99,7 +100,7 @@ export function PowerGenChart({ dataKey, color, valueFormatter }: PowerGenChartP
                 border: "none",
                 borderRadius: "8px",
               }}
-              formatter={(value: number) => [valueFormatter(value), ""]}
+              formatter={(value: number) => [valueFormatter(value), label]}
               labelFormatter={(label) => label}
             />
             <Area

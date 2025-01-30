@@ -8,6 +8,7 @@ export function MixChart() {
         dataKey="rlngShare"
         color="#FEC6A1"
         valueFormatter={(value: number) => `${value.toFixed(2)}%`}
+        label="RLNG Gen %"
       />
     </ChartContainer>
   );

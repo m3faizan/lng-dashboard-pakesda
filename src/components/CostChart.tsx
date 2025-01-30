@@ -8,6 +8,7 @@ export function CostChart() {
         dataKey="powerGenCost"
         color="#0EA5E9"
         valueFormatter={(value: number) => `${value.toFixed(2)} PKR/kWh`}
+        label="RLNG Gen Cost"
       />
     </ChartContainer>
   );

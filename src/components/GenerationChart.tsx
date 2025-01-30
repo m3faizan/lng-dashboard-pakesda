@@ -8,6 +8,7 @@ export function GenerationChart() {
         dataKey="powerGeneration"
         color="#4ADE80"
         valueFormatter={(value: number) => `${value.toFixed(2)} GWh`}
+        label="RLNG Gen"
       />
     </ChartContainer>
   );
