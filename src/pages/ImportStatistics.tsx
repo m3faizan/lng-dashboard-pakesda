@@ -44,7 +44,7 @@ export default function ImportStatistics() {
 
           setKpiData({
             payment: {
-              value: powerGenData[0]?.importPayment || 0,
+              value: (powerGenData[0]?.importPayment || 0) / 1000, // Convert to millions
               trend: calculateTrend(
                 powerGenData[0]?.importPayment || 0,
                 powerGenData[1]?.importPayment || 0
@@ -99,7 +99,7 @@ export default function ImportStatistics() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <KPICard
                 title="Import Payment"
-                value={`$${formatNumber(kpiData?.payment.value || 0)}M`}
+                value={`$${(kpiData?.payment.value || 0).toFixed(1)}M`}
                 icon={<DollarSign className="h-4 w-4 text-dashboard-green" />}
                 trend={{ 
                   value: Math.abs(kpiData?.payment.trend || 0), 
@@ -109,7 +109,7 @@ export default function ImportStatistics() {
               />
               <KPICard
                 title="Import Volume"
-                value={`${formatNumber(kpiData?.volume.value || 0)}M MMBtu`}
+                value={`${((kpiData?.volume.value || 0) / 1000000).toFixed(1)}M MMBtu`}
                 icon={<Droplet className="h-4 w-4 text-dashboard-blue" />}
                 trend={{ 
                   value: Math.abs(kpiData?.volume.trend || 0), 
