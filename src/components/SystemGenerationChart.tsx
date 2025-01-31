@@ -7,6 +7,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  DataKey,
 } from "recharts";
 import {
   Select,
@@ -96,11 +97,11 @@ export function SystemGenerationChart() {
     fetchData();
   }, [period]);
 
-  const handleLegendClick = (dataKey: string) => {
+  const handleLegendClick = (dataKey: DataKey<any>) => {
     setHiddenSeries(prev => 
-      prev.includes(dataKey)
-        ? prev.filter(key => key !== dataKey)
-        : [...prev, dataKey]
+      prev.includes(String(dataKey))
+        ? prev.filter(key => key !== String(dataKey))
+        : [...prev, String(dataKey)]
     );
   };
 
