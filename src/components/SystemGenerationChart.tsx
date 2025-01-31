@@ -95,8 +95,9 @@ export function SystemGenerationChart() {
     fetchData();
   }, [period]);
 
-  const handleLegendClick = (dataKey: string | number) => {
-    const key = String(dataKey);
+  const handleLegendClick = (dataKey: string | number | ((obj: any) => any)) => {
+    // Convert the dataKey to string, handling function case
+    const key = typeof dataKey === 'function' ? 'unknown' : String(dataKey);
     setHiddenSeries(prev => 
       prev.includes(key)
         ? prev.filter(k => k !== key)
