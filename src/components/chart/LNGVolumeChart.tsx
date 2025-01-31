@@ -29,9 +29,28 @@ export function LNGVolumeChart({ data, selectedYear, showYearFilter, trendColor,
   };
 
   const isSeriesVisible = (key: string) => !hiddenSeries.includes(key);
-  const getOpacity = (year: string) => {
+  const getOpacity = (entry: DataPoint) => {
     if (!showYearFilter || selectedYear === 'all') return 1;
-    return year === selectedYear ? 1 : 0.3;
+    return entry.year === selectedYear ? 1 : 0.3;
+  };
+
+  const formatValue = (value: number) => {
+    return `${Math.round(value)} M $`;
+  };
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (!active || !payload) return null;
+    
+    return (
+      <div className="bg-[#1a1b1e] border border-[#2d2e33] rounded-lg p-3">
+        <p className="text-white mb-1">{payload[0]?.payload.period}</p>
+        {payload.map((entry: any, index: number) => (
+          <p key={index} className="text-white">
+            {entry.name}: {formatValue(entry.value)}
+          </p>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -45,45 +64,24 @@ export function LNGVolumeChart({ data, selectedYear, showYearFilter, trendColor,
         <YAxis 
           tick={{ fill: 'white' }}
           axisLine={{ stroke: '#666' }}
-          label={{ 
-            value: `${unit}`, 
-            angle: -90, 
-            position: 'insideLeft', 
-            fill: 'white',
-            style: { textAnchor: 'middle' }
-          }}
         />
-        <Tooltip 
-          contentStyle={{ 
-            backgroundColor: '#1a1b1e', 
-            border: '1px solid #2d2e33',
-            borderRadius: '6px'
-          }}
-          labelStyle={{ color: 'white' }}
-          itemStyle={{ color: 'white' }}
-        />
-        <Bar
-          dataKey="volume"
-          name="LNG Payments"
-          fill={trendColor}
-          opacity={isSeriesVisible('volume') ? 1 : 0.3}
-          onClick={() => handleLegendClick('volume')}
-          style={{ cursor: 'pointer' }}
-        >
-          {data.map((entry, index) => (
-            <Bar
-              key={`bar-${index}`}
-              dataKey="volume"
-              fill={trendColor}
-              opacity={getOpacity(entry.year)}
-            />
-          ))}
-        </Bar>
+        <Tooltip content={<CustomTooltip />} />
+        {data.map((entry, index) => (
+          <Bar
+            key={`bar-${index}`}
+            dataKey="volume"
+            name="LNG Payments"
+            fill="#4ADE80"
+            opacity={getOpacity(entry)}
+            onClick={() => handleLegendClick('volume')}
+            style={{ cursor: 'pointer' }}
+          />
+        ))}
         <Line
           type="monotone"
           dataKey="average"
           name="Moving Average"
-          stroke="#4ADE80"
+          stroke="white"
           strokeWidth={2}
           dot={false}
           opacity={isSeriesVisible('average') ? 1 : 0.3}
