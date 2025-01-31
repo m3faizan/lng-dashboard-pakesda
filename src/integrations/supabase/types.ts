@@ -93,6 +93,7 @@ export type Database = {
           powerGenCost: number | null
           powerGeneration: number | null
           rlngShare: number | null
+          total_power_gen: number | null
         }
         Insert: {
           brentAvg?: number | null
@@ -102,6 +103,7 @@ export type Database = {
           powerGenCost?: number | null
           powerGeneration?: number | null
           rlngShare?: number | null
+          total_power_gen?: number | null
         }
         Update: {
           brentAvg?: number | null
@@ -111,6 +113,7 @@ export type Database = {
           powerGenCost?: number | null
           powerGeneration?: number | null
           rlngShare?: number | null
+          total_power_gen?: number | null
         }
         Relationships: []
       }
