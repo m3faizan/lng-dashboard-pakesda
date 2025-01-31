@@ -10,13 +10,19 @@ interface KPICardProps {
     isPositive: boolean;
   };
   className?: string;
-  type?: 'imports' | 'cargoes' | 'price' | 'share';
+  type?: 'generation' | 'cost' | 'share';
 }
 
 export function KPICard({ title, value, icon, trend, className, type = 'share' }: KPICardProps) {
-  const getTrendColor = (isPositive: boolean) => {
-    // All types now follow the same logic: negative is green, positive is red
-    return !isPositive ? "text-dashboard-green" : "text-red-500";
+  const getTrendColor = (isPositive: boolean, type: string) => {
+    switch (type) {
+      case 'cost':
+        return !isPositive ? "text-dashboard-green" : "text-red-500";
+      case 'generation':
+      case 'share':
+      default:
+        return isPositive ? "text-dashboard-green" : "text-red-500";
+    }
   };
 
   return (
@@ -36,7 +42,7 @@ export function KPICard({ title, value, icon, trend, className, type = 'share' }
             <p
               className={cn(
                 "text-xs flex items-center gap-1",
-                getTrendColor(trend.isPositive)
+                getTrendColor(trend.isPositive, type)
               )}
             >
               {trend.isPositive ? "+" : "-"}
