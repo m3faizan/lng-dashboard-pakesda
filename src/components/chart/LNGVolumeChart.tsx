@@ -29,14 +29,16 @@ export function LNGVolumeChart({ data, selectedYear, showYearFilter, trendColor,
   };
 
   const isSeriesVisible = (key: string) => !hiddenSeries.includes(key);
-  const getOpacity = (entry: DataPoint) => {
-    if (!showYearFilter || selectedYear === 'all') return 1;
-    return entry.year === selectedYear ? 1 : 0.3;
-  };
 
   const formatValue = (value: number) => {
     return `${Math.round(value)} M $`;
   };
+
+  // Process data to include opacity
+  const processedData = data.map(entry => ({
+    ...entry,
+    opacity: (!showYearFilter || selectedYear === 'all') ? 1 : (entry.year === selectedYear ? 1 : 0.3)
+  }));
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (!active || !payload) return null;
@@ -61,7 +63,7 @@ export function LNGVolumeChart({ data, selectedYear, showYearFilter, trendColor,
   return (
     <ResponsiveContainer width="100%" height="100%">
       <ComposedChart 
-        data={data} 
+        data={processedData} 
         margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
       >
         <XAxis 
@@ -83,7 +85,8 @@ export function LNGVolumeChart({ data, selectedYear, showYearFilter, trendColor,
           dataKey="volume"
           name="LNG Payments"
           fill="#4ADE80"
-          opacity={getOpacity}
+          opacity={1}
+          fillOpacity="opacity"
           onClick={() => handleLegendClick('volume')}
           style={{ cursor: 'pointer' }}
         />
