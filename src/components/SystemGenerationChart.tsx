@@ -7,7 +7,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  DataKey,
 } from "recharts";
 import {
   Select,
@@ -74,7 +73,6 @@ export function SystemGenerationChart() {
           };
         });
 
-        // Group data based on period
         const groupedData = transformedData.reduce((acc: any[], curr) => {
           const existingPeriod = acc.find(item => item.period === curr.period);
           if (existingPeriod) {
@@ -97,11 +95,11 @@ export function SystemGenerationChart() {
     fetchData();
   }, [period]);
 
-  const handleLegendClick = (dataKey: DataKey<any>) => {
+  const handleLegendClick = (dataKey: string) => {
     setHiddenSeries(prev => 
-      prev.includes(String(dataKey))
-        ? prev.filter(key => key !== String(dataKey))
-        : [...prev, String(dataKey)]
+      prev.includes(dataKey)
+        ? prev.filter(key => key !== dataKey)
+        : [...prev, dataKey]
     );
   };
 
@@ -122,7 +120,7 @@ export function SystemGenerationChart() {
         <div className="text-gray-400 mb-2">{payload[0]?.payload.period}</div>
         {payload.map((entry: any, index: number) => (
           <div key={index} className="text-white">
-            <span>{entry.dataKey === 'rlng' ? 'RLNG' : 'Other Sources'}: </span>
+            <span>{entry.dataKey === 'rlng' ? 'RLNG: ' : 'Other Sources: '}</span>
             <span className="font-mono">{entry.value.toFixed(2)} GWh</span>
           </div>
         ))}
@@ -131,9 +129,9 @@ export function SystemGenerationChart() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col items-center space-y-5">
-        <h2 className="text-lg font-semibold">Total System Generation</h2>
+    <div className="h-full flex flex-col">
+      <div className="flex flex-col items-center mb-6">
+        <h2 className="text-lg font-semibold mb-4">Total System Generation</h2>
         <Select value={period} onValueChange={setPeriod}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select period" />
@@ -145,42 +143,54 @@ export function SystemGenerationChart() {
           </SelectContent>
         </Select>
       </div>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart 
-          data={data}
-          margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
-        >
-          <XAxis 
-            dataKey="period" 
-            stroke="#525252"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-          />
-          <YAxis 
-            stroke="#525252"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-            unit=" GWh"
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend 
-            verticalAlign="top" 
-            height={36}
-            onClick={(e) => handleLegendClick(e.dataKey)}
-            formatter={(value) => {
-              const labels = {
-                rlng: "RLNG",
-                other: "Other Sources"
-              };
-              return labels[value as keyof typeof labels];
-            }}
-          />
-          {!hiddenSeries.includes('rlng') && <Bar dataKey="rlng" stackId="a" fill="#4ADE80" />}
-          {!hiddenSeries.includes('other') && <Bar dataKey="other" stackId="a" fill="#0EA5E9" />}
-        </BarChart>
-      </ResponsiveContainer>
+      <div className="flex-1">
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart 
+            data={data}
+            margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
+          >
+            <XAxis 
+              dataKey="period" 
+              stroke="#525252"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis 
+              stroke="#525252"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => value.toFixed(0)}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend 
+              verticalAlign="top" 
+              height={36}
+              onClick={(e) => handleLegendClick(e.dataKey)}
+              formatter={(value) => {
+                const labels = {
+                  rlng: "RLNG",
+                  other: "Other Sources"
+                };
+                return labels[value as keyof typeof labels];
+              }}
+            />
+            <Bar 
+              dataKey="rlng" 
+              stackId="a" 
+              fill="#4ADE80" 
+              fillOpacity={hiddenSeries.includes('rlng') ? 0.3 : 1}
+            />
+            <Bar 
+              dataKey="other" 
+              stackId="a" 
+              fill="#0EA5E9" 
+              fillOpacity={hiddenSeries.includes('other') ? 0.3 : 1}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
