@@ -1,107 +1,72 @@
-import {
-  Bar,
-  ComposedChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  Cell,
-  ResponsiveContainer,
-} from "recharts";
-
-interface ChartData {
-  period: string;
-  volume: number;
-  average: number;
-  year?: string;
-}
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { ChartTooltip } from "../charts/shared/ChartTooltip";
 
 interface LNGVolumeChartProps {
-  data: ChartData[];
+  data: any[];
   selectedYear: string;
   showYearFilter: boolean;
   trendColor: string;
+  unit?: string;
 }
 
-export function LNGVolumeChart({
-  data,
-  selectedYear,
+export function LNGVolumeChart({ 
+  data, 
+  selectedYear, 
   showYearFilter,
   trendColor,
+  unit = ""
 }: LNGVolumeChartProps) {
+  const filteredData = showYearFilter && selectedYear !== "all"
+    ? data.filter(item => item.year === selectedYear)
+    : data;
+
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <ComposedChart 
-        data={data}
-        margin={{ top: 5, right: 30, left: 60, bottom: 45 }}
-      >
+      <AreaChart data={filteredData}>
+        <defs>
+          <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#4ADE80" stopOpacity={0.2} />
+            <stop offset="95%" stopColor="#4ADE80" stopOpacity={0} />
+          </linearGradient>
+        </defs>
         <XAxis
           dataKey="period"
-          stroke="#525252"
-          fontSize={12}
-          tickLine={false}
           axisLine={false}
+          tickLine={false}
+          tick={{ fill: '#525252', fontSize: 12 }}
+          dy={10}
         />
         <YAxis
-          stroke="#525252"
-          fontSize={12}
-          tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
-          width={50}
+          tickLine={false}
+          tick={{ fill: '#525252', fontSize: 12 }}
+          tickFormatter={(value) => `${value}${unit}`}
         />
         <Tooltip
-          contentStyle={{
-            backgroundColor: "#1A1E2D",
-            border: "none",
-            borderRadius: "8px",
-          }}
-          formatter={(value: number, name: string) => [
-            name === "Moving Average" 
-              ? `${(value / 1000000).toFixed(2)}M MMBtu (MA)`
-              : `${(value / 1000000).toFixed(2)}M MMBtu`,
-            name
-          ]}
-        />
-        <Legend 
-          verticalAlign="bottom"
-          height={36}
-          wrapperStyle={{
-            paddingTop: "12px",
-            fontSize: "12px",
-            display: "flex",
-            justifyContent: "center",
-            gap: "1rem"
-          }}
-        />
-        <Bar
-          dataKey="volume"
-          name="Import Volume"
-          fill={trendColor}
-          radius={[4, 4, 0, 0]}
-          style={{ cursor: "pointer" }}
-        >
-          {data.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fillOpacity={
-                selectedYear === "all" || !showYearFilter || entry.year === selectedYear
-                  ? 1
-                  : 0.3
-              }
+          content={({ active, payload }) => (
+            <ChartTooltip
+              active={active}
+              payload={payload}
+              valueFormatter={(value) => `${value.toFixed(2)}${unit}`}
             />
-          ))}
-        </Bar>
-        <Line
+          )}
+        />
+        <Area
+          type="monotone"
+          dataKey="volume"
+          stroke="#4ADE80"
+          fill="url(#colorVolume)"
+          strokeWidth={2}
+        />
+        <Area
           type="monotone"
           dataKey="average"
-          stroke="#4fd1c5"
-          strokeWidth={3}
-          dot={false}
-          name="Moving Average"
+          stroke={trendColor}
+          fill="none"
+          strokeWidth={2}
+          strokeDasharray="5 5"
         />
-      </ComposedChart>
+      </AreaChart>
     </ResponsiveContainer>
   );
 }

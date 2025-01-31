@@ -45,8 +45,8 @@ export function LNGBarChart() {
       }
 
       const { data: response, error } = await supabase
-        .from('LNG Information')
-        .select('date, import_Volume')
+        .from('LNG Power Gen')
+        .select('date, importPayment')
         .gte('date', startDate.toISOString())
         .lte('date', endDate.toISOString())
         .order('date', { ascending: true });
@@ -67,12 +67,12 @@ export function LNGBarChart() {
         
         const existingEntry = acc.find(item => item.period === period);
         if (existingEntry) {
-          existingEntry.volume += Number(curr.import_Volume || 0);
+          existingEntry.volume += Number(curr.importPayment || 0) / 1000; // Convert to millions
           existingEntry.year = year;
         } else {
           const emptyPeriodIndex = emptyPeriods.findIndex(ep => ep.period === period);
           if (emptyPeriodIndex !== -1) {
-            emptyPeriods[emptyPeriodIndex].volume = Number(curr.import_Volume || 0);
+            emptyPeriods[emptyPeriodIndex].volume = Number(curr.importPayment || 0) / 1000; // Convert to millions
             emptyPeriods[emptyPeriodIndex].year = year;
           }
         }
@@ -100,7 +100,7 @@ export function LNGBarChart() {
     <Card className="bg-dashboard-navy border-0 h-[480px] transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
       <div className="flex flex-col items-center pt-6">
         <CardTitle className="text-xl font-semibold mb-4 text-center">
-          LNG Import Volume
+          LNG Import Payments
         </CardTitle>
         <PeriodSelector
           selectedPeriod={selectedPeriod}
@@ -116,7 +116,8 @@ export function LNGBarChart() {
           data={dataWithMovingAverage}
           selectedYear={selectedYear}
           showYearFilter={showYearFilter}
-          trendColor={trendColor}
+          trendColor="white"
+          unit="M"
         />
       </CardContent>
     </Card>
