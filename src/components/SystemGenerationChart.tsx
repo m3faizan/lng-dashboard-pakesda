@@ -25,21 +25,8 @@ export function SystemGenerationChart() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const startDate = new Date('2019-01-01');
         const endDate = new Date();
-        const startDate = new Date();
-        
-        // Set date range based on selected period
-        switch (period) {
-          case "monthly":
-            startDate.setMonth(endDate.getMonth() - 6); // Last 6 months
-            break;
-          case "quarterly":
-            startDate.setMonth(endDate.getMonth() - 12); // Last 4 quarters
-            break;
-          case "yearly":
-            startDate.setFullYear(endDate.getFullYear() - 3); // Last 3 years
-            break;
-        }
 
         const { data: powerGenData, error: supabaseError } = await supabase
           .from('LNG Power Gen')
@@ -68,7 +55,8 @@ export function SystemGenerationChart() {
               label = date.toLocaleString('default', { month: 'short', year: '2-digit' });
               break;
             case "quarterly":
-              label = `Q${Math.floor(date.getMonth() / 3) + 1} '${date.getFullYear().toString().slice(-2)}`;
+              const quarter = Math.floor(date.getMonth() / 3) + 1;
+              label = `Q${quarter} '${date.getFullYear().toString().slice(-2)}`;
               break;
             case "yearly":
               label = date.getFullYear().toString();
@@ -79,12 +67,24 @@ export function SystemGenerationChart() {
 
           return {
             period: label,
-            rlng: Number(item.powerGeneration),
-            other: Number(item.total_power_gen) - Number(item.powerGeneration)
+            rlng: Number(item.powerGeneration || 0),
+            other: Number(item.total_power_gen || 0) - Number(item.powerGeneration || 0)
           };
         });
 
-        setData(transformedData);
+        // Group data based on period
+        const groupedData = transformedData.reduce((acc: any[], curr) => {
+          const existingPeriod = acc.find(item => item.period === curr.period);
+          if (existingPeriod) {
+            existingPeriod.rlng += curr.rlng;
+            existingPeriod.other += curr.other;
+          } else {
+            acc.push(curr);
+          }
+          return acc;
+        }, []);
+
+        setData(groupedData);
         setError(null);
       } catch (err) {
         console.error('Error in fetchData:', err);
@@ -120,14 +120,30 @@ export function SystemGenerationChart() {
         </Select>
       </div>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data}>
-          <XAxis dataKey="period" stroke="#525252" />
-          <YAxis stroke="#525252" />
+        <BarChart 
+          data={data}
+          margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
+        >
+          <XAxis 
+            dataKey="period" 
+            stroke="#525252"
+            fontSize={12}
+            tickLine={false}
+            axisLine={false}
+          />
+          <YAxis 
+            stroke="#525252"
+            fontSize={12}
+            tickLine={false}
+            axisLine={false}
+          />
           <Tooltip
             contentStyle={{
               backgroundColor: "#1A1E2D",
               border: "none",
               borderRadius: "8px",
+              fontFamily: "Arial",
+              fontSize: "12px",
             }}
           />
           <Legend 
