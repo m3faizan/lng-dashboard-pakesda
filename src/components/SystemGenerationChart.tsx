@@ -95,11 +95,12 @@ export function SystemGenerationChart() {
     fetchData();
   }, [period]);
 
-  const handleLegendClick = (dataKey: string) => {
+  const handleLegendClick = (dataKey: string | number) => {
+    const key = String(dataKey);
     setHiddenSeries(prev => 
-      prev.includes(dataKey)
-        ? prev.filter(key => key !== dataKey)
-        : [...prev, dataKey]
+      prev.includes(key)
+        ? prev.filter(k => k !== key)
+        : [...prev, key]
     );
   };
 
