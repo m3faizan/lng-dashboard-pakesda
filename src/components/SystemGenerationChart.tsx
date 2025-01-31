@@ -21,6 +21,7 @@ export function SystemGenerationChart() {
   const [period, setPeriod] = useState("monthly");
   const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [hiddenSeries, setHiddenSeries] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,6 +96,14 @@ export function SystemGenerationChart() {
     fetchData();
   }, [period]);
 
+  const handleLegendClick = (dataKey: string) => {
+    setHiddenSeries(prev => 
+      prev.includes(dataKey)
+        ? prev.filter(key => key !== dataKey)
+        : [...prev, dataKey]
+    );
+  };
+
   if (error) {
     return (
       <div className="flex flex-col items-center space-y-5">
@@ -103,6 +112,22 @@ export function SystemGenerationChart() {
       </div>
     );
   }
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (!active || !payload) return null;
+    
+    return (
+      <div className="bg-[#1A1E2D] border border-gray-700 rounded-lg p-3 text-sm shadow-lg">
+        <div className="text-gray-400 mb-2">{payload[0]?.payload.period}</div>
+        {payload.map((entry: any, index: number) => (
+          <div key={index} className="text-white">
+            <span>{entry.dataKey === 'rlng' ? 'RLNG' : 'Other Sources'}: </span>
+            <span className="font-mono">{entry.value.toFixed(2)} GWh</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -136,19 +161,13 @@ export function SystemGenerationChart() {
             fontSize={12}
             tickLine={false}
             axisLine={false}
+            unit=" GWh"
           />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "#1A1E2D",
-              border: "none",
-              borderRadius: "8px",
-              fontFamily: "Arial",
-              fontSize: "12px",
-            }}
-          />
+          <Tooltip content={<CustomTooltip />} />
           <Legend 
             verticalAlign="top" 
             height={36}
+            onClick={(e) => handleLegendClick(e.dataKey)}
             formatter={(value) => {
               const labels = {
                 rlng: "RLNG",
@@ -157,8 +176,8 @@ export function SystemGenerationChart() {
               return labels[value as keyof typeof labels];
             }}
           />
-          <Bar dataKey="rlng" stackId="a" fill="#4ADE80" />
-          <Bar dataKey="other" stackId="a" fill="#0EA5E9" />
+          {!hiddenSeries.includes('rlng') && <Bar dataKey="rlng" stackId="a" fill="#4ADE80" />}
+          {!hiddenSeries.includes('other') && <Bar dataKey="other" stackId="a" fill="#0EA5E9" />}
         </BarChart>
       </ResponsiveContainer>
     </div>
