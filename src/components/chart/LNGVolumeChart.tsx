@@ -1,5 +1,6 @@
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend } from "recharts";
 import { ChartTooltip } from "../charts/shared/ChartTooltip";
+import { useState } from "react";
 
 interface LNGVolumeChartProps {
   data: any[];
@@ -16,8 +17,22 @@ export function LNGVolumeChart({
   trendColor,
   unit = ""
 }: LNGVolumeChartProps) {
+  const [hiddenSeries, setHiddenSeries] = useState<string[]>([]);
+
+  const handleLegendClick = (entry: { value: string; dataKey: string }) => {
+    setHiddenSeries(prev => 
+      prev.includes(entry.dataKey) 
+        ? prev.filter(key => key !== entry.dataKey)
+        : [...prev, entry.dataKey]
+    );
+  };
+
   const filteredData = showYearFilter && selectedYear !== "all"
-    ? data.filter(item => item.year === selectedYear)
+    ? data.map(item => ({
+        ...item,
+        volume: item.year === selectedYear ? item.volume : item.volume * 0.3,
+        average: item.year === selectedYear ? item.average : item.average * 0.3
+      }))
     : data;
 
   return (
@@ -51,20 +66,35 @@ export function LNGVolumeChart({
             />
           )}
         />
+        <Legend 
+          onClick={handleLegendClick}
+          formatter={(value, entry) => {
+            const isHidden = entry.dataKey && hiddenSeries.includes(entry.dataKey.toString());
+            return (
+              <span style={{ color: isHidden ? '#999' : '#fff' }}>
+                {value === "volume" ? "Import Payments" : "Moving Average"}
+              </span>
+            );
+          }}
+        />
         <Area
           type="monotone"
           dataKey="volume"
+          name="Import Payments"
           stroke="#4ADE80"
           fill="url(#colorVolume)"
           strokeWidth={2}
+          opacity={hiddenSeries.includes("volume") ? 0.3 : 1}
         />
         <Area
           type="monotone"
           dataKey="average"
+          name="Moving Average"
           stroke={trendColor}
           fill="none"
           strokeWidth={2}
           strokeDasharray="5 5"
+          opacity={hiddenSeries.includes("average") ? 0.3 : 1}
         />
       </AreaChart>
     </ResponsiveContainer>
