@@ -5,8 +5,89 @@ import { DollarSign, Droplet, Ship } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ContractVolumesChart } from "@/components/ContractVolumesChart";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+
+interface KPIData {
+  payment: { value: number; trend: number };
+  volume: { value: number; trend: number };
+  cargo: { value: number; trend: number };
+}
 
 export default function ImportStatistics() {
+  const [kpiData, setKpiData] = useState<KPIData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchKPIData = async () => {
+      try {
+        // Get latest and previous month data for LNG Power Gen
+        const { data: powerGenData } = await supabase
+          .from('LNG Power Gen')
+          .select('date, importPayment')
+          .order('date', { ascending: false })
+          .limit(2);
+
+        // Get latest and previous month data for LNG Information
+        const { data: lngInfo } = await supabase
+          .from('LNG Information')
+          .select('date, import_Volume, Total_Cargoes')
+          .order('date', { ascending: false })
+          .limit(2);
+
+        if (powerGenData && lngInfo) {
+          const calculateTrend = (current: number, previous: number) => {
+            return previous ? ((current - previous) / previous) * 100 : 0;
+          };
+
+          setKpiData({
+            payment: {
+              value: powerGenData[0]?.importPayment || 0,
+              trend: calculateTrend(
+                powerGenData[0]?.importPayment || 0,
+                powerGenData[1]?.importPayment || 0
+              ),
+            },
+            volume: {
+              value: lngInfo[0]?.import_Volume || 0,
+              trend: calculateTrend(
+                lngInfo[0]?.import_Volume || 0,
+                lngInfo[1]?.import_Volume || 0
+              ),
+            },
+            cargo: {
+              value: lngInfo[0]?.Total_Cargoes || 0,
+              trend: calculateTrend(
+                lngInfo[0]?.Total_Cargoes || 0,
+                lngInfo[1]?.Total_Cargoes || 0
+              ),
+            },
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching KPI data:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load statistics data",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchKPIData();
+  }, [toast]);
+
+  const formatNumber = (value: number) => {
+    if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(1)}M`;
+    }
+    return value.toFixed(1);
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -18,21 +99,33 @@ export default function ImportStatistics() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <KPICard
                 title="Import Payment"
-                value="$2.5M"
+                value={`$${formatNumber(kpiData?.payment.value || 0)}M`}
                 icon={<DollarSign className="h-4 w-4 text-dashboard-green" />}
-                trend={{ value: 12, isPositive: true }}
+                trend={{ 
+                  value: Math.abs(kpiData?.payment.trend || 0), 
+                  isPositive: (kpiData?.payment.trend || 0) > 0 
+                }}
+                type="imports"
               />
               <KPICard
                 title="Import Volume"
-                value="1.8M MMBtu"
+                value={`${formatNumber(kpiData?.volume.value || 0)}M MMBtu`}
                 icon={<Droplet className="h-4 w-4 text-dashboard-blue" />}
-                trend={{ value: 8, isPositive: true }}
+                trend={{ 
+                  value: Math.abs(kpiData?.volume.trend || 0), 
+                  isPositive: (kpiData?.volume.trend || 0) > 0 
+                }}
+                type="imports"
               />
               <KPICard
                 title="Importing Cargo"
-                value="24 Units"
+                value={kpiData?.cargo.value.toFixed(1) || "0"}
                 icon={<Ship className="h-4 w-4 text-dashboard-coral" />}
-                trend={{ value: 15, isPositive: true }}
+                trend={{ 
+                  value: Math.abs(kpiData?.cargo.trend || 0), 
+                  isPositive: (kpiData?.cargo.trend || 0) > 0 
+                }}
+                type="cargoes"
               />
             </div>
 
