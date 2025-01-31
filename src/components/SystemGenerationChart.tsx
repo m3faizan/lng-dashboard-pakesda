@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -15,18 +15,94 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const data = [
-  { month: "Jan", rlng: 400, other: 600 },
-  { month: "Feb", rlng: 300, other: 700 },
-  { month: "Mar", rlng: 500, other: 500 },
-  { month: "Apr", rlng: 600, other: 400 },
-  { month: "May", rlng: 400, other: 600 },
-  { month: "Jun", rlng: 300, other: 700 },
-];
+import { supabase } from "@/integrations/supabase/client";
 
 export function SystemGenerationChart() {
   const [period, setPeriod] = useState("monthly");
+  const [data, setData] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const endDate = new Date();
+        const startDate = new Date();
+        
+        // Set date range based on selected period
+        switch (period) {
+          case "monthly":
+            startDate.setMonth(endDate.getMonth() - 6); // Last 6 months
+            break;
+          case "quarterly":
+            startDate.setMonth(endDate.getMonth() - 12); // Last 4 quarters
+            break;
+          case "yearly":
+            startDate.setFullYear(endDate.getFullYear() - 3); // Last 3 years
+            break;
+        }
+
+        const { data: powerGenData, error: supabaseError } = await supabase
+          .from('LNG Power Gen')
+          .select('date, powerGeneration, total_power_gen')
+          .gte('date', startDate.toISOString())
+          .lte('date', endDate.toISOString())
+          .order('date', { ascending: true });
+
+        if (supabaseError) {
+          console.error('Error fetching data:', supabaseError);
+          setError('Failed to load data');
+          return;
+        }
+
+        if (!powerGenData) {
+          setError('No data available');
+          return;
+        }
+
+        const transformedData = powerGenData.map(item => {
+          const date = new Date(item.date);
+          let label;
+
+          switch (period) {
+            case "monthly":
+              label = date.toLocaleString('default', { month: 'short', year: '2-digit' });
+              break;
+            case "quarterly":
+              label = `Q${Math.floor(date.getMonth() / 3) + 1} '${date.getFullYear().toString().slice(-2)}`;
+              break;
+            case "yearly":
+              label = date.getFullYear().toString();
+              break;
+            default:
+              label = date.toLocaleString('default', { month: 'short', year: '2-digit' });
+          }
+
+          return {
+            period: label,
+            rlng: Number(item.powerGeneration),
+            other: Number(item.total_power_gen) - Number(item.powerGeneration)
+          };
+        });
+
+        setData(transformedData);
+        setError(null);
+      } catch (err) {
+        console.error('Error in fetchData:', err);
+        setError('An unexpected error occurred');
+      }
+    };
+
+    fetchData();
+  }, [period]);
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center space-y-5">
+        <h2 className="text-lg font-semibold">Total System Generation</h2>
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -45,7 +121,7 @@ export function SystemGenerationChart() {
       </div>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data}>
-          <XAxis dataKey="month" stroke="#525252" />
+          <XAxis dataKey="period" stroke="#525252" />
           <YAxis stroke="#525252" />
           <Tooltip
             contentStyle={{
