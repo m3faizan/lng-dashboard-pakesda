@@ -1,4 +1,4 @@
-import { Bar, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend } from "recharts";
 import { useState } from "react";
 
 interface DataPoint {
@@ -41,12 +41,17 @@ export function LNGVolumeChart({ data, selectedYear, showYearFilter, trendColor,
   const CustomTooltip = ({ active, payload }: any) => {
     if (!active || !payload) return null;
     
+    // Filter to show only volume and average
+    const relevantData = payload.filter((entry: any) => 
+      entry.dataKey === "volume" || entry.dataKey === "average"
+    );
+    
     return (
       <div className="bg-[#1a1b1e] border border-[#2d2e33] rounded-lg p-3">
         <p className="text-white mb-1">{payload[0]?.payload.period}</p>
-        {payload.map((entry: any, index: number) => (
+        {relevantData.map((entry: any, index: number) => (
           <p key={index} className="text-white">
-            {entry.name}: {formatValue(entry.value)}
+            {entry.dataKey === "volume" ? "LNG Payments" : "Moving Average"}: {formatValue(entry.value)}
           </p>
         ))}
       </div>
@@ -55,7 +60,10 @@ export function LNGVolumeChart({ data, selectedYear, showYearFilter, trendColor,
 
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <ComposedChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+      <ComposedChart 
+        data={data} 
+        margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+      >
         <XAxis 
           dataKey="period" 
           tick={{ fill: 'white' }}
@@ -66,17 +74,19 @@ export function LNGVolumeChart({ data, selectedYear, showYearFilter, trendColor,
           axisLine={{ stroke: '#666' }}
         />
         <Tooltip content={<CustomTooltip />} />
-        {data.map((entry, index) => (
-          <Bar
-            key={`bar-${index}`}
-            dataKey="volume"
-            name="LNG Payments"
-            fill="#4ADE80"
-            opacity={getOpacity(entry)}
-            onClick={() => handleLegendClick('volume')}
-            style={{ cursor: 'pointer' }}
-          />
-        ))}
+        <Legend 
+          verticalAlign="top" 
+          height={36}
+          wrapperStyle={{ color: 'white' }}
+        />
+        <Bar
+          dataKey="volume"
+          name="LNG Payments"
+          fill="#4ADE80"
+          opacity={getOpacity}
+          onClick={() => handleLegendClick('volume')}
+          style={{ cursor: 'pointer' }}
+        />
         <Line
           type="monotone"
           dataKey="average"

@@ -97,7 +97,7 @@ export function LNGBarChart() {
   const showYearFilter = selectedPeriod !== "yearly";
 
   return (
-    <Card className="bg-dashboard-navy border-0 h-[480px] transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
+    <Card className="bg-dashboard-navy border-0 h-[520px] transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
       <div className="flex flex-col items-center pt-6">
         <CardTitle className="text-xl font-semibold mb-4 text-center">
           LNG Import Payments
@@ -111,7 +111,7 @@ export function LNGBarChart() {
           years={years}
         />
       </div>
-      <CardContent className="h-[400px]">
+      <CardContent className="h-[440px]">
         <LNGVolumeChart
           data={dataWithMovingAverage}
           selectedYear={selectedYear}
