@@ -123,8 +123,11 @@ export type Database = {
           company: string | null
           country: string | null
           first_name: string | null
+          full_name: string | null
           id: string
           last_name: string | null
+          location: string | null
+          phone_number: string | null
           position: string | null
           social_media_link: string | null
           updated_at: string | null
@@ -135,8 +138,11 @@ export type Database = {
           company?: string | null
           country?: string | null
           first_name?: string | null
+          full_name?: string | null
           id: string
           last_name?: string | null
+          location?: string | null
+          phone_number?: string | null
           position?: string | null
           social_media_link?: string | null
           updated_at?: string | null
@@ -147,8 +153,11 @@ export type Database = {
           company?: string | null
           country?: string | null
           first_name?: string | null
+          full_name?: string | null
           id?: string
           last_name?: string | null
+          location?: string | null
+          phone_number?: string | null
           position?: string | null
           social_media_link?: string | null
           updated_at?: string | null

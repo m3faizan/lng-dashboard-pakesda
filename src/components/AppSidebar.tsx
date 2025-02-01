@@ -2,8 +2,8 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -16,8 +16,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCharacterLimit } from "@/components/hooks/use-character-limit";
 import { useImageUpload } from "@/components/hooks/use-image-upload";
-import { ImagePlus, X } from "lucide-react";
-import { useState } from "react";
+import { ImagePlus } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface AppSidebarProps {
   onLogout?: () => void;
@@ -55,7 +57,7 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
                         <DialogHeader>
                           <DialogTitle>Edit Profile</DialogTitle>
                         </DialogHeader>
-                        <ProfileForm />
+                        <ProfileForm onClose={() => setIsProfileOpen(false)} />
                       </DialogContent>
                     </Dialog>
                   ) : (
@@ -86,17 +88,105 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
   );
 }
 
-function ProfileForm() {
+interface ProfileFormProps {
+  onClose: () => void;
+}
+
+function ProfileForm({ onClose }: ProfileFormProps) {
   const maxLength = 180;
-  const { value, characterCount, handleChange } = useCharacterLimit({
+  const { value: bio, characterCount, handleChange: handleBioChange } = useCharacterLimit({
     maxLength,
-    initialValue: "Hey, I am a web developer who loves turning ideas into amazing websites!",
+    initialValue: "",
+  });
+  const { toast } = useToast();
+  const { previewUrl, fileInputRef, handleThumbnailClick, handleFileChange } = useImageUpload();
+  const [loading, setLoading] = useState(false);
+  const [profileData, setProfileData] = useState({
+    full_name: "",
+    email: "",
+    phone_number: "",
+    location: "",
+    company: "",
   });
 
-  const { previewUrl, fileInputRef, handleThumbnailClick, handleFileChange } = useImageUpload();
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (error) throw error;
+
+        if (profile) {
+          setProfileData({
+            full_name: profile.full_name || "",
+            email: user.email || "",
+            phone_number: profile.phone_number || "",
+            location: profile.location || "",
+            company: profile.company || "",
+          });
+        }
+      } catch (error: any) {
+        console.error('Error fetching profile:', error.message);
+      }
+    }
+
+    fetchProfile();
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setProfileData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: profileData.full_name,
+          phone_number: profileData.phone_number,
+          location: profileData.location,
+          company: profileData.company,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
+      onClose();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <form className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-4">
         <div className="flex justify-center">
           <div className="relative h-24 w-24">
@@ -131,20 +221,57 @@ function ProfileForm() {
         </div>
 
         <div className="space-y-2">
+          <Label htmlFor="full_name">Full Name</Label>
+          <Input
+            id="full_name"
+            name="full_name"
+            value={profileData.full_name}
+            onChange={handleChange}
+            placeholder="Enter your full name"
+          />
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
+            name="email"
             type="email"
-            value="mfahadfaizan@gmail.com"
+            value={profileData.email}
             disabled
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="username">Username</Label>
+          <Label htmlFor="phone_number">Phone Number</Label>
           <Input
-            id="username"
-            placeholder="Enter your username"
+            id="phone_number"
+            name="phone_number"
+            value={profileData.phone_number}
+            onChange={handleChange}
+            placeholder="Enter your phone number"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="location">Location</Label>
+          <Input
+            id="location"
+            name="location"
+            value={profileData.location}
+            onChange={handleChange}
+            placeholder="Enter your location"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="company">Company</Label>
+          <Input
+            id="company"
+            name="company"
+            value={profileData.company}
+            onChange={handleChange}
+            placeholder="Enter your company name"
           />
         </div>
 
@@ -152,8 +279,8 @@ function ProfileForm() {
           <Label htmlFor="bio">Bio</Label>
           <Textarea
             id="bio"
-            value={value}
-            onChange={handleChange}
+            value={bio}
+            onChange={handleBioChange}
             maxLength={maxLength}
             placeholder="Tell us about yourself"
             className="resize-none"
@@ -165,8 +292,18 @@ function ProfileForm() {
       </div>
 
       <div className="flex justify-end space-x-2">
-        <Button type="submit">
-          Save Changes
+        <Button 
+          variant="outline" 
+          type="button"
+          onClick={onClose}
+        >
+          Cancel
+        </Button>
+        <Button 
+          type="submit"
+          disabled={loading}
+        >
+          {loading ? "Saving..." : "Save Changes"}
         </Button>
       </div>
     </form>
