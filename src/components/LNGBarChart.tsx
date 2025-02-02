@@ -100,44 +100,48 @@ export function LNGBarChart() {
       </div>
       <CardContent className="h-[400px] px-4">
         <ResponsiveContainer width="100%" height="85%">
-          <LineChart
+          <LineChart 
             data={data}
             margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="month"
-              tick={{ fill: "#94a3b8" }}
-              height={50}
+              stroke="#525252"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
             />
             <YAxis
-              tick={{ fill: "#94a3b8" }}
+              stroke="#525252"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
               label={{
                 value: getYAxisLabel(),
                 angle: -90,
                 position: 'insideLeft',
                 style: { fill: '#94a3b8' }
               }}
-              width={60}
             />
             <Tooltip
               contentStyle={{
                 backgroundColor: "#1A1E2D",
-                border: "1px solid #2D3748",
+                border: "none",
+                borderRadius: "8px",
               }}
               formatter={(value: number) => [formatValue(value)]}
             />
             <Line
               type="monotone"
               dataKey="value"
-              name={showDESSlope ? "DES Slope" : "DES Price"}
               stroke="#0EA5E9"
               strokeWidth={2}
               dot={false}
             />
           </LineChart>
         </ResponsiveContainer>
-        <div className="flex justify-center gap-2 mt-4">
+        <div className="flex justify-center gap-2 mt-4 mb-6">
           {timeframes.map((tf) => (
             <button
               key={tf.label}

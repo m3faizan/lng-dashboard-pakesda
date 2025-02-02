@@ -33,6 +33,7 @@ export function CargoTypesChart() {
   const [selectedYear, setSelectedYear] = useState<string>("");
   const [yearlyData, setYearlyData] = useState<{ [key: string]: CargoData[] }>({});
   const [availableYears, setAvailableYears] = useState<string[]>([]);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(["longTerm", "spot"]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,6 +87,17 @@ export function CargoTypesChart() {
 
     fetchData();
   }, []);
+
+  const toggleCargoType = (type: string) => {
+    setSelectedTypes(prev => {
+      const newSelection = prev.includes(type)
+        ? prev.filter(t => t !== type)
+        : [...prev, type];
+      
+      // Ensure at least one type remains selected
+      return newSelection.length > 0 ? newSelection : [type];
+    });
+  };
 
   if (!selectedYear || !yearlyData[selectedYear]) {
     return (
@@ -149,31 +161,45 @@ export function CargoTypesChart() {
                 name === "longTerm" ? "Long Term" : "Spot"
               ]}
             />
-            <Bar
-              dataKey="longTerm"
-              name="Long Term"
-              fill="#0EA5E9"
-              radius={[0, 4, 4, 0]}
-              stackId="a"
-            />
-            <Bar
-              dataKey="spot"
-              name="Spot"
-              fill="#FEC6A1"
-              radius={[0, 4, 4, 0]}
-              stackId="a"
-            />
+            {selectedTypes.includes("longTerm") && (
+              <Bar
+                dataKey="longTerm"
+                name="Long Term"
+                fill="#0EA5E9"
+                radius={[0, 4, 4, 0]}
+                stackId="a"
+              />
+            )}
+            {selectedTypes.includes("spot") && (
+              <Bar
+                dataKey="spot"
+                name="Spot"
+                fill="#FEC6A1"
+                radius={[0, 4, 4, 0]}
+                stackId="a"
+              />
+            )}
           </BarChart>
         </ResponsiveContainer>
-        <div className="flex justify-center gap-4 mt-4">
-          <div className="flex items-center gap-2">
+        <div className="flex justify-center gap-4 mt-4 mb-6">
+          <button
+            onClick={() => toggleCargoType("longTerm")}
+            className={`flex items-center gap-2 px-3 py-1 rounded-md transition-opacity ${
+              selectedTypes.includes("longTerm") ? "opacity-100" : "opacity-50"
+            }`}
+          >
             <div className="w-3 h-3 bg-dashboard-blue rounded-sm"></div>
             <span className="text-sm text-gray-400">Long Term</span>
-          </div>
-          <div className="flex items-center gap-2">
+          </button>
+          <button
+            onClick={() => toggleCargoType("spot")}
+            className={`flex items-center gap-2 px-3 py-1 rounded-md transition-opacity ${
+              selectedTypes.includes("spot") ? "opacity-100" : "opacity-50"
+            }`}
+          >
             <div className="w-3 h-3 bg-dashboard-coral rounded-sm"></div>
             <span className="text-sm text-gray-400">Spot</span>
-          </div>
+          </button>
         </div>
       </CardContent>
     </Card>
