@@ -120,19 +120,23 @@ export function CargoTypesChart() {
         </Select>
       </div>
       <CardContent className="h-[400px] px-4">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="85%">
           <BarChart
             data={yearlyData[selectedYear]}
             layout="vertical"
-            margin={{ top: 20, right: 30, left: 60, bottom: 40 }}
+            margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
           >
             <CartesianGrid strokeDasharray="3 3" horizontal={true} />
-            <XAxis type="number" />
+            <XAxis 
+              type="number"
+              tick={{ fill: "#94a3b8" }}
+              height={50}
+            />
             <YAxis
               type="category"
               dataKey="month"
               tick={{ fill: "#94a3b8" }}
-              width={50}
+              width={60}
             />
             <Tooltip
               contentStyle={{
@@ -144,17 +148,6 @@ export function CargoTypesChart() {
                 value,
                 name === "longTerm" ? "Long Term" : "Spot"
               ]}
-            />
-            <Legend 
-              verticalAlign="bottom"
-              height={36}
-              wrapperStyle={{
-                paddingTop: "12px",
-                fontSize: "12px",
-                display: "flex",
-                justifyContent: "center",
-                gap: "1rem"
-              }}
             />
             <Bar
               dataKey="longTerm"
@@ -172,6 +165,16 @@ export function CargoTypesChart() {
             />
           </BarChart>
         </ResponsiveContainer>
+        <div className="flex justify-center gap-4 mt-4">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-dashboard-blue rounded-sm"></div>
+            <span className="text-sm text-gray-400">Long Term</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-dashboard-coral rounded-sm"></div>
+            <span className="text-sm text-gray-400">Spot</span>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

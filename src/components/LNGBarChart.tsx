@@ -17,21 +17,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { TimeFrameSelector } from "./charts/TimeFrameSelector";
 
 type ChartData = {
   month: string;
   value: number;
 };
-
-const timeframes = [
-  { label: "3M", months: 3 },
-  { label: "6M", months: 6 },
-  { label: "YTD", months: new Date().getMonth() },
-  { label: "1Y", months: 12 },
-  { label: "5Y", months: 60 },
-  { label: "Max", months: 120 },
-] as const;
 
 export function LNGBarChart() {
   const [showDESSlope, setShowDESSlope] = useState(false);
@@ -40,7 +30,6 @@ export function LNGBarChart() {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Calculate date range based on selected timeframe
       const endDate = new Date();
       const startDate = new Date();
       startDate.setMonth(endDate.getMonth() - selectedTimeframe);
@@ -81,42 +70,45 @@ export function LNGBarChart() {
     return showDESSlope ? `${value.toFixed(2)}%` : `$${value.toFixed(2)}`;
   };
 
+  const timeframes = [
+    { label: "3M", months: 3 },
+    { label: "6M", months: 6 },
+    { label: "YTD", months: new Date().getMonth() },
+    { label: "1Y", months: 12 },
+    { label: "5Y", months: 60 },
+    { label: "Max", months: 120 },
+  ];
+
   return (
     <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
       <div className="flex flex-col items-center pt-6">
         <CardTitle className="text-xl font-semibold text-center mb-4">
           LNG Price
         </CardTitle>
-        <div className="flex items-center gap-4 mb-4">
-          <Select
-            value={showDESSlope ? "slope" : "price"}
-            onValueChange={(value) => setShowDESSlope(value === "slope")}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select metric" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="price">DES Price</SelectItem>
-              <SelectItem value="slope">DES Slope</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <TimeFrameSelector
-          selectedTimeframe={selectedTimeframe}
-          onTimeframeChange={setSelectedTimeframe}
-          color="dashboard-blue"
-        />
+        <Select
+          value={showDESSlope ? "slope" : "price"}
+          onValueChange={(value) => setShowDESSlope(value === "slope")}
+        >
+          <SelectTrigger className="w-[180px] mb-4 hover:bg-dashboard-navy/80">
+            <SelectValue placeholder="Select metric" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="price">DES Price</SelectItem>
+            <SelectItem value="slope">DES Slope</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <CardContent className="h-[400px] px-4">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="85%">
           <LineChart
             data={data}
-            margin={{ top: 20, right: 30, left: 60, bottom: 40 }}
+            margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="month"
               tick={{ fill: "#94a3b8" }}
+              height={50}
             />
             <YAxis
               tick={{ fill: "#94a3b8" }}
@@ -126,6 +118,7 @@ export function LNGBarChart() {
                 position: 'insideLeft',
                 style: { fill: '#94a3b8' }
               }}
+              width={60}
             />
             <Tooltip
               contentStyle={{
@@ -144,6 +137,21 @@ export function LNGBarChart() {
             />
           </LineChart>
         </ResponsiveContainer>
+        <div className="flex justify-center gap-2 mt-4">
+          {timeframes.map((tf) => (
+            <button
+              key={tf.label}
+              onClick={() => setSelectedTimeframe(tf.months)}
+              className={`px-3 py-1 rounded-md text-sm ${
+                selectedTimeframe === tf.months
+                  ? "bg-dashboard-blue text-white"
+                  : "bg-dashboard-dark/50 text-muted-foreground hover:bg-dashboard-dark"
+              }`}
+            >
+              {tf.label}
+            </button>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );
