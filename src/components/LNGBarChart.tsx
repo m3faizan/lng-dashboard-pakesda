@@ -1,36 +1,55 @@
 import { useState, useEffect } from "react";
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
-  Legend,
 } from "recharts";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Toggle } from "@/components/ui/toggle";
-import { ToggleLeft, ToggleRight } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { TimeFrameSelector } from "./charts/TimeFrameSelector";
 
 type ChartData = {
   month: string;
   value: number;
-  average: number;
 };
+
+const timeframes = [
+  { label: "3M", months: 3 },
+  { label: "6M", months: 6 },
+  { label: "YTD", months: new Date().getMonth() },
+  { label: "1Y", months: 12 },
+  { label: "5Y", months: 60 },
+  { label: "Max", months: 120 },
+] as const;
 
 export function LNGBarChart() {
   const [showDESSlope, setShowDESSlope] = useState(false);
   const [data, setData] = useState<ChartData[]>([]);
-  const [showBars, setShowBars] = useState(true);
-  const [showAverage, setShowAverage] = useState(true);
+  const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12); // Default to 1Y
 
   useEffect(() => {
     const fetchData = async () => {
+      // Calculate date range based on selected timeframe
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setMonth(endDate.getMonth() - selectedTimeframe);
+      
       const { data: response, error } = await supabase
         .from('LNG Port_Price_Import')
         .select('date, wAvg_DES, DES_Slope')
+        .gte('date', startDate.toISOString())
+        .lte('date', endDate.toISOString())
         .order('date', { ascending: true });
 
       if (error) {
@@ -38,23 +57,13 @@ export function LNGBarChart() {
         return;
       }
 
-      const processedData = response.map((item, index, array) => {
+      const processedData = response.map((item) => {
         const date = new Date(item.date);
         const value = showDESSlope ? Number(item.DES_Slope) : Number(item.wAvg_DES);
-        
-        // Calculate 3-month moving average
-        const startIdx = Math.max(0, index - 1);
-        const endIdx = Math.min(array.length - 1, index + 1);
-        const avgWindow = array.slice(startIdx, endIdx + 1);
-        const average = avgWindow.reduce((sum, curr) => 
-          sum + (showDESSlope ? Number(curr.DES_Slope) : Number(curr.wAvg_DES)), 
-          0
-        ) / avgWindow.length;
 
         return {
           month: date.toLocaleString('default', { month: 'short', year: '2-digit' }),
           value,
-          average,
         };
       });
 
@@ -62,7 +71,7 @@ export function LNGBarChart() {
     };
 
     fetchData();
-  }, [showDESSlope]);
+  }, [showDESSlope, selectedTimeframe]);
 
   const getYAxisLabel = () => {
     return showDESSlope ? "%" : "$/MMBtu";
@@ -75,38 +84,32 @@ export function LNGBarChart() {
   return (
     <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
       <div className="flex flex-col items-center pt-6">
+        <CardTitle className="text-xl font-semibold text-center mb-4">
+          LNG Price
+        </CardTitle>
         <div className="flex items-center gap-4 mb-4">
-          <CardTitle className="text-xl font-semibold text-center">
-            {showDESSlope ? "DES Slope" : "DES Price"}
-          </CardTitle>
-          <Toggle
-            pressed={showDESSlope}
-            onPressedChange={setShowDESSlope}
-            className="data-[state=on]:bg-dashboard-blue"
+          <Select
+            value={showDESSlope ? "slope" : "price"}
+            onValueChange={(value) => setShowDESSlope(value === "slope")}
           >
-            {showDESSlope ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}
-          </Toggle>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select metric" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="price">DES Price</SelectItem>
+              <SelectItem value="slope">DES Slope</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-        <div className="flex gap-4 mb-4">
-          <Toggle
-            pressed={showBars}
-            onPressedChange={setShowBars}
-            className="data-[state=on]:bg-dashboard-blue"
-          >
-            Column
-          </Toggle>
-          <Toggle
-            pressed={showAverage}
-            onPressedChange={setShowAverage}
-            className="data-[state=on]:bg-dashboard-blue"
-          >
-            Moving Average
-          </Toggle>
-        </div>
+        <TimeFrameSelector
+          selectedTimeframe={selectedTimeframe}
+          onTimeframeChange={setSelectedTimeframe}
+          color="dashboard-blue"
+        />
       </div>
       <CardContent className="h-[400px] px-4">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
+          <LineChart
             data={data}
             margin={{ top: 20, right: 30, left: 60, bottom: 40 }}
           >
@@ -131,24 +134,15 @@ export function LNGBarChart() {
               }}
               formatter={(value: number) => [formatValue(value)]}
             />
-            <Legend />
-            {showBars && (
-              <Bar
-                dataKey="value"
-                name={showDESSlope ? "DES Slope" : "DES Price"}
-                fill="#0EA5E9"
-                opacity={showBars ? 1 : 0.3}
-              />
-            )}
-            {showAverage && (
-              <Bar
-                dataKey="average"
-                name="Moving Average"
-                fill="#FEC6A1"
-                opacity={showAverage ? 1 : 0.3}
-              />
-            )}
-          </BarChart>
+            <Line
+              type="monotone"
+              dataKey="value"
+              name={showDESSlope ? "DES Slope" : "DES Price"}
+              stroke="#0EA5E9"
+              strokeWidth={2}
+              dot={false}
+            />
+          </LineChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
