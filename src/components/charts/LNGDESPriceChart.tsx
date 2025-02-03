@@ -46,45 +46,47 @@ export function LNGDESPriceChart() {
 
   return (
     <ChartContainer title="LNG DES Price">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart 
-          data={chartData}
-          margin={CHART_MARGIN}
-        >
-          <XAxis
-            dataKey="date"
-            stroke="#525252"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-          />
-          <YAxis
-            stroke="#525252"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={(value) => `$${value}`}
-            width={50}
-          />
-          <Tooltip
-            content={({ active, payload }) => (
-              <ChartTooltip 
-                active={active}
-                payload={payload}
-                valueFormatter={(value) => `$${value.toFixed(2)}/MMBtu`}
-                labelFormatter={() => "Price"}
-              />
-            )}
-          />
-          <Line
-            type="linear"
-            dataKey="price"
-            stroke="#4ADE80"
-            strokeWidth={2}
-            dot={false}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+      <div className="transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-4">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart 
+            data={chartData}
+            margin={CHART_MARGIN}
+          >
+            <XAxis
+              dataKey="date"
+              stroke="#525252"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis
+              stroke="#525252"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => `$${value}`}
+              width={50}
+            />
+            <Tooltip
+              content={({ active, payload }) => (
+                <ChartTooltip 
+                  active={active}
+                  payload={payload}
+                  valueFormatter={(value) => `$${value.toFixed(2)}/MMBtu`}
+                  labelFormatter={() => "Price"}
+                />
+              )}
+            />
+            <Line
+              type="linear"
+              dataKey="price"
+              stroke="#4ADE80"
+              strokeWidth={2}
+              dot={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </ChartContainer>
   );
 }

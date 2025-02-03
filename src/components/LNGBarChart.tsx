@@ -80,7 +80,7 @@ export function LNGBarChart() {
   ];
 
   return (
-    <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all hover:ring-1 hover:ring-dashboard-blue/20 overflow-hidden">
+    <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden">
       <div className="flex flex-col items-center pt-6">
         <CardTitle className="text-xl font-semibold text-center mb-4">
           LNG Price

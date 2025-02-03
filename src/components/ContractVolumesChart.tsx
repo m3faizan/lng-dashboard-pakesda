@@ -73,7 +73,7 @@ export function ContractVolumesChart() {
   }
 
   return (
-    <Card className="bg-dashboard-navy border-0 h-[400px]">
+    <Card className="bg-dashboard-navy border-0 h-[400px] transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg">
       <CardHeader className="text-center pb-2">
         <CardTitle className="text-lg font-semibold">
           Contract Volumes (MMBtu)

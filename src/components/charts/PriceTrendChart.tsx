@@ -111,6 +111,7 @@ export function PriceTrendChart() {
       title="Price Trend" 
       headerContent={YearSelector}
     >
+      <div className="transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-4">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart 
           data={chartData}
@@ -164,6 +165,7 @@ export function PriceTrendChart() {
           />
         </BarChart>
       </ResponsiveContainer>
+      </div>
     </ChartContainer>
   );
 }

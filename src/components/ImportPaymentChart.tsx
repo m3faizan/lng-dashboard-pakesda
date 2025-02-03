@@ -31,7 +31,7 @@ const data = [
 
 export function ImportPaymentChart() {
   return (
-    <Card className="bg-dashboard-navy border-0 h-[400px]">
+    <Card className="bg-dashboard-navy border-0 h-[400px] transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg">
       <CardHeader className="flex flex-col items-center pb-2">
         <CardTitle className="text-lg font-semibold text-center">
           Import Payment Trend
