@@ -98,7 +98,7 @@ export function ImportPaymentsChart() {
     if (name === "Import Payments") {
       return [`$${(value / 1000).toFixed(1)}M`, name];
     }
-    return [`$${value.toFixed(2}/bbl`, name];
+    return [`$${value.toFixed(2)}/bbl`, name];
   };
 
   return (
