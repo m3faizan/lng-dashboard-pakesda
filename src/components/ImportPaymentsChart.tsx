@@ -155,7 +155,7 @@ export function ImportPaymentsChart() {
               formatter={formatTooltipValue}
             />
             <Legend 
-              onClick={handleLegendClick}
+              onClick={handleLegendClick},
               wrapperStyle={{ paddingTop: "2rem" }}
             />
             <Bar
