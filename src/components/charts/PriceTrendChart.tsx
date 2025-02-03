@@ -26,7 +26,7 @@ export function PriceTrendChart() {
   const [selectedYear, setSelectedYear] = useState<string>("all");
   const [hiddenSeries, setHiddenSeries] = useState<string[]>([]);
 
-  const { data: rawData = [], isLoading } = useQuery({
+  const { data: rawData = [], isLoading, error } = useQuery({
     queryKey: ["price-trend"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -43,8 +43,8 @@ export function PriceTrendChart() {
           year: "numeric",
         }),
         year: new Date(item.date as string).getFullYear().toString(),
-        longTerm: item.Long_Term_DES,
-        spot: item.Spot_DES,
+        longTerm: Number(item.Long_Term_DES),
+        spot: Number(item.Spot_DES),
       }));
     },
   });
@@ -56,16 +56,14 @@ export function PriceTrendChart() {
   }, [rawData]);
 
   const chartData = useMemo(() => {
-    return rawData.map(item => ({
-      ...item,
-      date: item.formattedDate,
-      longTerm: selectedYear === "all" || item.year === selectedYear 
-        ? hiddenSeries.includes("longTerm") ? 0 : item.longTerm 
-        : hiddenSeries.includes("longTerm") ? 0 : item.longTerm * 0.15,
-      spot: selectedYear === "all" || item.year === selectedYear 
-        ? hiddenSeries.includes("spot") ? 0 : item.spot 
-        : hiddenSeries.includes("spot") ? 0 : item.spot * 0.15
-    }));
+    if (!rawData) return [];
+    return rawData
+      .filter(item => selectedYear === "all" || item.year === selectedYear)
+      .map(item => ({
+        date: item.formattedDate,
+        longTerm: hiddenSeries.includes("longTerm") ? 0 : item.longTerm,
+        spot: hiddenSeries.includes("spot") ? 0 : item.spot
+      }));
   }, [rawData, selectedYear, hiddenSeries]);
 
   const handleLegendClick = (entry: any) => {
@@ -83,6 +81,16 @@ export function PriceTrendChart() {
       <ChartContainer title="Price Trend">
         <div className="h-full w-full flex items-center justify-center">
           <p className="text-gray-500">Loading...</p>
+        </div>
+      </ChartContainer>
+    );
+  }
+
+  if (error) {
+    return (
+      <ChartContainer title="Price Trend">
+        <div className="h-full w-full flex items-center justify-center">
+          <p className="text-red-500">Error loading data</p>
         </div>
       </ChartContainer>
     );
@@ -111,60 +119,53 @@ export function PriceTrendChart() {
       title="Price Trend" 
       headerContent={YearSelector}
     >
-      <div className="transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-4">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart 
-          data={chartData}
-          margin={CHART_MARGIN}
-        >
-          <XAxis
-            dataKey="date"
-            stroke="#525252"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-          />
-          <YAxis
-            stroke="#525252"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={(value) => `$${value}`}
-          />
-          <Tooltip
-            content={({ active, payload }) => (
-              <ChartTooltip 
-                active={active}
-                payload={payload}
-                valueFormatter={(value) => `$${value.toFixed(2)}/MMBtu`}
-              />
-            )}
-          />
-          <Legend 
-            onClick={(entry) => handleLegendClick(entry)}
-            formatter={(value, entry) => {
-              const isHidden = entry.dataKey && hiddenSeries.includes(entry.dataKey.toString());
-              return (
-                <span style={{ color: isHidden ? '#999' : '#333' }}>
-                  {value}
-                </span>
-              );
-            }}
-          />
-          <Bar
-            dataKey="longTerm"
-            name="Long Term"
-            fill="#0EA5E9"
-            stackId="stack"
-          />
-          <Bar
-            dataKey="spot"
-            name="Spot"
-            fill="#F59E0B"
-            stackId="stack"
-          />
-        </BarChart>
-      </ResponsiveContainer>
+      <div className="h-[320px] transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-4">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart 
+            data={chartData}
+            margin={CHART_MARGIN}
+          >
+            <XAxis
+              dataKey="date"
+              stroke="#525252"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis
+              stroke="#525252"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => `$${value}`}
+            />
+            <Tooltip
+              content={({ active, payload }) => (
+                <ChartTooltip 
+                  active={active}
+                  payload={payload}
+                  valueFormatter={(value) => `$${value.toFixed(2)}/MMBtu`}
+                />
+              )}
+            />
+            <Legend 
+              onClick={handleLegendClick}
+              wrapperStyle={{ paddingTop: "2rem" }}
+            />
+            <Bar
+              dataKey="longTerm"
+              name="Long Term"
+              fill="#0EA5E9"
+              hide={hiddenSeries.includes("longTerm")}
+            />
+            <Bar
+              dataKey="spot"
+              name="Spot"
+              fill="#F59E0B"
+              hide={hiddenSeries.includes("spot")}
+            />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
     </ChartContainer>
   );

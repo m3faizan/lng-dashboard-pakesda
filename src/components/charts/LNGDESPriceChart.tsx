@@ -7,14 +7,14 @@ import {
   YAxis,
   Tooltip,
 } from "recharts";
-import { supabase } from "@/integrations/supabase/client";
 import { ChartContainer } from "./shared/ChartContainer";
 import { ChartTooltip } from "./shared/ChartTooltip";
+import { supabase } from "@/integrations/supabase/client";
 
 const CHART_MARGIN = { top: 10, right: 30, left: 60, bottom: 20 };
 
 export function LNGDESPriceChart() {
-  const { data: chartData = [], isLoading } = useQuery({
+  const { data: chartData = [], isLoading, error } = useQuery({
     queryKey: ["lng-des-price"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -29,7 +29,7 @@ export function LNGDESPriceChart() {
           month: "short",
           year: "numeric",
         }),
-        price: item.wAvg_DES,
+        price: Number(item.wAvg_DES),
       }));
     },
   });
@@ -44,9 +44,19 @@ export function LNGDESPriceChart() {
     );
   }
 
+  if (error) {
+    return (
+      <ChartContainer title="LNG DES Price">
+        <div className="h-full w-full flex items-center justify-center">
+          <p className="text-red-500">Error loading data</p>
+        </div>
+      </ChartContainer>
+    );
+  }
+
   return (
     <ChartContainer title="LNG DES Price">
-      <div className="transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-4">
+      <div className="h-[320px] transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-4">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart 
             data={chartData}
@@ -78,7 +88,7 @@ export function LNGDESPriceChart() {
               )}
             />
             <Line
-              type="linear"
+              type="monotone"
               dataKey="price"
               stroke="#4ADE80"
               strokeWidth={2}
