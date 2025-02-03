@@ -246,6 +246,10 @@ export default function Index() {
                 <LNGBarChart />
                 <CargoTypesChart />
               </div>
+
+              <div className="w-full">
+                <ImportPaymentsChart />
+              </div>
             </div>
           </div>
         </main>
