@@ -3,6 +3,7 @@ import { KPICard } from "@/components/KPICard";
 import { LNGChart } from "@/components/LNGChart";
 import { LNGBarChart } from "@/components/LNGBarChart";
 import { CargoTypesChart } from "@/components/CargoTypesChart";
+import { ImportPaymentsChart } from "@/components/ImportPaymentsChart";
 import { AppSidebar } from "@/components/AppSidebar";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
