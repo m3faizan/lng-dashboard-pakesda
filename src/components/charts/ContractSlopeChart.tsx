@@ -46,45 +46,48 @@ export function ContractSlopeChart() {
 
   return (
     <ChartContainer title="Contract Slope">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart 
-          data={chartData}
-          margin={CHART_MARGIN}
-        >
-          <XAxis
-            dataKey="date"
-            stroke="#525252"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-          />
-          <YAxis
-            stroke="#525252"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={(value) => `${value}%`}
-            width={50}
-          />
-          <Tooltip
-            content={({ active, payload }) => (
-              <ChartTooltip 
-                active={active}
-                payload={payload}
-                valueFormatter={(value) => `${value.toFixed(2)}%`}
-                labelFormatter={() => "Slope"}
-              />
-            )}
-          />
-          <Line
-            type="linear"
-            dataKey="slope"
-            stroke="#0EA5E9"
-            strokeWidth={2}
-            dot={false}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+      <div className="h-[320px] transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-4">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart 
+            data={chartData}
+            margin={CHART_MARGIN}
+          >
+            <XAxis
+              dataKey="date"
+              stroke="#525252"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              height={50}
+            />
+            <YAxis
+              stroke="#525252"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => `${value}%`}
+              width={50}
+            />
+            <Tooltip
+              content={({ active, payload }) => (
+                <ChartTooltip 
+                  active={active}
+                  payload={payload}
+                  valueFormatter={(value) => `${value.toFixed(2)}%`}
+                  labelFormatter={() => "Slope"}
+                />
+              )}
+            />
+            <Line
+              type="linear"
+              dataKey="slope"
+              stroke="#0EA5E9"
+              strokeWidth={2}
+              dot={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </ChartContainer>
   );
 }

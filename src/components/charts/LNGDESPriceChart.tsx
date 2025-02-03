@@ -68,6 +68,7 @@ export function LNGDESPriceChart() {
               fontSize={12}
               tickLine={false}
               axisLine={false}
+              height={50}
             />
             <YAxis
               stroke="#525252"
