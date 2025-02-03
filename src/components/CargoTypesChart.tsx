@@ -132,7 +132,7 @@ export function CargoTypesChart() {
         </Select>
       </div>
       <CardContent className="h-[400px] px-4">
-        <ResponsiveContainer width="100%" height="85%">
+        <ResponsiveContainer width="100%" height="75%">
           <BarChart
             data={yearlyData[selectedYear]}
             layout="vertical"
@@ -181,7 +181,7 @@ export function CargoTypesChart() {
             )}
           </BarChart>
         </ResponsiveContainer>
-        <div className="flex justify-center gap-4 mt-4 mb-6">
+        <div className="flex justify-center gap-4 mt-8 mb-8">
           <button
             onClick={() => toggleCargoType("longTerm")}
             className={`flex items-center gap-2 px-3 py-1 rounded-md transition-opacity ${

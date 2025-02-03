@@ -99,7 +99,7 @@ export function LNGBarChart() {
         </Select>
       </div>
       <CardContent className="h-[400px] px-4">
-        <ResponsiveContainer width="100%" height="85%">
+        <ResponsiveContainer width="100%" height="75%">
           <LineChart 
             data={data}
             margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
@@ -111,12 +111,14 @@ export function LNGBarChart() {
               fontSize={12}
               tickLine={false}
               axisLine={false}
+              height={50}
             />
             <YAxis
               stroke="#525252"
               fontSize={12}
               tickLine={false}
               axisLine={false}
+              width={60}
               label={{
                 value: getYAxisLabel(),
                 angle: -90,
@@ -141,7 +143,7 @@ export function LNGBarChart() {
             />
           </LineChart>
         </ResponsiveContainer>
-        <div className="flex justify-center gap-2 mt-4 mb-6">
+        <div className="flex justify-center gap-2 mt-8 mb-8">
           {timeframes.map((tf) => (
             <button
               key={tf.label}
