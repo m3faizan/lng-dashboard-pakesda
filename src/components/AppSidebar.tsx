@@ -16,10 +16,19 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCharacterLimit } from "@/components/hooks/use-character-limit";
 import { useImageUpload } from "@/components/hooks/use-image-upload";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 
 interface AppSidebarProps {
   onLogout?: () => void;
@@ -27,6 +36,8 @@ interface AppSidebarProps {
 
 export function AppSidebar({ onLogout }: AppSidebarProps) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const isMobile = useIsMobile();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const handleItemClick = (item: any) => {
     if (item.isLogout && onLogout) {
@@ -34,57 +45,86 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
     } else if (item.isProfile) {
       setIsProfileOpen(true);
     }
+    if (isMobile) {
+      setIsDrawerOpen(false);
+    }
   };
 
+  const NavigationContent = () => (
+    <SidebarContent>
+      <SidebarGroup>
+        <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            {sidebarItems.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                {item.isProfile ? (
+                  <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+                    <DialogTrigger asChild>
+                      <SidebarMenuButton>
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Edit Profile</DialogTitle>
+                      </DialogHeader>
+                      <ProfileForm onClose={() => setIsProfileOpen(false)} />
+                    </DialogContent>
+                  </Dialog>
+                ) : (
+                  <SidebarMenuButton
+                    asChild={!item.isLogout}
+                    onClick={() => handleItemClick(item)}
+                  >
+                    {item.isLogout ? (
+                      <button className="flex w-full items-center gap-2">
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                      </button>
+                    ) : (
+                      <a href={item.url}>
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                      </a>
+                    )}
+                  </SidebarMenuButton>
+                )}
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    </SidebarContent>
+  );
+
   return (
-    <Sidebar>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {sidebarItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  {item.isProfile ? (
-                    <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-                      <DialogTrigger asChild>
-                        <SidebarMenuButton>
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
-                        </SidebarMenuButton>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                          <DialogTitle>Edit Profile</DialogTitle>
-                        </DialogHeader>
-                        <ProfileForm onClose={() => setIsProfileOpen(false)} />
-                      </DialogContent>
-                    </Dialog>
-                  ) : (
-                    <SidebarMenuButton
-                      asChild={!item.isLogout}
-                      onClick={() => handleItemClick(item)}
-                    >
-                      {item.isLogout ? (
-                        <button className="flex w-full items-center gap-2">
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
-                        </button>
-                      ) : (
-                        <a href={item.url}>
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
-                        </a>
-                      )}
-                    </SidebarMenuButton>
-                  )}
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+    <>
+      {isMobile ? (
+        <div className="fixed top-4 left-4 z-50">
+          <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+            <DrawerTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Menu className="h-4 w-4" />
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent>
+              <DrawerHeader>
+                <DrawerTitle>Menu</DrawerTitle>
+              </DrawerHeader>
+              <div className="p-4">
+                <NavigationContent />
+              </div>
+            </DrawerContent>
+          </Drawer>
+        </div>
+      ) : (
+        <Sidebar>
+          <NavigationContent />
+        </Sidebar>
+      )}
+    </>
   );
 }
 
