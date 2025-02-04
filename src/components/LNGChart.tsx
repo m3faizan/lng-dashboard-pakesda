@@ -26,14 +26,12 @@ export function LNGChart() {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Calculate the date range based on selected timeframe
       const endDate = new Date();
       const startDate = new Date();
       
-      // Set the start date to be exactly X months before the end date
-      startDate.setMonth(endDate.getMonth() - selectedTimeframe + 1);
-      // Set to first day of the month to include full months
-      startDate.setDate(1);
+      // Calculate start date based on selected timeframe
+      startDate.setMonth(endDate.getMonth() - selectedTimeframe);
+      startDate.setDate(1); // First day of the month
       startDate.setHours(0, 0, 0, 0);
       
       // Set end date to last day of current month
