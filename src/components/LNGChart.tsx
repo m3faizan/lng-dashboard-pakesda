@@ -8,6 +8,7 @@ import {
 } from "recharts";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const timeframes = [
   { label: "3M", months: 3 },
@@ -21,6 +22,7 @@ const timeframes = [
 export function LNGChart() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
   const [data, setData] = useState<any[]>([]);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,14 +72,14 @@ export function LNGChart() {
   }, [selectedTimeframe]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col items-center space-y-5">
-        <div className="flex gap-2">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col items-center space-y-3 md:space-y-5">
+        <div className="flex flex-wrap justify-center gap-1 md:gap-2">
           {timeframes.map((tf) => (
             <button
               key={tf.label}
               onClick={() => setSelectedTimeframe(tf.months)}
-              className={`px-3 py-1 rounded-md text-sm font-medium ${
+              className={`px-2 md:px-3 py-1 rounded-md text-xs md:text-sm font-medium ${
                 selectedTimeframe === tf.months
                   ? "bg-dashboard-green text-black"
                   : "bg-dashboard-dark/50 text-muted-foreground hover:bg-dashboard-dark"
@@ -89,7 +91,7 @@ export function LNGChart() {
         </div>
       </div>
       
-      <div className="h-[320px]">
+      <div className="h-[280px] md:h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>
             <defs>
@@ -101,17 +103,20 @@ export function LNGChart() {
             <XAxis
               dataKey="month"
               stroke="#525252"
-              fontSize={12}
+              fontSize={isMobile ? 10 : 12}
               tickLine={false}
               axisLine={false}
-              interval="preserveStartEnd"
+              angle={isMobile ? -45 : 0}
+              textAnchor={isMobile ? "end" : "middle"}
+              height={isMobile ? 60 : 50}
+              interval={isMobile ? 1 : 0}
             />
             <YAxis
               stroke="#525252"
-              fontSize={12}
+              fontSize={isMobile ? 10 : 12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
+              width={isMobile ? 40 : 60}
             />
             <Tooltip
               contentStyle={{
