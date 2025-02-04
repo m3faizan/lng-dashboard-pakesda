@@ -10,16 +10,18 @@ import {
 } from "@/components/ui/sidebar";
 import { sidebarItems } from "@/pages/Index";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCharacterLimit } from "@/components/hooks/use-character-limit";
 import { useImageUpload } from "@/components/hooks/use-image-upload";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AppSidebarProps {
   onLogout?: () => void;
@@ -27,6 +29,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ onLogout }: AppSidebarProps) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleItemClick = (item: any) => {
     if (item.isLogout && onLogout) {
@@ -36,51 +39,76 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
     }
   };
 
+  const SidebarContent = () => (
+    <SidebarMenu>
+      {sidebarItems.map((item) => (
+        <SidebarMenuItem key={item.title}>
+          {item.isProfile ? (
+            <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+              <DialogTrigger asChild>
+                <SidebarMenuButton>
+                  <item.icon className="h-4 w-4" />
+                  <span>{item.title}</span>
+                </SidebarMenuButton>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Edit Profile</DialogTitle>
+                </DialogHeader>
+                <ProfileForm onClose={() => setIsProfileOpen(false)} />
+              </DialogContent>
+            </Dialog>
+          ) : (
+            <SidebarMenuButton
+              asChild={!item.isLogout}
+              onClick={() => handleItemClick(item)}
+            >
+              {item.isLogout ? (
+                <button className="flex w-full items-center gap-2">
+                  <item.icon className="h-4 w-4" />
+                  <span>{item.title}</span>
+                </button>
+              ) : (
+                <a href={item.url}>
+                  <item.icon className="h-4 w-4" />
+                  <span>{item.title}</span>
+                </a>
+              )}
+            </SidebarMenuButton>
+          )}
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
+  );
+
+  if (isMobile) {
+    return (
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="fixed top-4 left-4 z-50 md:hidden"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-[240px] p-0">
+          <div className="h-full bg-background">
+            <SidebarContent />
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
   return (
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {sidebarItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  {item.isProfile ? (
-                    <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-                      <DialogTrigger asChild>
-                        <SidebarMenuButton>
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
-                        </SidebarMenuButton>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                          <DialogTitle>Edit Profile</DialogTitle>
-                        </DialogHeader>
-                        <ProfileForm onClose={() => setIsProfileOpen(false)} />
-                      </DialogContent>
-                    </Dialog>
-                  ) : (
-                    <SidebarMenuButton
-                      asChild={!item.isLogout}
-                      onClick={() => handleItemClick(item)}
-                    >
-                      {item.isLogout ? (
-                        <button className="flex w-full items-center gap-2">
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
-                        </button>
-                      ) : (
-                        <a href={item.url}>
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
-                        </a>
-                      )}
-                    </SidebarMenuButton>
-                  )}
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            <SidebarContent />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
