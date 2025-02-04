@@ -39,7 +39,7 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
     }
   };
 
-  const SidebarContent = () => (
+  const SidebarContentComponent = () => (
     <SidebarMenu>
       {sidebarItems.map((item) => (
         <SidebarMenuItem key={item.title}>
@@ -95,7 +95,7 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
         </SheetTrigger>
         <SheetContent side="left" className="w-[240px] p-0">
           <div className="h-full bg-background">
-            <SidebarContent />
+            <SidebarContentComponent />
           </div>
         </SheetContent>
       </Sheet>
@@ -108,7 +108,7 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarContent />
+            <SidebarContentComponent />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
