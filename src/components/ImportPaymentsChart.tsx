@@ -19,7 +19,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 type Period = "monthly" | "quarterly" | "yearly";
 
@@ -27,7 +26,6 @@ export function ImportPaymentsChart() {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("monthly");
   const [data, setData] = useState<any[]>([]);
   const [hiddenSeries, setHiddenSeries] = useState<string[]>([]);
-  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -105,12 +103,12 @@ export function ImportPaymentsChart() {
 
   return (
     <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden">
-      <div className="flex flex-col items-center pt-4 md:pt-6">
-        <CardTitle className="text-lg md:text-xl font-semibold mb-2 md:mb-4 text-center px-2">
+      <div className="flex flex-col items-center pt-6">
+        <CardTitle className="text-xl font-semibold mb-4">
           LNG Import Payments
         </CardTitle>
         <Select value={selectedPeriod} onValueChange={(value: Period) => setSelectedPeriod(value)}>
-          <SelectTrigger className="w-[140px] md:w-[180px] mb-2 md:mb-4 hover:bg-dashboard-navy/80">
+          <SelectTrigger className="w-[180px] mb-4 hover:bg-dashboard-navy/80">
             <SelectValue placeholder="Select period" />
           </SelectTrigger>
           <SelectContent>
@@ -120,14 +118,11 @@ export function ImportPaymentsChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent className={`h-[${isMobile ? '350px' : '400px'}] px-2 md:px-4`}>
+      <CardContent className="h-[400px] px-4">
         <ResponsiveContainer width="100%" height="75%">
           <ComposedChart
             data={data}
-            margin={isMobile ? 
-              { top: 20, right: 20, left: 20, bottom: 60 } : 
-              { top: 20, right: 30, left: 60, bottom: 20 }
-            }
+            margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
             <XAxis
@@ -135,26 +130,20 @@ export function ImportPaymentsChart() {
               stroke="#94a3b8"
               tick={{ fill: "#94a3b8" }}
               height={50}
-              angle={isMobile ? -45 : 0}
-              textAnchor={isMobile ? "end" : "middle"}
-              interval={isMobile ? 1 : 0}
-              fontSize={isMobile ? 10 : 12}
             />
             <YAxis
               yAxisId="left"
               stroke="#94a3b8"
               tick={{ fill: "#94a3b8" }}
               tickFormatter={formatImportPayment}
-              width={isMobile ? 40 : 60}
-              fontSize={isMobile ? 10 : 12}
+              width={60}
             />
             <YAxis
               yAxisId="right"
               orientation="right"
               stroke="#94a3b8"
               tick={{ fill: "#94a3b8" }}
-              width={isMobile ? 40 : 60}
-              fontSize={isMobile ? 10 : 12}
+              width={60}
             />
             <Tooltip
               contentStyle={{
@@ -167,10 +156,7 @@ export function ImportPaymentsChart() {
             />
             <Legend 
               onClick={handleLegendClick}
-              wrapperStyle={{ 
-                paddingTop: isMobile ? "1rem" : "2rem",
-                fontSize: isMobile ? "10px" : "12px",
-              }}
+              wrapperStyle={{ paddingTop: "2rem" }}
             />
             <Bar
               yAxisId="left"

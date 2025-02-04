@@ -16,14 +16,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { useIsMobile } from "@/hooks/use-mobile"; // Added this import
 
 export function SystemGenerationChart() {
   const [period, setPeriod] = useState("monthly");
   const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [hiddenSeries, setHiddenSeries] = useState<string[]>([]);
-  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,10 +132,10 @@ export function SystemGenerationChart() {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex flex-col items-center mb-4 md:mb-6">
-        <h2 className="text-base md:text-lg font-semibold mb-2 md:mb-4 text-center px-2">Total System Generation</h2>
+      <div className="flex flex-col items-center mb-6">
+        <h2 className="text-lg font-semibold mb-4">Total System Generation</h2>
         <Select value={period} onValueChange={setPeriod}>
-          <SelectTrigger className="w-[140px] md:w-[180px]">
+          <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select period" />
           </SelectTrigger>
           <SelectContent>
@@ -147,32 +145,24 @@ export function SystemGenerationChart() {
           </SelectContent>
         </Select>
       </div>
-      <div className="flex-1 min-h-[280px] md:min-h-[300px]">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="flex-1">
+        <ResponsiveContainer width="100%" height={300}>
           <BarChart 
             data={data}
-            margin={isMobile ? 
-              { top: 20, right: 20, left: 20, bottom: 60 } : 
-              { top: 20, right: 30, left: 20, bottom: 30 }
-            }
+            margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
           >
             <XAxis 
               dataKey="period" 
               stroke="#525252"
-              fontSize={isMobile ? 10 : 12}
+              fontSize={12}
               tickLine={false}
               axisLine={false}
-              angle={isMobile ? -45 : 0}
-              textAnchor={isMobile ? "end" : "middle"}
-              height={isMobile ? 60 : 50}
-              interval={isMobile ? 1 : 0}
             />
             <YAxis 
               stroke="#525252"
-              fontSize={isMobile ? 10 : 12}
+              fontSize={12}
               tickLine={false}
               axisLine={false}
-              width={isMobile ? 40 : 60}
               tickFormatter={(value) => value.toFixed(0)}
             />
             <Tooltip content={<CustomTooltip />} />
@@ -180,7 +170,6 @@ export function SystemGenerationChart() {
               verticalAlign="top" 
               height={36}
               onClick={(e) => handleLegendClick(e.dataKey)}
-              wrapperStyle={{ fontSize: isMobile ? "10px" : "12px" }}
               formatter={(value) => {
                 const labels = {
                   rlng: "RLNG",

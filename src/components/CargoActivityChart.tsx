@@ -81,7 +81,7 @@ export function CargoActivityChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent className="flex items-center justify-center h-[400px] px-6">
+      <CardContent className="h-[400px] px-4">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart 
             data={data}

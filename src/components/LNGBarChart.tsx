@@ -32,17 +32,7 @@ export function LNGBarChart() {
     const fetchData = async () => {
       const endDate = new Date();
       const startDate = new Date();
-      
-      // Calculate start date based on selected timeframe
       startDate.setMonth(endDate.getMonth() - selectedTimeframe);
-      startDate.setDate(1); // First day of the month
-      startDate.setHours(0, 0, 0, 0);
-      
-      // Set end date to last day of current month
-      endDate.setDate(1);
-      endDate.setMonth(endDate.getMonth() + 1);
-      endDate.setDate(0);
-      endDate.setHours(23, 59, 59, 999);
       
       const { data: response, error } = await supabase
         .from('LNG Port_Price_Import')
@@ -89,20 +79,6 @@ export function LNGBarChart() {
     { label: "Max", months: 120 },
   ];
 
-  // Calculate x-axis settings based on timeframe
-  const getXAxisSettings = () => {
-    const isLongPeriod = selectedTimeframe > 24;
-    return {
-      angle: isLongPeriod ? -45 : 0,
-      textAnchor: isLongPeriod ? "end" : "middle",
-      height: isLongPeriod ? 60 : 30,
-      interval: isLongPeriod ? 2 : 0,
-      dy: isLongPeriod ? 8 : 0,
-    };
-  };
-
-  const xAxisSettings = getXAxisSettings();
-
   return (
     <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden">
       <div className="flex flex-col items-center pt-6">
@@ -126,7 +102,7 @@ export function LNGBarChart() {
         <ResponsiveContainer width="100%" height="75%">
           <LineChart 
             data={data}
-            margin={{ top: 20, right: 30, left: 60, bottom: xAxisSettings.height }}
+            margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
@@ -135,11 +111,7 @@ export function LNGBarChart() {
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              angle={xAxisSettings.angle}
-              textAnchor={xAxisSettings.textAnchor}
-              height={xAxisSettings.height}
-              interval={xAxisSettings.interval}
-              dy={xAxisSettings.dy}
+              height={50}
             />
             <YAxis
               stroke="#525252"

@@ -15,7 +15,6 @@ import {
 } from "recharts";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useState } from "react";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 const data = [
   { month: "Jan", thisYear: 10.25, lastYear: 9.5 },
@@ -39,52 +38,43 @@ interface SlopeChartProps {
 
 export function SlopeChart({ title = "Contract Slope", showPrice = false }: SlopeChartProps) {
   const [selectedYears, setSelectedYears] = useState<string[]>(["thisYear", "lastYear"]);
-  const isMobile = useIsMobile();
 
   return (
     <Card className="bg-dashboard-navy border-0 h-[400px]">
       <CardHeader className="flex flex-col items-center pb-2">
-        <CardTitle className="text-base md:text-lg font-semibold text-center">{title}</CardTitle>
+        <CardTitle className="text-lg font-semibold text-center">{title}</CardTitle>
         <ToggleGroup 
           type="multiple" 
           value={selectedYears}
           onValueChange={(value) => {
             if (value.length > 0) setSelectedYears(value);
           }}
-          className="mt-2 md:mt-4"
+          className="mt-4"
         >
-          <ToggleGroupItem value="thisYear" className="text-xs md:text-sm px-2 md:px-3">This Year</ToggleGroupItem>
-          <ToggleGroupItem value="lastYear" className="text-xs md:text-sm px-2 md:px-3">Last Year</ToggleGroupItem>
+          <ToggleGroupItem value="thisYear">This Year</ToggleGroupItem>
+          <ToggleGroupItem value="lastYear">Last Year</ToggleGroupItem>
         </ToggleGroup>
       </CardHeader>
-      <CardContent className="h-[320px] p-2 md:p-5">
+      <CardContent className="h-[320px] p-5">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart 
             data={data}
-            margin={isMobile ? 
-              { top: 20, right: 20, left: 20, bottom: 60 } : 
-              { top: 20, right: 30, left: 20, bottom: 30 }
-            }
+            margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
           >
             <XAxis
               dataKey="month"
               stroke="#DDD"
-              fontSize={isMobile ? 10 : 12}
+              fontSize={12}
               fontFamily="Arial"
               tickLine={false}
               axisLine={false}
-              angle={isMobile ? -45 : 0}
-              textAnchor={isMobile ? "end" : "middle"}
-              height={isMobile ? 60 : 50}
-              interval={isMobile ? 1 : 0}
             />
             <YAxis
               stroke="#DDD"
-              fontSize={isMobile ? 10 : 12}
+              fontSize={12}
               fontFamily="Arial"
               tickLine={false}
               axisLine={false}
-              width={isMobile ? 40 : 60}
             />
             <Tooltip
               contentStyle={{
@@ -92,14 +82,13 @@ export function SlopeChart({ title = "Contract Slope", showPrice = false }: Slop
                 border: "none",
                 borderRadius: "8px",
                 fontFamily: "Arial",
-                fontSize: isMobile ? "10px" : "12px",
+                fontSize: "12px",
               }}
             />
             <Legend 
               verticalAlign="bottom"
               align="center"
               height={36}
-              wrapperStyle={{ fontSize: isMobile ? "10px" : "12px" }}
             />
             {selectedYears.includes("thisYear") && (
               <Line
