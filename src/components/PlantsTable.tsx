@@ -28,21 +28,21 @@ const plants = [
 export function PlantsTable() {
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-4">Plant Information</h2>
+      <h2 className="text-lg font-semibold mb-4 text-center">Plant Information</h2>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Plant Name</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead>Capacity</TableHead>
+            <TableHead className="text-center">Plant Name</TableHead>
+            <TableHead className="text-center">Location</TableHead>
+            <TableHead className="text-center">Capacity</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {plants.map((plant) => (
             <TableRow key={plant.name}>
-              <TableCell>{plant.name}</TableCell>
-              <TableCell>{plant.location}</TableCell>
-              <TableCell>{plant.capacity}</TableCell>
+              <TableCell className="text-center">{plant.name}</TableCell>
+              <TableCell className="text-center">{plant.location}</TableCell>
+              <TableCell className="text-center">{plant.capacity}</TableCell>
             </TableRow>
           ))}
         </TableBody>

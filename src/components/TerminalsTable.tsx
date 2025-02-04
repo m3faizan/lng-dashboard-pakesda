@@ -27,23 +27,23 @@ export function TerminalsTable() {
   return (
     <Card className="bg-dashboard-navy border-0">
       <CardContent className="pt-6">
-        <h2 className="text-lg font-semibold mb-4">LNG Terminals</h2>
+        <h2 className="text-lg font-semibold mb-4 text-center">LNG Terminals</h2>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Terminal Name</TableHead>
-              <TableHead>Port Name</TableHead>
-              <TableHead>City</TableHead>
-              <TableHead>Owner</TableHead>
+              <TableHead className="text-center">Terminal Name</TableHead>
+              <TableHead className="text-center">Port Name</TableHead>
+              <TableHead className="text-center">City</TableHead>
+              <TableHead className="text-center">Owner</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {terminals.map((terminal) => (
               <TableRow key={terminal.name}>
-                <TableCell className="font-medium">{terminal.name}</TableCell>
-                <TableCell>{terminal.port}</TableCell>
-                <TableCell>{terminal.city}</TableCell>
-                <TableCell>{terminal.owner}</TableCell>
+                <TableCell className="font-medium text-center">{terminal.name}</TableCell>
+                <TableCell className="text-center">{terminal.port}</TableCell>
+                <TableCell className="text-center">{terminal.city}</TableCell>
+                <TableCell className="text-center">{terminal.owner}</TableCell>
               </TableRow>
             ))}
           </TableBody>
