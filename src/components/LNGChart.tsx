@@ -31,12 +31,15 @@ export function LNGChart() {
       const startDate = new Date();
       
       // Set the start date to be exactly X months before the end date
-      startDate.setMonth(endDate.getMonth() - selectedTimeframe);
+      startDate.setMonth(endDate.getMonth() - selectedTimeframe + 1);
       // Set to first day of the month to include full months
       startDate.setDate(1);
       startDate.setHours(0, 0, 0, 0);
       
-      // Set end date to last moment of current month
+      // Set end date to last day of current month
+      endDate.setDate(1);
+      endDate.setMonth(endDate.getMonth() + 1);
+      endDate.setDate(0);
       endDate.setHours(23, 59, 59, 999);
       
       // Ensure we don't go before Jan 2019
@@ -71,6 +74,20 @@ export function LNGChart() {
     fetchData();
   }, [selectedTimeframe]);
 
+  // Calculate x-axis settings based on timeframe
+  const getXAxisSettings = () => {
+    const isLongPeriod = selectedTimeframe > 24;
+    return {
+      angle: isLongPeriod ? -45 : 0,
+      textAnchor: isLongPeriod ? "end" : "middle",
+      height: isLongPeriod ? 60 : 30,
+      interval: isLongPeriod ? 2 : 0,
+      dy: isLongPeriod ? 8 : 0,
+    };
+  };
+
+  const xAxisSettings = getXAxisSettings();
+
   return (
     <div className="space-y-4 md:space-y-6">
       <div className="flex flex-col items-center space-y-3 md:space-y-5">
@@ -93,7 +110,10 @@ export function LNGChart() {
       
       <div className="h-[280px] md:h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data}>
+          <AreaChart 
+            data={data}
+            margin={{ top: 10, right: 30, left: 0, bottom: xAxisSettings.height }}
+          >
             <defs>
               <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#4ADE80" stopOpacity={0.3} />
@@ -106,10 +126,11 @@ export function LNGChart() {
               fontSize={isMobile ? 10 : 12}
               tickLine={false}
               axisLine={false}
-              angle={isMobile ? -45 : 0}
-              textAnchor={isMobile ? "end" : "middle"}
-              height={isMobile ? 60 : 50}
-              interval={isMobile ? 1 : 0}
+              angle={xAxisSettings.angle}
+              textAnchor={xAxisSettings.textAnchor}
+              height={xAxisSettings.height}
+              interval={xAxisSettings.interval}
+              dy={xAxisSettings.dy}
             />
             <YAxis
               stroke="#525252"
