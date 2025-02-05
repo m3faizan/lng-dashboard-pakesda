@@ -61,10 +61,11 @@ export function PowerGenChart({
         }
 
         const transformedData = powerGenData
-          .filter((item): item is PowerGenData => 
+          .filter((item): item is NonNullable<typeof item> => 
             item !== null && 
             typeof item.date === 'string' && 
-            item[dataKey] !== null)
+            item[dataKey] !== null
+          )
           .map(item => ({
             date: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
             volume: Number(item[dataKey])
@@ -113,6 +114,8 @@ export function PowerGenChart({
           axisLine={false}
           height={xAxisHeight}
           tickMargin={tickMargin}
+          angle={-45}
+          textAnchor="end"
         />
         <YAxis
           stroke="#525252"

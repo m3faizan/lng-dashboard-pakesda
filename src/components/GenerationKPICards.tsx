@@ -69,7 +69,7 @@ export function GenerationKPICards() {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       <KPICard
         title="RLNG Power Generation"
         value={`${currentData.powerGeneration.toFixed(1)} GWh`}
