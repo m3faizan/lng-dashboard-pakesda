@@ -57,10 +57,12 @@ export function PowerGenChart({
           return;
         }
 
-        const transformedData = powerGenData.map(item => ({
-          date: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
-          volume: Number(item[dataKey] || 0)
-        }));
+        const transformedData = powerGenData
+          .filter(item => item && item.date)
+          .map(item => ({
+            date: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
+            volume: Number(item[dataKey] || 0)
+          }));
 
         setData(transformedData);
         setError(null);
@@ -92,7 +94,7 @@ export function PowerGenChart({
   };
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height={400}>
       <LineChart
         data={data}
         margin={margin}
