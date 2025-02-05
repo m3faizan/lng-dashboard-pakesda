@@ -8,6 +8,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+
+type PowerGenData = Database['public']['Tables']['LNG Power Gen']['Row'];
 
 interface PowerGenChartProps {
   dataKey: string;
@@ -58,7 +61,7 @@ export function PowerGenChart({
         }
 
         const transformedData = powerGenData
-          .filter(item => item && item.date)
+          .filter((item): item is PowerGenData => item !== null && item.date !== null)
           .map(item => ({
             date: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
             volume: Number(item[dataKey] || 0)
