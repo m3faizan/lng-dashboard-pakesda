@@ -8,9 +8,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
-
-type PowerGenData = Database['public']['Tables']['LNG Power Gen']['Row'];
+import { PowerGenData, ChartDataPoint } from "@/types/chart";
+import { CustomTooltip } from "./charts/CustomTooltip";
 
 interface PowerGenChartProps {
   dataKey: keyof PowerGenData;
@@ -33,7 +32,7 @@ export function PowerGenChart({
   xAxisHeight = 60,
   tickMargin = 20
 }: PowerGenChartProps) {
-  const [data, setData] = useState<Array<{date: string; volume: number}>>([]);
+  const [data, setData] = useState<ChartDataPoint[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -61,14 +60,14 @@ export function PowerGenChart({
         }
 
         const transformedData = powerGenData
-          .filter((item): item is NonNullable<typeof powerGenData[0]> => 
+          .filter((item): item is PowerGenData => 
             item !== null && 
             typeof item.date === 'string' && 
             typeof item[dataKey] === 'number'
           )
           .map(item => ({
             date: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
-            volume: Number(item[dataKey])
+            volume: item[dataKey] as number
           }));
 
         setData(transformedData);
@@ -85,20 +84,6 @@ export function PowerGenChart({
   if (error) {
     return <div className="text-red-500">{error}</div>;
   }
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (!active || !payload || !payload[0]) return null;
-    
-    return (
-      <div className="bg-[#1A1E2D] border border-gray-700 rounded-lg p-3 text-sm shadow-lg">
-        <div className="text-gray-400 mb-2">{payload[0].payload.date}</div>
-        <div className="text-white">
-          <span>{label}: </span>
-          <span className="font-mono">{valueFormatter(payload[0].value)}</span>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <ResponsiveContainer width="100%" height={400}>
@@ -125,7 +110,12 @@ export function PowerGenChart({
           tickFormatter={(value) => value.toFixed(0)}
           width={yAxisWidth}
         />
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip content={
+          <CustomTooltip 
+            label={label}
+            valueFormatter={valueFormatter}
+          />
+        } />
         <Line
           type="monotone"
           dataKey="volume"
