@@ -49,25 +49,13 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label }: PowerGe
         const startDate = new Date(latestDate);
 
         // Calculate start date based on selected timeframe
-        switch (selectedTimeframe) {
-          case 3: // 3M
-            startDate.setMonth(latestDate.getMonth() - 3);
-            break;
-          case 6: // 6M
-            startDate.setMonth(latestDate.getMonth() - 6);
-            break;
-          case new Date().getMonth(): // YTD
-            startDate.setMonth(0, 1); // January 1st of the current year
-            startDate.setFullYear(latestDate.getFullYear());
-            break;
-          case 12: // 1Y
-            startDate.setFullYear(latestDate.getFullYear() - 1);
-            break;
-          case 60: // 5Y
-            startDate.setFullYear(latestDate.getFullYear() - 5);
-            break;
-          default: // Max or other cases
-            startDate.setFullYear(2019, 0, 1); // Set to Jan 1, 2019 as minimum date
+        if (selectedTimeframe === new Date().getMonth()) {
+          // YTD: From January 1st of current year
+          startDate.setFullYear(new Date().getFullYear(), 0, 1);
+        } else {
+          // For all other timeframes, calculate from the last day of the latest month
+          startDate.setDate(1); // Go to first day of the month
+          startDate.setMonth(startDate.getMonth() - selectedTimeframe + 1); // +1 to include current month
         }
 
         // Fetch data for the selected time range
