@@ -13,7 +13,7 @@ import type { Database } from "@/integrations/supabase/types";
 type PowerGenData = Database['public']['Tables']['LNG Power Gen']['Row'];
 
 interface PowerGenChartProps {
-  dataKey: string;
+  dataKey: keyof PowerGenData;
   color: string;
   valueFormatter: (value: number) => string;
   label: string;
@@ -33,7 +33,7 @@ export function PowerGenChart({
   xAxisHeight = 60,
   tickMargin = 20
 }: PowerGenChartProps) {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Array<{date: string; volume: number}>>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -64,10 +64,10 @@ export function PowerGenChart({
           .filter((item): item is PowerGenData => 
             item !== null && 
             typeof item.date === 'string' && 
-            item.date !== null)
+            item[dataKey] !== null)
           .map(item => ({
             date: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
-            volume: Number(item[dataKey] || 0)
+            volume: Number(item[dataKey])
           }));
 
         setData(transformedData);
@@ -86,14 +86,14 @@ export function PowerGenChart({
   }
 
   const CustomTooltip = ({ active, payload }: any) => {
-    if (!active || !payload) return null;
+    if (!active || !payload || !payload[0]) return null;
     
     return (
       <div className="bg-[#1A1E2D] border border-gray-700 rounded-lg p-3 text-sm shadow-lg">
-        <div className="text-gray-400 mb-2">{payload[0]?.payload.date}</div>
+        <div className="text-gray-400 mb-2">{payload[0].payload.date}</div>
         <div className="text-white">
           <span>{label}: </span>
-          <span className="font-mono">{valueFormatter(payload[0]?.value)}</span>
+          <span className="font-mono">{valueFormatter(payload[0].value)}</span>
         </div>
       </div>
     );
