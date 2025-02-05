@@ -9,12 +9,14 @@ import {
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { TimeFrameSelector } from "@/components/charts/TimeFrameSelector";
+import { cn } from "@/lib/utils";
 
 interface PowerGenChartProps {
   dataKey: "powerGeneration" | "powerGenCost" | "rlngShare";
   color: string;
   valueFormatter: (value: number) => string;
   label: string;
+  className?: string;
 }
 
 interface PowerGenData {
@@ -24,7 +26,7 @@ interface PowerGenData {
   rlngShare: number | null;
 }
 
-export function PowerGenChart({ dataKey, color, valueFormatter, label }: PowerGenChartProps) {
+export function PowerGenChart({ dataKey, color, valueFormatter, label, className }: PowerGenChartProps) {
   const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
   const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -111,7 +113,7 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label }: PowerGe
   }
 
   return (
-    <div className="space-y-6">
+    <div className={cn("space-y-6", className)}>
       <TimeFrameSelector 
         selectedTimeframe={selectedTimeframe}
         onTimeframeChange={setSelectedTimeframe}
