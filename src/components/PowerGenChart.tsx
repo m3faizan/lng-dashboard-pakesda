@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { TimeFrameSelector } from "@/components/charts/TimeFrameSelector";
 import { cn } from "@/lib/utils";
+import { Toggle } from "@/components/ui/toggle";
 
 interface PowerGenChartProps {
   dataKey: "powerGeneration" | "powerGenCost" | "rlngShare";
@@ -30,6 +31,7 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
   const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
   const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [showPercentage, setShowPercentage] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,11 +81,24 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
           .filter((item): item is PowerGenData => {
             return item !== null && typeof item.date === 'string';
           })
-          .map(item => ({
-            month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
-            date: new Date(item.date),
-            value: Number(item[dataKey]) || 0
-          }))
+          .map((item, index, array) => {
+            const currentValue = Number(item[dataKey]) || 0;
+            let percentageChange = 0;
+            
+            if (index > 0) {
+              const previousValue = Number(array[index - 1][dataKey]) || 0;
+              percentageChange = previousValue !== 0 
+                ? ((currentValue - previousValue) / previousValue) * 100 
+                : 0;
+            }
+
+            return {
+              month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
+              date: new Date(item.date),
+              value: currentValue,
+              percentageChange: percentageChange
+            };
+          })
           .sort((a, b) => a.date.getTime() - b.date.getTime());
 
         setData(transformedData);
@@ -112,13 +127,33 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
     );
   }
 
+  const getDisplayValue = (dataPoint: any) => {
+    return showPercentage ? dataPoint.percentageChange : dataPoint.value;
+  };
+
+  const getValueFormatter = (value: number) => {
+    if (showPercentage) {
+      return `${value.toFixed(2)}%`;
+    }
+    return valueFormatter(value);
+  };
+
   return (
     <div className={cn("space-y-6", className)}>
-      <TimeFrameSelector 
-        selectedTimeframe={selectedTimeframe}
-        onTimeframeChange={setSelectedTimeframe}
-        color={color}
-      />
+      <div className="flex justify-between items-center">
+        <TimeFrameSelector 
+          selectedTimeframe={selectedTimeframe}
+          onTimeframeChange={setSelectedTimeframe}
+          color={color}
+        />
+        <Toggle
+          pressed={showPercentage}
+          onPressedChange={setShowPercentage}
+          className="px-4 py-2 text-sm font-medium bg-transparent hover:bg-gray-700/50 data-[state=on]:bg-gray-700"
+        >
+          %
+        </Toggle>
+      </div>
       
       <div className="h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -142,7 +177,7 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => value.toFixed(1)}
+              tickFormatter={(value) => showPercentage ? `${value.toFixed(1)}%` : value.toFixed(1)}
             />
             <Tooltip
               contentStyle={{
@@ -150,12 +185,12 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
                 border: "none",
                 borderRadius: "8px",
               }}
-              formatter={(value: number) => [valueFormatter(value), label]}
+              formatter={(value: number) => [getValueFormatter(value), showPercentage ? "Change" : label]}
               labelFormatter={(label) => label}
             />
             <Area
               type="monotone"
-              dataKey="value"
+              dataKey={showPercentage ? "percentageChange" : "value"}
               stroke={color}
               fillOpacity={1}
               fill={`url(#color${dataKey})`}
