@@ -60,7 +60,7 @@ export function PowerGenChart({
         }
 
         const transformedData = powerGenData
-          .filter((item): item is PowerGenData => 
+          .filter((item): item is NonNullable<typeof powerGenData[number]> => 
             item !== null && 
             typeof item.date === 'string' && 
             typeof item[dataKey] === 'number'
