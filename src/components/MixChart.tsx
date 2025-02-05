@@ -9,6 +9,10 @@ export function MixChart() {
         color="#FEC6A1"
         valueFormatter={(value: number) => `${value.toFixed(2)}%`}
         label="RLNG Gen %"
+        margin={{ top: 20, right: 30, left: 60, bottom: 30 }}
+        yAxisWidth={50}
+        xAxisHeight={60}
+        tickMargin={20}
       />
     </ChartContainer>
   );
