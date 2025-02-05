@@ -8,8 +8,8 @@ interface TimeFrameSelectorProps {
 
 export function TimeFrameSelector({ selectedTimeframe, onTimeframeChange, color }: TimeFrameSelectorProps) {
   return (
-    <div className="flex flex-col items-center space-y-5">
-      <div className="flex gap-2">
+    <div className="flex flex-col items-center justify-center w-full space-y-5">
+      <div className="flex justify-center gap-2">
         {timeframes.map((tf) => (
           <button
             key={tf.label}
