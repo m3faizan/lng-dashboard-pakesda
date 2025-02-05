@@ -57,13 +57,13 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
         <SidebarGroupContent>
           <SidebarMenu>
             {sidebarItems.map((item) => (
-              <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem key={item.title} className="group">
                 {item.isProfile ? (
                   <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
                     <DialogTrigger asChild>
-                      <SidebarMenuButton>
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
+                      <SidebarMenuButton className="transition-all duration-200 hover:bg-dashboard-navy/50 group-hover:translate-x-1">
+                        <item.icon className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+                        <span className="transition-all duration-200 group-hover:font-medium">{item.title}</span>
                       </SidebarMenuButton>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
@@ -77,16 +77,17 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
                   <SidebarMenuButton
                     asChild={!item.isLogout}
                     onClick={() => handleItemClick(item)}
+                    className="transition-all duration-200 hover:bg-dashboard-navy/50 group-hover:translate-x-1"
                   >
                     {item.isLogout ? (
                       <button className="flex w-full items-center gap-2">
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
+                        <item.icon className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+                        <span className="transition-all duration-200 group-hover:font-medium">{item.title}</span>
                       </button>
                     ) : (
                       <a href={item.url}>
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
+                        <item.icon className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+                        <span className="transition-all duration-200 group-hover:font-medium">{item.title}</span>
                       </a>
                     )}
                   </SidebarMenuButton>
