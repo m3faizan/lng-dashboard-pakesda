@@ -17,6 +17,13 @@ interface PowerGenChartProps {
   label: string;
 }
 
+interface PowerGenData {
+  date: string;
+  powerGeneration: number | null;
+  powerGenCost: number | null;
+  rlngShare: number | null;
+}
+
 export function PowerGenChart({ dataKey, color, valueFormatter, label }: PowerGenChartProps) {
   const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
   const [data, setData] = useState<any[]>([]);
@@ -56,11 +63,13 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label }: PowerGe
         }
 
         const transformedData = powerGenData
-          .filter(item => item.date && item[dataKey] !== null)
+          .filter((item): item is PowerGenData => {
+            return item !== null && typeof item.date === 'string';
+          })
           .map(item => ({
             month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
             date: new Date(item.date),
-            value: Number(item[dataKey])
+            value: Number(item[dataKey]) || 0
           }))
           .sort((a, b) => a.date.getTime() - b.date.getTime());
 
