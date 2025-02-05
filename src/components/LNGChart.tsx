@@ -8,6 +8,7 @@ import {
 } from "recharts";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Toggle } from "@/components/ui/toggle";
 
 const timeframes = [
   { label: "3M", months: 3 },
@@ -21,23 +22,19 @@ const timeframes = [
 export function LNGChart() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
   const [data, setData] = useState<any[]>([]);
+  const [showPercentage, setShowPercentage] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      // Calculate the date range based on selected timeframe
       const endDate = new Date();
       const startDate = new Date();
       
-      // Set the start date to be exactly X months before the end date
       startDate.setMonth(endDate.getMonth() - selectedTimeframe);
-      // Set to first day of the month to include full months
       startDate.setDate(1);
       startDate.setHours(0, 0, 0, 0);
       
-      // Set end date to last moment of current month
       endDate.setHours(23, 59, 59, 999);
       
-      // Ensure we don't go before Jan 2019
       const minDate = new Date('2019-01-01');
       const actualStartDate = startDate < minDate ? minDate : startDate;
 
@@ -53,14 +50,26 @@ export function LNGChart() {
         return;
       }
 
-      // Filter out null values and transform the data
       const transformedData = lngData
         .filter(item => item.date && item.import_Volume !== null)
-        .map(item => ({
-          month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
-          date: new Date(item.date),
-          volume: Number(item.import_Volume)
-        }))
+        .map((item, index, array) => {
+          const currentValue = Number(item.import_Volume);
+          let percentageChange = 0;
+          
+          if (index > 0) {
+            const previousValue = Number(array[index - 1].import_Volume);
+            percentageChange = previousValue !== 0 
+              ? ((currentValue - previousValue) / previousValue) * 100 
+              : 0;
+          }
+
+          return {
+            month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
+            date: new Date(item.date),
+            volume: currentValue,
+            percentageChange
+          };
+        })
         .sort((a, b) => a.date.getTime() - b.date.getTime());
 
       setData(transformedData);
@@ -68,6 +77,17 @@ export function LNGChart() {
 
     fetchData();
   }, [selectedTimeframe]);
+
+  const getDisplayValue = (dataPoint: any) => {
+    return showPercentage ? dataPoint.percentageChange : dataPoint.volume;
+  };
+
+  const formatValue = (value: number) => {
+    if (showPercentage) {
+      return `${value.toFixed(2)}%`;
+    }
+    return `${(value / 1000000).toFixed(2)}M MMBtu`;
+  };
 
   return (
     <div className="space-y-6">
@@ -87,6 +107,13 @@ export function LNGChart() {
             </button>
           ))}
         </div>
+        <Toggle
+          pressed={showPercentage}
+          onPressedChange={setShowPercentage}
+          className="px-4 py-2 text-sm font-medium bg-transparent hover:bg-gray-700/50 data-[state=on]:bg-gray-700"
+        >
+          {showPercentage ? "%" : "MMBtu"}
+        </Toggle>
       </div>
       
       <div className="h-[320px]">
@@ -111,7 +138,11 @@ export function LNGChart() {
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
+              tickFormatter={(value) => 
+                showPercentage 
+                  ? `${value.toFixed(1)}%`
+                  : `${(value / 1000000).toFixed(1)}M`
+              }
             />
             <Tooltip
               contentStyle={{
@@ -119,11 +150,11 @@ export function LNGChart() {
                 border: "none",
                 borderRadius: "8px",
               }}
-              formatter={(value: number) => [`${(value / 1000000).toFixed(2)}M MMBtu`, "Volume"]}
+              formatter={(value: number) => [formatValue(value), showPercentage ? "Change" : "Volume"]}
             />
             <Area
               type="monotone"
-              dataKey="volume"
+              dataKey={showPercentage ? "percentageChange" : "volume"}
               stroke="#4ADE80"
               fillOpacity={1}
               fill="url(#colorVolume)"
