@@ -28,7 +28,7 @@ export function PowerGenChart({
   color, 
   valueFormatter, 
   label,
-  margin = { top: 20, right: 30, left: 60, bottom: 30 },
+  margin = { top: 20, right: 30, left: 40, bottom: 30 },
   yAxisWidth = 50,
   xAxisHeight = 60,
   tickMargin = 20
@@ -61,7 +61,7 @@ export function PowerGenChart({
         }
 
         const transformedData = powerGenData
-          .filter((item): item is NonNullable<typeof item> => 
+          .filter((item): item is PowerGenData => 
             item !== null && 
             typeof item.date === 'string' && 
             item[dataKey] !== null
