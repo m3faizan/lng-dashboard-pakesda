@@ -29,7 +29,7 @@ export function KPICard({ title, value, icon, trend, className, type = 'share' }
   };
 
   return (
-    <Card className={cn("bg-dashboard-navy border-0 min-w-[250px]", className)}>
+    <Card className={cn("bg-dashboard-navy border-0", className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground text-left">
           {title}
@@ -39,7 +39,7 @@ export function KPICard({ title, value, icon, trend, className, type = 'share' }
         </div>
       </CardHeader>
       <CardContent className="h-[100px] flex flex-col">
-        <div className="text-xl md:text-2xl font-bold text-left mb-auto break-words">{value}</div>
+        <div className="text-2xl font-bold text-left mb-auto">{value}</div>
         {trend && (
           <div className="mt-auto text-left">
             <p

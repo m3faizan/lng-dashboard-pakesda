@@ -61,7 +61,7 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
                 {item.isProfile ? (
                   <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
                     <DialogTrigger asChild>
-                      <SidebarMenuButton className="transition-colors duration-200 hover:bg-accent hover:text-accent-foreground">
+                      <SidebarMenuButton>
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
                       </SidebarMenuButton>
@@ -77,7 +77,6 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
                   <SidebarMenuButton
                     asChild={!item.isLogout}
                     onClick={() => handleItemClick(item)}
-                    className="transition-colors duration-200 hover:bg-accent hover:text-accent-foreground"
                   >
                     {item.isLogout ? (
                       <button className="flex w-full items-center gap-2">
@@ -85,7 +84,7 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
                         <span>{item.title}</span>
                       </button>
                     ) : (
-                      <a href={item.url} className="flex items-center gap-2">
+                      <a href={item.url}>
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
                       </a>

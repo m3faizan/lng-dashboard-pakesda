@@ -149,7 +149,7 @@ export function SystemGenerationChart() {
         <ResponsiveContainer width="100%" height={300}>
           <BarChart 
             data={data}
-            margin={{ top: 20, right: 30, left: 60, bottom: 30 }}
+            margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
           >
             <XAxis 
               dataKey="period" 
@@ -157,8 +157,6 @@ export function SystemGenerationChart() {
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              height={60}
-              tickMargin={20}
             />
             <YAxis 
               stroke="#525252"
@@ -166,7 +164,6 @@ export function SystemGenerationChart() {
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => value.toFixed(0)}
-              width={50}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend 

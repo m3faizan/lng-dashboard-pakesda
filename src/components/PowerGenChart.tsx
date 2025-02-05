@@ -1,50 +1,46 @@
-import { useState, useEffect } from "react";
 import {
-  LineChart,
-  Line,
+  Area,
+  AreaChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer,
 } from "recharts";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { PowerGenData, ChartDataPoint } from "@/types/chart";
-import { CustomTooltip } from "./charts/CustomTooltip";
+import { TimeFrameSelector } from "@/components/charts/TimeFrameSelector";
 
 interface PowerGenChartProps {
-  dataKey: keyof PowerGenData;
+  dataKey: "powerGeneration" | "powerGenCost" | "rlngShare";
   color: string;
   valueFormatter: (value: number) => string;
   label: string;
-  margin?: { top: number; right: number; left: number; bottom: number };
-  yAxisWidth?: number;
-  xAxisHeight?: number;
-  tickMargin?: number;
 }
 
-export function PowerGenChart({ 
-  dataKey, 
-  color, 
-  valueFormatter, 
-  label,
-  margin = { top: 20, right: 30, left: 40, bottom: 30 },
-  yAxisWidth = 50,
-  xAxisHeight = 60,
-  tickMargin = 20
-}: PowerGenChartProps) {
-  const [data, setData] = useState<ChartDataPoint[]>([]);
+export function PowerGenChart({ dataKey, color, valueFormatter, label }: PowerGenChartProps) {
+  const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
+  const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const startDate = new Date('2019-01-01');
         const endDate = new Date();
+        const startDate = new Date();
+        
+        startDate.setMonth(endDate.getMonth() - selectedTimeframe);
+        startDate.setDate(1);
+        startDate.setHours(0, 0, 0, 0);
+        
+        endDate.setHours(23, 59, 59, 999);
+        
+        const minDate = new Date('2019-01-01');
+        const actualStartDate = startDate < minDate ? minDate : startDate;
 
         const { data: powerGenData, error: supabaseError } = await supabase
           .from('LNG Power Gen')
-          .select('date, ' + dataKey)
-          .gte('date', startDate.toISOString())
+          .select(`date, ${dataKey}`)
+          .gte('date', actualStartDate.toISOString())
           .lte('date', endDate.toISOString())
           .order('date', { ascending: true });
 
@@ -60,15 +56,13 @@ export function PowerGenChart({
         }
 
         const transformedData = powerGenData
-          .filter((item): item is NonNullable<typeof powerGenData[number]> => 
-            item !== null && 
-            typeof item.date === 'string' && 
-            typeof item[dataKey] === 'number'
-          )
+          .filter(item => item.date && item[dataKey] !== null)
           .map(item => ({
-            date: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
-            volume: item[dataKey] as number
-          }));
+            month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
+            date: new Date(item.date),
+            value: Number(item[dataKey])
+          }))
+          .sort((a, b) => a.date.getTime() - b.date.getTime());
 
         setData(transformedData);
         setError(null);
@@ -79,51 +73,74 @@ export function PowerGenChart({
     };
 
     fetchData();
-  }, [dataKey]);
+  }, [selectedTimeframe, dataKey]);
 
   if (error) {
-    return <div className="text-red-500">{error}</div>;
+    return (
+      <div className="space-y-6">
+        <TimeFrameSelector 
+          selectedTimeframe={selectedTimeframe}
+          onTimeframeChange={setSelectedTimeframe}
+          color={color}
+        />
+        <div className="h-[320px] flex items-center justify-center text-red-500">
+          {error}
+        </div>
+      </div>
+    );
   }
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <LineChart
-        data={data}
-        margin={margin}
-      >
-        <XAxis
-          dataKey="date"
-          stroke="#525252"
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-          height={xAxisHeight}
-          tickMargin={tickMargin}
-          angle={-45}
-          textAnchor="end"
-        />
-        <YAxis
-          stroke="#525252"
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-          tickFormatter={(value) => value.toFixed(0)}
-          width={yAxisWidth}
-        />
-        <Tooltip content={
-          <CustomTooltip 
-            label={label}
-            valueFormatter={valueFormatter}
-          />
-        } />
-        <Line
-          type="monotone"
-          dataKey="volume"
-          stroke={color}
-          strokeWidth={2}
-          dot={false}
-        />
-      </LineChart>
-    </ResponsiveContainer>
+    <div className="space-y-6">
+      <TimeFrameSelector 
+        selectedTimeframe={selectedTimeframe}
+        onTimeframeChange={setSelectedTimeframe}
+        color={color}
+      />
+      
+      <div className="h-[320px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data}>
+            <defs>
+              <linearGradient id={`color${dataKey}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={color} stopOpacity={0.3} />
+                <stop offset="95%" stopColor={color} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <XAxis
+              dataKey="month"
+              stroke="#525252"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              interval="preserveStartEnd"
+            />
+            <YAxis
+              stroke="#525252"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => value.toFixed(1)}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#1A1E2D",
+                border: "none",
+                borderRadius: "8px",
+              }}
+              formatter={(value: number) => [valueFormatter(value), label]}
+              labelFormatter={(label) => label}
+            />
+            <Area
+              type="monotone"
+              dataKey="value"
+              stroke={color}
+              fillOpacity={1}
+              fill={`url(#color${dataKey})`}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 }
