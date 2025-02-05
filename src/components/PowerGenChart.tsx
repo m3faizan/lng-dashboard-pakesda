@@ -61,10 +61,10 @@ export function PowerGenChart({
         }
 
         const transformedData = powerGenData
-          .filter((item): item is PowerGenData => 
+          .filter((item): item is NonNullable<typeof powerGenData[0]> => 
             item !== null && 
             typeof item.date === 'string' && 
-            item[dataKey] !== null
+            typeof item[dataKey] === 'number'
           )
           .map(item => ({
             date: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
