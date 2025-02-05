@@ -1,15 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 interface ChartContainerProps {
   title: string;
   children: ReactNode;
   headerContent?: ReactNode;
+  className?: string;
 }
 
-export function ChartContainer({ title, children, headerContent }: ChartContainerProps) {
+export function ChartContainer({ title, children, headerContent, className }: ChartContainerProps) {
   return (
-    <Card className="bg-dashboard-navy border-0 h-[450px]">
+    <Card className={cn("bg-dashboard-navy border-0 h-[450px]", className)}>
       <CardHeader className="flex flex-col items-center pb-2">
         <CardTitle className="text-lg font-semibold mb-4">{title}</CardTitle>
         {headerContent}

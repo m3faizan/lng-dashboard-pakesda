@@ -22,24 +22,24 @@ export default function GenerationMetrics() {
 
             <div className="grid gap-6 md:grid-cols-2">
               <div className="p-6 bg-dashboard-navy rounded-lg border-0">
-                <GenerationChart />
+                <CostChart />
               </div>
               <div className="p-6 bg-dashboard-navy rounded-lg border-0">
-                <CostChart />
+                <MixChart />
               </div>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
               <div className="p-6 bg-dashboard-navy rounded-lg border-0">
-                <MixChart />
+                <SystemGenerationChart />
               </div>
               <div className="p-6 bg-dashboard-navy rounded-lg border-0">
-                <SystemGenerationChart />
+                <PlantsTable />
               </div>
             </div>
 
             <div className="p-6 bg-dashboard-navy rounded-lg border-0">
-              <PlantsTable />
+              <GenerationChart />
             </div>
           </div>
         </main>

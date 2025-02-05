@@ -3,12 +3,13 @@ import { PowerGenChart } from "@/components/PowerGenChart";
 
 export function GenerationChart() {
   return (
-    <ChartContainer title="RLNG Power Generation (GWh)">
+    <ChartContainer title="RLNG Power Generation (GWh)" className="h-[600px]">
       <PowerGenChart 
         dataKey="powerGeneration"
         color="#4ADE80"
         valueFormatter={(value: number) => `${value.toFixed(2)} GWh`}
         label="RLNG Gen"
+        className="h-[500px]"
       />
     </ChartContainer>
   );
