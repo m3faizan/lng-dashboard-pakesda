@@ -107,13 +107,28 @@ export function LNGChart() {
             </button>
           ))}
         </div>
-        <Toggle
-          pressed={showPercentage}
-          onPressedChange={setShowPercentage}
-          className="px-4 py-2 text-sm font-medium bg-transparent hover:bg-gray-700/50 data-[state=on]:bg-gray-700"
-        >
-          {showPercentage ? "%" : "MMBtu"}
-        </Toggle>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowPercentage(false)}
+            className={`px-4 py-2 rounded-md text-sm font-medium ${
+              !showPercentage
+                ? "bg-dashboard-green text-black"
+                : "bg-dashboard-dark/50 text-muted-foreground hover:bg-dashboard-dark"
+            }`}
+          >
+            MMBtu
+          </button>
+          <button
+            onClick={() => setShowPercentage(true)}
+            className={`px-4 py-2 rounded-md text-sm font-medium ${
+              showPercentage
+                ? "bg-dashboard-green text-black"
+                : "bg-dashboard-dark/50 text-muted-foreground hover:bg-dashboard-dark"
+            }`}
+          >
+            %
+          </button>
+        </div>
       </div>
       
       <div className="h-[320px]">
