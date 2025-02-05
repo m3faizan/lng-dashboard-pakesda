@@ -32,30 +32,53 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label }: PowerGe
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const endDate = new Date();
-        const startDate = new Date();
-        
-        startDate.setMonth(endDate.getMonth() - selectedTimeframe);
-        startDate.setDate(1);
-        startDate.setHours(0, 0, 0, 0);
-        
-        endDate.setHours(23, 59, 59, 999);
-        
-        const minDate = new Date('2019-01-01');
-        const actualStartDate = startDate < minDate ? minDate : startDate;
-
-        const { data: powerGenData, error: supabaseError } = await supabase
+        // First, get the latest date from the data
+        const { data: latestData, error: latestError } = await supabase
           .from('LNG Power Gen')
-          .select(`date, ${dataKey}`)
-          .gte('date', actualStartDate.toISOString())
-          .lte('date', endDate.toISOString())
-          .order('date', { ascending: true });
+          .select(`date,${dataKey}`)
+          .order('date', { ascending: false })
+          .limit(1);
 
-        if (supabaseError) {
-          console.error('Error fetching data:', supabaseError);
-          setError('Failed to load data');
+        if (latestError) throw latestError;
+        if (!latestData || latestData.length === 0) {
+          setError('No data available');
           return;
         }
+
+        const latestDate = new Date(latestData[0].date);
+        const startDate = new Date(latestDate);
+
+        // Calculate start date based on selected timeframe
+        switch (selectedTimeframe) {
+          case 3: // 3M
+            startDate.setMonth(latestDate.getMonth() - 3);
+            break;
+          case 6: // 6M
+            startDate.setMonth(latestDate.getMonth() - 6);
+            break;
+          case new Date().getMonth(): // YTD
+            startDate.setMonth(0, 1); // January 1st of the current year
+            startDate.setFullYear(latestDate.getFullYear());
+            break;
+          case 12: // 1Y
+            startDate.setFullYear(latestDate.getFullYear() - 1);
+            break;
+          case 60: // 5Y
+            startDate.setFullYear(latestDate.getFullYear() - 5);
+            break;
+          default: // Max or other cases
+            startDate.setFullYear(2019, 0, 1); // Set to Jan 1, 2019 as minimum date
+        }
+
+        // Fetch data for the selected time range
+        const { data: powerGenData, error: fetchError } = await supabase
+          .from('LNG Power Gen')
+          .select(`date,${dataKey}`)
+          .gte('date', startDate.toISOString())
+          .lte('date', latestDate.toISOString())
+          .order('date', { ascending: true });
+
+        if (fetchError) throw fetchError;
 
         if (!powerGenData) {
           setError('No data available');
