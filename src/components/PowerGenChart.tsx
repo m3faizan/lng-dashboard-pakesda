@@ -224,7 +224,7 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
               <Line
                 type="monotone"
                 dataKey="movingAverage"
-                stroke={color}
+                stroke="#FFFFFF"
                 strokeDasharray="5 5"
                 dot={false}
                 strokeWidth={2}
@@ -237,3 +237,4 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
     </div>
   );
 }
+
