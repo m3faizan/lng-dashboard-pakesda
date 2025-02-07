@@ -1,3 +1,4 @@
+
 import {
   Area,
   AreaChart,
@@ -5,6 +6,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  Line,
 } from "recharts";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +34,7 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
   const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [showPercentage, setShowPercentage] = useState(false);
+  const [showAverage, setShowAverage] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,11 +95,21 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
                 : 0;
             }
 
+            // Calculate moving average (3-month window)
+            let movingAverage = currentValue;
+            if (index >= 2) {
+              const sum = array
+                .slice(Math.max(0, index - 2), index + 1)
+                .reduce((acc, curr) => acc + (Number(curr[dataKey]) || 0), 0);
+              movingAverage = sum / 3;
+            }
+
             return {
               month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
               date: new Date(item.date),
               value: currentValue,
-              percentageChange: percentageChange
+              percentageChange: percentageChange,
+              movingAverage: movingAverage
             };
           })
           .sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -146,13 +159,22 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
           onTimeframeChange={setSelectedTimeframe}
           color={color}
         />
-        <Toggle
-          pressed={showPercentage}
-          onPressedChange={setShowPercentage}
-          className="px-4 py-2 text-sm font-medium bg-transparent hover:bg-gray-700/50 data-[state=on]:bg-gray-700"
-        >
-          %
-        </Toggle>
+        <div className="flex gap-2">
+          <Toggle
+            pressed={showPercentage}
+            onPressedChange={setShowPercentage}
+            className="px-4 py-2 text-sm font-medium bg-transparent hover:bg-gray-700/50 data-[state=on]:bg-gray-700"
+          >
+            %
+          </Toggle>
+          <Toggle
+            pressed={showAverage}
+            onPressedChange={setShowAverage}
+            className="px-4 py-2 text-sm font-medium bg-transparent hover:bg-gray-700/50 data-[state=on]:bg-gray-700"
+          >
+            Avg.
+          </Toggle>
+        </div>
       </div>
       
       <div className="h-[320px]">
@@ -185,7 +207,10 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
                 border: "none",
                 borderRadius: "8px",
               }}
-              formatter={(value: number) => [getValueFormatter(value), showPercentage ? "Change" : label]}
+              formatter={(value: number) => [
+                getValueFormatter(value), 
+                showPercentage ? "Change" : label
+              ]}
               labelFormatter={(label) => label}
             />
             <Area
@@ -195,6 +220,17 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
               fillOpacity={1}
               fill={`url(#color${dataKey})`}
             />
+            {showAverage && (
+              <Line
+                type="monotone"
+                dataKey="movingAverage"
+                stroke={color}
+                strokeDasharray="5 5"
+                dot={false}
+                strokeWidth={2}
+                name="Moving Average"
+              />
+            )}
           </AreaChart>
         </ResponsiveContainer>
       </div>
