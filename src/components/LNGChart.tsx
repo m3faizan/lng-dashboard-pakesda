@@ -1,3 +1,4 @@
+
 import {
   Area,
   AreaChart,
@@ -8,7 +9,6 @@ import {
 } from "recharts";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Toggle } from "@/components/ui/toggle";
 
 const timeframes = [
   { label: "3M", months: 3 },
@@ -26,23 +26,36 @@ export function LNGChart() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const endDate = new Date();
-      const startDate = new Date();
+      let queryBuilder = supabase
+        .from('LNG Information')
+        .select('date, import_Volume')
+        .order('date', { ascending: false });
+
+      // Get most recent date first
+      const { data: latestData } = await queryBuilder.limit(1);
       
-      startDate.setMonth(endDate.getMonth() - selectedTimeframe);
+      if (!latestData || latestData.length === 0) return;
+      
+      const latestDate = new Date(latestData[0].date);
+      const startDate = new Date(latestDate);
+
+      // For YTD, use current year's start
+      if (selectedTimeframe === new Date().getMonth()) {
+        startDate.setMonth(0);
+        startDate.setDate(1);
+      } else {
+        // For other timeframes, go back X months from latest date
+        startDate.setMonth(latestDate.getMonth() - selectedTimeframe);
+      }
+      
       startDate.setDate(1);
       startDate.setHours(0, 0, 0, 0);
       
-      endDate.setHours(23, 59, 59, 999);
-      
-      const minDate = new Date('2019-01-01');
-      const actualStartDate = startDate < minDate ? minDate : startDate;
-
       const { data: lngData, error } = await supabase
         .from('LNG Information')
         .select('date, import_Volume')
-        .gte('date', actualStartDate.toISOString())
-        .lte('date', endDate.toISOString())
+        .gte('date', startDate.toISOString())
+        .lte('date', latestDate.toISOString())
         .order('date', { ascending: true });
 
       if (error) {

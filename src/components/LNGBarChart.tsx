@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   LineChart,
@@ -26,19 +27,39 @@ type ChartData = {
 export function LNGBarChart() {
   const [showDESSlope, setShowDESSlope] = useState(false);
   const [data, setData] = useState<ChartData[]>([]);
-  const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12); // Default to 1Y
+  const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
 
   useEffect(() => {
     const fetchData = async () => {
-      const endDate = new Date();
-      const startDate = new Date();
-      startDate.setMonth(endDate.getMonth() - selectedTimeframe);
+      // First, get the most recent date
+      const { data: latestData } = await supabase
+        .from('LNG Port_Price_Import')
+        .select('date')
+        .order('date', { ascending: false })
+        .limit(1);
+
+      if (!latestData || latestData.length === 0) return;
+
+      const latestDate = new Date(latestData[0].date);
+      const startDate = new Date(latestDate);
+
+      // For YTD, use current year's start
+      if (selectedTimeframe === new Date().getMonth()) {
+        startDate.setMonth(0);
+        startDate.setDate(1);
+      } else {
+        // For other timeframes, go back X months from latest date
+        startDate.setMonth(latestDate.getMonth() - selectedTimeframe);
+      }
+
+      startDate.setDate(1);
+      startDate.setHours(0, 0, 0, 0);
       
       const { data: response, error } = await supabase
         .from('LNG Port_Price_Import')
         .select('date, wAvg_DES, DES_Slope')
         .gte('date', startDate.toISOString())
-        .lte('date', endDate.toISOString())
+        .lte('date', latestDate.toISOString())
         .order('date', { ascending: true });
 
       if (error) {
