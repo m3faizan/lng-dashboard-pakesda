@@ -1,3 +1,4 @@
+
 import {
   LineChart,
   Line,
@@ -28,24 +29,35 @@ export function TotalCargoesChart() {
     const fetchData = async () => {
       setIsLoading(true);
       
-      // Calculate the date range based on selected timeframe
-      const endDate = new Date();
-      const startDate = new Date();
-      
-      // Set the start date to be exactly X months before the end date
-      startDate.setMonth(endDate.getMonth() - selectedTimeframe);
-      // Set to first day of the month to include full months
-      startDate.setDate(1);
+      // First, get the most recent date
+      const { data: latestData } = await supabase
+        .from('LNG Information')
+        .select('date')
+        .order('date', { ascending: false })
+        .limit(1);
+
+      if (!latestData || latestData.length === 0) return;
+
+      const latestDate = new Date(latestData[0].date);
+      const startDate = new Date(latestDate);
+
+      // For YTD, use current year's start
+      if (selectedTimeframe === new Date().getMonth()) {
+        startDate.setFullYear(new Date().getFullYear(), 0, 1); // January 1st of current year
+      } else {
+        // For other timeframes, go back X-1 months from latest date
+        // We subtract 1 from the selectedTimeframe because we want the current month plus X-1 previous months
+        startDate.setMonth(latestDate.getMonth() - (selectedTimeframe - 1));
+        startDate.setDate(1);
+      }
+
       startDate.setHours(0, 0, 0, 0);
-      
-      // Set end date to last moment of current month
-      endDate.setHours(23, 59, 59, 999);
 
       const { data: response, error } = await supabase
         .from('LNG Information')
         .select('date, Total_Cargoes')
         .gte('date', startDate.toISOString())
-        .lte('date', endDate.toISOString())
+        .lte('date', latestDate.toISOString())
         .order('date', { ascending: true });
 
       if (error) {
@@ -135,3 +147,4 @@ export function TotalCargoesChart() {
     </Card>
   );
 }
+
