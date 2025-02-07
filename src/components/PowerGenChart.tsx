@@ -84,37 +84,41 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
           .filter((item): item is PowerGenData => {
             return item !== null && typeof item.date === 'string';
           })
-          .map((item, index, array) => {
-            const currentValue = Number(item[dataKey]) || 0;
-            let percentageChange = 0;
-            
-            if (index > 0) {
-              const previousValue = Number(array[index - 1][dataKey]) || 0;
-              percentageChange = previousValue !== 0 
-                ? ((currentValue - previousValue) / previousValue) * 100 
-                : 0;
-            }
-
-            // Calculate moving average (3-month window)
-            let movingAverage = currentValue;
-            if (index >= 2) {
-              const sum = array
-                .slice(Math.max(0, index - 2), index + 1)
-                .reduce((acc, curr) => acc + (Number(curr[dataKey]) || 0), 0);
-              movingAverage = sum / 3;
-            }
-
-            return {
-              month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
-              date: new Date(item.date),
-              value: currentValue,
-              percentageChange: percentageChange,
-              movingAverage: movingAverage
-            };
-          })
+          .map((item) => ({
+            month: new Date(item.date).toLocaleString('default', { month: 'short', year: '2-digit' }),
+            date: new Date(item.date),
+            value: Number(item[dataKey]) || 0
+          }))
           .sort((a, b) => a.date.getTime() - b.date.getTime());
 
-        setData(transformedData);
+        // Calculate moving average
+        const finalData = transformedData.map((item, index, array) => {
+          // Calculate percentage change
+          let percentageChange = 0;
+          if (index > 0) {
+            const previousValue = array[index - 1].value;
+            percentageChange = previousValue !== 0 
+              ? ((item.value - previousValue) / previousValue) * 100 
+              : 0;
+          }
+
+          // Calculate 3-month moving average
+          let movingAverage = item.value;
+          if (index >= 2) {
+            const sum = array
+              .slice(Math.max(0, index - 2), index + 1)
+              .reduce((acc, curr) => acc + curr.value, 0);
+            movingAverage = sum / 3;
+          }
+
+          return {
+            ...item,
+            percentageChange,
+            movingAverage
+          };
+        });
+
+        setData(finalData);
         setError(null);
       } catch (err) {
         console.error('Error in fetchData:', err);
@@ -237,4 +241,3 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
     </div>
   );
 }
-
