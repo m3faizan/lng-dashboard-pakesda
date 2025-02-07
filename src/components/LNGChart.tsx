@@ -41,14 +41,14 @@ export function LNGChart() {
 
       // For YTD, use current year's start
       if (selectedTimeframe === new Date().getMonth()) {
-        startDate.setMonth(0);
-        startDate.setDate(1);
+        startDate.setFullYear(new Date().getFullYear(), 0, 1); // January 1st of current year
       } else {
-        // For other timeframes, go back X months from latest date
-        startDate.setMonth(latestDate.getMonth() - selectedTimeframe);
+        // For other timeframes, go back X-1 months from latest date
+        // We subtract 1 from the selectedTimeframe because we want the current month plus X-1 previous months
+        startDate.setMonth(latestDate.getMonth() - (selectedTimeframe - 1));
+        startDate.setDate(1);
       }
       
-      startDate.setDate(1);
       startDate.setHours(0, 0, 0, 0);
       
       const { data: lngData, error } = await supabase
