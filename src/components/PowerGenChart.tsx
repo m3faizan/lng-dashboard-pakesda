@@ -6,7 +6,6 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-  Line,
 } from "recharts";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,7 +33,6 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
   const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [showPercentage, setShowPercentage] = useState(false);
-  const [showAverage, setShowAverage] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,7 +78,7 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
           return;
         }
 
-        const transformedData = powerGenData
+        const finalData = powerGenData
           .filter((item): item is PowerGenData => {
             return item !== null && typeof item.date === 'string';
           })
@@ -89,34 +87,22 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
             date: new Date(item.date),
             value: Number(item[dataKey]) || 0
           }))
-          .sort((a, b) => a.date.getTime() - b.date.getTime());
+          .sort((a, b) => a.date.getTime() - b.date.getTime())
+          .map((item, index, array) => {
+            // Calculate percentage change
+            let percentageChange = 0;
+            if (index > 0) {
+              const previousValue = array[index - 1].value;
+              percentageChange = previousValue !== 0 
+                ? ((item.value - previousValue) / previousValue) * 100 
+                : 0;
+            }
 
-        // Calculate moving average
-        const finalData = transformedData.map((item, index, array) => {
-          // Calculate percentage change
-          let percentageChange = 0;
-          if (index > 0) {
-            const previousValue = array[index - 1].value;
-            percentageChange = previousValue !== 0 
-              ? ((item.value - previousValue) / previousValue) * 100 
-              : 0;
-          }
-
-          // Calculate 3-month moving average
-          let movingAverage = item.value;
-          if (index >= 2) {
-            const sum = array
-              .slice(Math.max(0, index - 2), index + 1)
-              .reduce((acc, curr) => acc + curr.value, 0);
-            movingAverage = sum / 3;
-          }
-
-          return {
-            ...item,
-            percentageChange,
-            movingAverage
-          };
-        });
+            return {
+              ...item,
+              percentageChange,
+            };
+          });
 
         setData(finalData);
         setError(null);
@@ -171,13 +157,6 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
           >
             %
           </Toggle>
-          <Toggle
-            pressed={showAverage}
-            onPressedChange={setShowAverage}
-            className="px-4 py-2 text-sm font-medium bg-transparent hover:bg-gray-700/50 data-[state=on]:bg-gray-700"
-          >
-            Avg.
-          </Toggle>
         </div>
       </div>
       
@@ -224,17 +203,6 @@ export function PowerGenChart({ dataKey, color, valueFormatter, label, className
               fillOpacity={1}
               fill={`url(#color${dataKey})`}
             />
-            {showAverage && (
-              <Line
-                type="monotone"
-                dataKey="movingAverage"
-                stroke="#FFFFFF"
-                strokeDasharray="5 5"
-                dot={false}
-                strokeWidth={2}
-                name="Moving Average"
-              />
-            )}
           </AreaChart>
         </ResponsiveContainer>
       </div>
