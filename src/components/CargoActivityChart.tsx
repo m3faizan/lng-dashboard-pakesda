@@ -1,3 +1,4 @@
+
 import {
   BarChart,
   Bar,
@@ -15,53 +16,99 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 type Period = "monthly" | "quarterly" | "yearly";
-
-const generateData = (period: Period) => {
-  const currentDate = new Date();
-  const data = [];
-  
-  switch (period) {
-    case "monthly":
-      for (let i = 11; i >= 0; i--) {
-        const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-        data.push({
-          period: date.toLocaleString('default', { month: 'short', year: '2-digit' }),
-          EETL: Math.floor(Math.random() * (15 - 5) + 5),
-          PGPCL: Math.floor(Math.random() * (15 - 5) + 5),
-        });
-      }
-      break;
-    case "quarterly":
-      for (let i = 3; i >= 0; i--) {
-        const quarterMonth = Math.floor((currentDate.getMonth() - (i * 3)) / 3) * 3;
-        const date = new Date(currentDate.getFullYear(), quarterMonth, 1);
-        data.push({
-          period: `Q${Math.floor(date.getMonth() / 3) + 1} '${date.getFullYear().toString().slice(-2)}`,
-          EETL: Math.floor(Math.random() * (45 - 15) + 15),
-          PGPCL: Math.floor(Math.random() * (45 - 15) + 15),
-        });
-      }
-      break;
-    case "yearly":
-      for (let i = 4; i >= 0; i--) {
-        const year = currentDate.getFullYear() - i;
-        data.push({
-          period: year.toString(),
-          EETL: Math.floor(Math.random() * (180 - 60) + 60),
-          PGPCL: Math.floor(Math.random() * (180 - 60) + 60),
-        });
-      }
-      break;
-  }
-  return data;
+type SeriesVisibility = {
+  EETL: boolean;
+  PGPCL: boolean;
 };
+
+interface CargoData {
+  date: string;
+  EETL_cargo: number | null;
+  PGPCL_cargo: number | null;
+}
 
 export function CargoActivityChart() {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("monthly");
-  const data = useMemo(() => generateData(selectedPeriod), [selectedPeriod]);
+  const [data, setData] = useState<any[]>([]);
+  const [seriesVisibility, setSeriesVisibility] = useState<SeriesVisibility>({
+    EETL: true,
+    PGPCL: true,
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data: latestData, error: latestError } = await supabase
+          .from('LNG Information')
+          .select('date,EETL_cargo,PGPCL_cargo')
+          .order('date', { ascending: false })
+          .limit(1);
+
+        if (latestError) throw latestError;
+        if (!latestData || latestData.length === 0) return;
+
+        const latestDate = new Date(latestData[0].date);
+        const startDate = new Date(latestDate);
+
+        // Calculate start date based on selected timeframe
+        if (selectedPeriod === "monthly") {
+          startDate.setMonth(startDate.getMonth() - 11);
+        } else if (selectedPeriod === "quarterly") {
+          startDate.setMonth(startDate.getMonth() - 11);
+        } else {
+          startDate.setFullYear(startDate.getFullYear() - 4);
+        }
+
+        const { data: cargoData, error: fetchError } = await supabase
+          .from('LNG Information')
+          .select('date,EETL_cargo,PGPCL_cargo')
+          .gte('date', startDate.toISOString())
+          .lte('date', latestDate.toISOString())
+          .order('date', { ascending: true });
+
+        if (fetchError) throw fetchError;
+        if (!cargoData) return;
+
+        const transformedData = cargoData
+          .filter((item): item is CargoData => item !== null && typeof item.date === 'string')
+          .map(item => {
+            const date = new Date(item.date);
+            let period;
+            
+            if (selectedPeriod === "monthly") {
+              period = date.toLocaleString('default', { month: 'short', year: '2-digit' });
+            } else if (selectedPeriod === "quarterly") {
+              period = `Q${Math.floor(date.getMonth() / 3) + 1} '${date.getFullYear().toString().slice(-2)}`;
+            } else {
+              period = date.getFullYear().toString();
+            }
+
+            return {
+              period,
+              EETL: Number(item.EETL_cargo) || 0,
+              PGPCL: Number(item.PGPCL_cargo) || 0,
+            };
+          });
+
+        setData(transformedData);
+      } catch (err) {
+        console.error('Error fetching cargo data:', err);
+      }
+    };
+
+    fetchData();
+  }, [selectedPeriod]);
+
+  const handleLegendClick = (dataKey: string) => {
+    setSeriesVisibility(prev => ({
+      ...prev,
+      [dataKey]: !prev[dataKey as keyof SeriesVisibility],
+    }));
+  };
 
   return (
     <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden">
@@ -114,9 +161,22 @@ export function CargoActivityChart() {
                 paddingTop: "12px",
                 fontSize: "12px",
               }}
+              onClick={(e) => handleLegendClick(e.dataKey)}
             />
-            <Bar dataKey="EETL" stackId="a" fill="#4ADE80" name="EETL Terminal" />
-            <Bar dataKey="PGPCL" stackId="a" fill="#0EA5E9" name="PGPCL Terminal" />
+            <Bar
+              dataKey="EETL"
+              stackId="a"
+              fill="#4ADE80"
+              name="EETL Terminal"
+              opacity={seriesVisibility.EETL ? 1 : 0.3}
+            />
+            <Bar
+              dataKey="PGPCL"
+              stackId="a"
+              fill="#0EA5E9"
+              name="PGPCL Terminal"
+              opacity={seriesVisibility.PGPCL ? 1 : 0.3}
+            />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>

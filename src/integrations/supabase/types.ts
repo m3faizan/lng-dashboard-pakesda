@@ -12,31 +12,37 @@ export type Database = {
       "LNG Information": {
         Row: {
           date: string | null
-          id: number | null
+          EETL_cargo: number | null
+          id: number
           import_Volume: number | null
           LT_Volume: number | null
           num_Long_Term_Cargoes: number | null
           num_Spot_Cargoes: number | null
+          PGPCL_cargo: number | null
           Spot_Volume: number | null
           Total_Cargoes: number | null
         }
         Insert: {
           date?: string | null
-          id?: number | null
+          EETL_cargo?: number | null
+          id: number
           import_Volume?: number | null
           LT_Volume?: number | null
           num_Long_Term_Cargoes?: number | null
           num_Spot_Cargoes?: number | null
+          PGPCL_cargo?: number | null
           Spot_Volume?: number | null
           Total_Cargoes?: number | null
         }
         Update: {
           date?: string | null
-          id?: number | null
+          EETL_cargo?: number | null
+          id?: number
           import_Volume?: number | null
           LT_Volume?: number | null
           num_Long_Term_Cargoes?: number | null
           num_Spot_Cargoes?: number | null
+          PGPCL_cargo?: number | null
           Spot_Volume?: number | null
           Total_Cargoes?: number | null
         }
