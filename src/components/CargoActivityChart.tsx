@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ChartTooltip } from "./charts/shared/ChartTooltip";
 
 type Period = "monthly" | "quarterly" | "yearly";
 type SeriesVisibility = {
@@ -35,10 +34,7 @@ interface CargoData {
 export function CargoActivityChart() {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("monthly");
   const [data, setData] = useState<any[]>([]);
-  const [seriesVisibility, setSeriesVisibility] = useState<SeriesVisibility>({
-    EETL: true,
-    PGPCL: true,
-  });
+  const [selectedSeries, setSelectedSeries] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -137,10 +133,7 @@ export function CargoActivityChart() {
   }, [selectedPeriod]);
 
   const handleLegendClick = (dataKey: string) => {
-    setSeriesVisibility(prev => ({
-      ...prev,
-      [dataKey]: !prev[dataKey as keyof SeriesVisibility],
-    }));
+    setSelectedSeries(prev => prev === dataKey ? null : dataKey);
   };
 
   const CustomTooltip = ({ active, payload }: any) => {
@@ -158,6 +151,19 @@ export function CargoActivityChart() {
           </div>
         ))}
       </div>
+    );
+  };
+
+  const renderLegendText = (value: string) => {
+    return (
+      <span
+        style={{
+          color: selectedSeries && selectedSeries !== value ? '#666666' : '#ffffff',
+          cursor: 'pointer'
+        }}
+      >
+        {value === 'EETL' ? 'EETL Terminal' : 'PGPCL Terminal'}
+      </span>
     );
   };
 
@@ -211,20 +217,19 @@ export function CargoActivityChart() {
                   handleLegendClick(e.dataKey);
                 }
               }}
+              formatter={renderLegendText}
             />
             <Bar
               dataKey="EETL"
-              stackId="a"
               fill="#4ADE80"
               name="EETL Terminal"
-              opacity={seriesVisibility.EETL ? 1 : 0.3}
+              hide={selectedSeries !== null && selectedSeries !== "EETL"}
             />
             <Bar
               dataKey="PGPCL"
-              stackId="a"
               fill="#0EA5E9"
               name="PGPCL Terminal"
-              opacity={seriesVisibility.PGPCL ? 1 : 0.3}
+              hide={selectedSeries !== null && selectedSeries !== "PGPCL"}
             />
           </BarChart>
         </ResponsiveContainer>
