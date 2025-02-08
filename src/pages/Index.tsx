@@ -74,12 +74,25 @@ export default function Index() {
   const { toast } = useToast();
   const [kpiData, setKpiData] = useState<KPIData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [latestDate, setLatestDate] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchKPIData = async () => {
       try {
         // Get latest and previous month data for LNG Information
         const { data: lngInfo } = await supabase
+          .from('LNG Information')
+          .select('date')
+          .order('date', { ascending: false })
+          .limit(1);
+
+        if (lngInfo && lngInfo[0]?.date) {
+          const dateObj = new Date(lngInfo[0].date);
+          setLatestDate(dateObj.toLocaleString('default', { month: 'long', year: 'numeric' }));
+        }
+
+        // Get latest and previous month data for LNG Information
+        const { data: lngInfoData } = await supabase
           .from('LNG Information')
           .select('date, import_Volume, Total_Cargoes')
           .order('date', { ascending: false })
@@ -99,24 +112,24 @@ export default function Index() {
           .order('date', { ascending: false })
           .limit(2);
 
-        if (lngInfo && priceInfo && powerInfo) {
+        if (lngInfoData && priceInfo && powerInfo) {
           const calculateTrend = (current: number, previous: number) => {
             return previous ? ((current - previous) / previous) * 100 : 0;
           };
 
           setKpiData({
             imports: {
-              value: lngInfo[0]?.import_Volume || 0,
+              value: lngInfoData[0]?.import_Volume || 0,
               trend: calculateTrend(
-                lngInfo[0]?.import_Volume || 0,
-                lngInfo[1]?.import_Volume || 0
+                lngInfoData[0]?.import_Volume || 0,
+                lngInfoData[1]?.import_Volume || 0
               ),
             },
             cargoes: {
-              value: lngInfo[0]?.Total_Cargoes || 0,
+              value: lngInfoData[0]?.Total_Cargoes || 0,
               trend: calculateTrend(
-                lngInfo[0]?.Total_Cargoes || 0,
-                lngInfo[1]?.Total_Cargoes || 0
+                lngInfoData[0]?.Total_Cargoes || 0,
+                lngInfoData[1]?.Total_Cargoes || 0
               ),
             },
             price: {
@@ -182,14 +195,13 @@ export default function Index() {
           <div className="space-y-8 animate-fade-in max-w-[1400px] mx-auto">
             <div className="flex justify-between items-center">
               <h1 className="text-2xl font-bold text-left">LNG Dashboard</h1>
-              <div className="flex gap-4">
-                <span className="text-sm text-muted-foreground">As of:</span>
-                <button className="p-2 rounded-full bg-dashboard-navy">
-                  <Zap className="h-5 w-5 text-muted-foreground" />
-                </button>
-              </div>
+              {latestDate && (
+                <div className="bg-[#1A1E2D] rounded-md px-3 py-1.5 text-xs">
+                  <span className="text-muted-foreground">As of: {latestDate}</span>
+                </div>
+              )}
             </div>
-
+            
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <KPICard
                 title="Total LNG Imports"

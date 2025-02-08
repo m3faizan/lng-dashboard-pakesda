@@ -48,8 +48,8 @@ export default function PriceMetrics() {
             <div className="flex justify-between items-center">
               <h1 className="text-2xl font-bold text-left">Price Metrics</h1>
               {latestDate && (
-                <div className="border border-border rounded-md px-4 py-2">
-                  <span className="text-sm">As of: {latestDate}</span>
+                <div className="bg-[#1A1E2D] rounded-md px-3 py-1.5 text-xs">
+                  <span className="text-muted-foreground">As of: {latestDate}</span>
                 </div>
               )}
             </div>
