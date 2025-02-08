@@ -161,7 +161,11 @@ export function CargoActivityChart() {
                 paddingTop: "12px",
                 fontSize: "12px",
               }}
-              onClick={(e) => handleLegendClick(e.dataKey)}
+              onClick={(e) => {
+                if (typeof e.dataKey === 'string') {
+                  handleLegendClick(e.dataKey);
+                }
+              }}
             />
             <Bar
               dataKey="EETL"
