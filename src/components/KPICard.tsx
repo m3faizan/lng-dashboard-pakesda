@@ -1,10 +1,11 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface KPICardProps {
   title: string;
   value: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   trend?: {
     value: number;
     isPositive: boolean;
@@ -34,9 +35,11 @@ export function KPICard({ title, value, icon, trend, className, type = 'share' }
         <CardTitle className="text-sm font-medium text-muted-foreground text-left">
           {title}
         </CardTitle>
-        <div className="h-8 w-8 rounded-full bg-dashboard-dark/50 flex items-center justify-center">
-          {icon}
-        </div>
+        {icon && (
+          <div className="h-8 w-8 rounded-full bg-dashboard-dark/50 flex items-center justify-center">
+            {icon}
+          </div>
+        )}
       </CardHeader>
       <CardContent className="h-[100px] flex flex-col">
         <div className="text-2xl font-bold text-left mb-auto">{value}</div>

@@ -1,4 +1,3 @@
-
 import { KPICard } from "@/components/KPICard";
 import { Ship, Package, DollarSign } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -85,19 +84,16 @@ export function TerminalKPICards() {
       <KPICard
         title="Cargoes at EETL"
         value={cargoData.EETL !== null ? Math.round(cargoData.EETL).toString() : "Loading..."}
-        icon={<Ship className="h-4 w-4 text-dashboard-green" />}
         trend={calculateTrend(cargoData.EETL, cargoData.prevEETL)}
       />
       <KPICard
         title="Cargoes at PGPCL"
         value={cargoData.PGPCL !== null ? Math.round(cargoData.PGPCL).toString() : "Loading..."}
-        icon={<Package className="h-4 w-4 text-dashboard-green" />}
         trend={calculateTrend(cargoData.PGPCL, cargoData.prevPGPCL)}
       />
       <KPICard
         title="Terminal Charges"
         value={portCharges.current !== null ? `$${portCharges.current.toFixed(2)}/MMBtu` : "Loading..."}
-        icon={<DollarSign className="h-4 w-4 text-dashboard-green" />}
         trend={calculateTrend(portCharges.current, portCharges.previous)}
         type="cost"
       />
