@@ -1,3 +1,4 @@
+
 import { ImportVolumeChart } from "@/components/ImportVolumeChart";
 import { LNGBarChart } from "@/components/LNGBarChart";
 import { KPICard } from "@/components/KPICard";
@@ -18,6 +19,7 @@ interface KPIData {
 export default function ImportStatistics() {
   const [kpiData, setKpiData] = useState<KPIData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [latestDate, setLatestDate] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -37,7 +39,10 @@ export default function ImportStatistics() {
           .order('date', { ascending: false })
           .limit(2);
 
-        if (powerGenData && lngInfo) {
+        if (powerGenData && lngInfo && powerGenData[0]?.date) {
+          const dateObj = new Date(powerGenData[0].date);
+          setLatestDate(dateObj.toLocaleString('default', { month: 'long', year: 'numeric' }));
+          
           const calculateTrend = (current: number, previous: number) => {
             return previous ? ((current - previous) / previous) * 100 : 0;
           };
@@ -94,7 +99,14 @@ export default function ImportStatistics() {
         <AppSidebar />
         <main className="flex-1 p-8 overflow-auto">
           <div className="space-y-8 animate-fade-in max-w-[1400px] mx-auto">
-            <h1 className="text-2xl font-bold">Import Statistics</h1>
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-bold text-left">Import Statistics</h1>
+              {latestDate && (
+                <div className="border border-border rounded-md px-4 py-2">
+                  <span className="text-sm">As of: {latestDate}</span>
+                </div>
+              )}
+            </div>
             
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <KPICard
