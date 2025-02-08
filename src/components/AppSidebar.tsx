@@ -29,6 +29,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { cn } from "@/lib/utils";
 
 interface AppSidebarProps {
   onLogout?: () => void;
@@ -38,6 +39,11 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const isMobile = useIsMobile();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [currentPath, setCurrentPath] = useState("");
+
+  useEffect(() => {
+    setCurrentPath(window.location.pathname);
+  }, []);
 
   const handleItemClick = (item: any) => {
     if (item.isLogout && onLogout) {
@@ -77,7 +83,10 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
                   <SidebarMenuButton
                     asChild={!item.isLogout}
                     onClick={() => handleItemClick(item)}
-                    className="transition-all duration-200 hover:bg-dashboard-navy/50 group-hover:translate-x-1"
+                    className={cn(
+                      "transition-all duration-200 hover:bg-dashboard-navy/50 group-hover:translate-x-1",
+                      currentPath === item.url && "bg-dashboard-navy/50 font-medium"
+                    )}
                   >
                     {item.isLogout ? (
                       <button className="flex w-full items-center gap-2">
