@@ -162,7 +162,7 @@ export function CargoActivityChart() {
           cursor: 'pointer'
         }}
       >
-        {value === 'EETL' ? 'EETL Terminal' : 'PGPCL Terminal'}
+        {value}
       </span>
     );
   };
@@ -221,12 +221,14 @@ export function CargoActivityChart() {
             />
             <Bar
               dataKey="EETL"
+              stackId="stack"
               fill="#4ADE80"
               name="EETL Terminal"
               hide={selectedSeries !== null && selectedSeries !== "EETL"}
             />
             <Bar
               dataKey="PGPCL"
+              stackId="stack"
               fill="#0EA5E9"
               name="PGPCL Terminal"
               hide={selectedSeries !== null && selectedSeries !== "PGPCL"}
