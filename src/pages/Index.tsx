@@ -181,11 +181,9 @@ export default function Index() {
         <main className="flex-1 p-8 overflow-auto">
           <div className="space-y-8 animate-fade-in max-w-[1400px] mx-auto">
             <div className="flex justify-between items-center">
-              <h1 className="text-3xl font-bold">LNG Dashboard</h1>
+              <h1 className="text-2xl font-bold text-left">LNG Dashboard</h1>
               <div className="flex gap-4">
-                <button className="p-2 rounded-full bg-dashboard-navy">
-                  <Ship className="h-5 w-5 text-muted-foreground" />
-                </button>
+                <span className="text-sm text-muted-foreground">As of:</span>
                 <button className="p-2 rounded-full bg-dashboard-navy">
                   <Zap className="h-5 w-5 text-muted-foreground" />
                 </button>
