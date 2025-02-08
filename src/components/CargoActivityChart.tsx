@@ -73,26 +73,56 @@ export function CargoActivityChart() {
         if (fetchError) throw fetchError;
         if (!cargoData) return;
 
-        const transformedData = cargoData
-          .filter((item): item is CargoData => item !== null && typeof item.date === 'string')
-          .map(item => {
-            const date = new Date(item.date);
-            let period;
-            
-            if (selectedPeriod === "monthly") {
-              period = date.toLocaleString('default', { month: 'short', year: '2-digit' });
-            } else if (selectedPeriod === "quarterly") {
-              period = `Q${Math.floor(date.getMonth() / 3) + 1} '${date.getFullYear().toString().slice(-2)}`;
-            } else {
-              period = date.getFullYear().toString();
-            }
+        // Create a map to aggregate data by period
+        const aggregatedData = new Map();
 
+        cargoData.forEach((item: CargoData) => {
+          if (!item || !item.date) return;
+          
+          const date = new Date(item.date);
+          let periodKey;
+          
+          if (selectedPeriod === "monthly") {
+            periodKey = date.toLocaleString('default', { month: 'short', year: '2-digit' });
+          } else if (selectedPeriod === "quarterly") {
+            const quarter = Math.floor(date.getMonth() / 3) + 1;
+            periodKey = `Q${quarter} '${date.getFullYear().toString().slice(-2)}`;
+          } else {
+            periodKey = date.getFullYear().toString();
+          }
+
+          if (!aggregatedData.has(periodKey)) {
+            aggregatedData.set(periodKey, {
+              period: periodKey,
+              EETL: 0,
+              PGPCL: 0,
+              count: 0
+            });
+          }
+
+          const current = aggregatedData.get(periodKey);
+          current.EETL += Number(item.EETL_cargo) || 0;
+          current.PGPCL += Number(item.PGPCL_cargo) || 0;
+          current.count += 1;
+        });
+
+        // Convert aggregated data to final format
+        const transformedData = Array.from(aggregatedData.values()).map(item => {
+          // For monthly and quarterly, we want the average
+          if (selectedPeriod !== "yearly") {
             return {
-              period,
-              EETL: Number(item.EETL_cargo) || 0,
-              PGPCL: Number(item.PGPCL_cargo) || 0,
+              period: item.period,
+              EETL: item.EETL / item.count,
+              PGPCL: item.PGPCL / item.count
             };
-          });
+          }
+          // For yearly, we want the total
+          return {
+            period: item.period,
+            EETL: item.EETL,
+            PGPCL: item.PGPCL
+          };
+        });
 
         setData(transformedData);
       } catch (err) {
