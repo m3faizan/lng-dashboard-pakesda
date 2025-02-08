@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ChartTooltip } from "./charts/shared/ChartTooltip";
 
 type Period = "monthly" | "quarterly" | "yearly";
 type SeriesVisibility = {
@@ -42,32 +43,15 @@ export function CargoActivityChart() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data: latestData, error: latestError } = await supabase
-          .from('LNG Information')
-          .select('date,EETL_cargo,PGPCL_cargo')
-          .order('date', { ascending: false })
-          .limit(1);
-
-        if (latestError) throw latestError;
-        if (!latestData || latestData.length === 0) return;
-
-        const latestDate = new Date(latestData[0].date);
-        const startDate = new Date(latestDate);
-
-        // Calculate start date based on selected timeframe
-        if (selectedPeriod === "monthly") {
-          startDate.setMonth(startDate.getMonth() - 11);
-        } else if (selectedPeriod === "quarterly") {
-          startDate.setMonth(startDate.getMonth() - 11);
-        } else {
-          startDate.setFullYear(startDate.getFullYear() - 4);
-        }
+        // Use fixed date range from Jan 2019 to Dec 2024
+        const startDate = new Date('2019-01-01');
+        const endDate = new Date('2024-12-31');
 
         const { data: cargoData, error: fetchError } = await supabase
           .from('LNG Information')
           .select('date,EETL_cargo,PGPCL_cargo')
           .gte('date', startDate.toISOString())
-          .lte('date', latestDate.toISOString())
+          .lte('date', endDate.toISOString())
           .order('date', { ascending: true });
 
         if (fetchError) throw fetchError;
@@ -112,16 +96,35 @@ export function CargoActivityChart() {
           if (selectedPeriod !== "yearly") {
             return {
               period: item.period,
-              EETL: item.EETL / item.count,
-              PGPCL: item.PGPCL / item.count
+              EETL: Math.round(item.EETL / item.count),
+              PGPCL: Math.round(item.PGPCL / item.count)
             };
           }
           // For yearly, we want the total
           return {
             period: item.period,
-            EETL: item.EETL,
-            PGPCL: item.PGPCL
+            EETL: Math.round(item.EETL),
+            PGPCL: Math.round(item.PGPCL)
           };
+        });
+
+        // Sort the data chronologically
+        transformedData.sort((a, b) => {
+          if (selectedPeriod === "monthly") {
+            const [aMonth, aYear] = a.period.split(" ");
+            const [bMonth, bYear] = b.period.split(" ");
+            if (aYear !== bYear) return aYear.localeCompare(bYear);
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            return months.indexOf(aMonth) - months.indexOf(bMonth);
+          } else if (selectedPeriod === "quarterly") {
+            const aQuarter = parseInt(a.period.split(" ")[0].substring(1));
+            const aYear = a.period.split(" ")[1];
+            const bQuarter = parseInt(b.period.split(" ")[0].substring(1));
+            const bYear = b.period.split(" ")[1];
+            if (aYear !== bYear) return aYear.localeCompare(bYear);
+            return aQuarter - bQuarter;
+          }
+          return a.period.localeCompare(b.period);
         });
 
         setData(transformedData);
@@ -138,6 +141,24 @@ export function CargoActivityChart() {
       ...prev,
       [dataKey]: !prev[dataKey as keyof SeriesVisibility],
     }));
+  };
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (!active || !payload?.length) return null;
+  
+    return (
+      <div className="bg-[#1A1E2D] border border-gray-700 rounded-lg p-3 text-sm shadow-lg">
+        <div className="text-gray-400 mb-1">{payload[0].payload.period}</div>
+        {payload.map((entry: any, index: number) => (
+          <div key={index} className="whitespace-nowrap text-white">
+            <span>{entry.name}: </span>
+            <span className="font-mono font-medium">
+              {Math.round(entry.value)}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -177,13 +198,7 @@ export function CargoActivityChart() {
               tickLine={false}
               axisLine={false}
             />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1A1E2D",
-                border: "none",
-                borderRadius: "8px",
-              }}
-            />
+            <Tooltip content={<CustomTooltip />} />
             <Legend 
               verticalAlign="bottom"
               height={36}
