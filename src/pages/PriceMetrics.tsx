@@ -43,7 +43,7 @@ export default function PriceMetrics() {
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
-        <main className="flex-1 p-8 overflow-auto">
+        <main className="flex-1 p-8 overflow-y-auto scrollbar-hide">
           <div className="space-y-8 animate-fade-in max-w-[1400px] mx-auto">
             <div className="flex justify-between items-center">
               <h1 className="text-2xl font-bold text-left">Price Metrics</h1>
