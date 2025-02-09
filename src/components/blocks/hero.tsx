@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -15,11 +16,12 @@ interface HeroProps extends React.HTMLAttributes<HTMLElement> {
     label: string
     href: string
     variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"
-    onClick?: () => void // Added onClick handler support
+    onClick?: () => void
   }>
   titleClassName?: string
   subtitleClassName?: string
   actionsClassName?: string
+  children?: React.ReactNode
 }
 
 const Hero = React.forwardRef<HTMLElement, HeroProps>(
@@ -34,6 +36,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
       titleClassName,
       subtitleClassName,
       actionsClassName,
+      children,
       ...props
     },
     ref,
@@ -158,6 +161,7 @@ const Hero = React.forwardRef<HTMLElement, HeroProps>(
             )}
           </div>
         </motion.div>
+        {children}
       </section>
     )
   },

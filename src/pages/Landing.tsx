@@ -41,46 +41,46 @@ export default function Landing() {
             onClick: handleGetStarted,
           },
         ]}
-      />
-      
-      <footer className="mt-auto pt-8 pb-4 text-center bg-[#0F1117]">
-        <div className="flex justify-center space-x-4 mb-3">
-          <a 
-            href="https://www.linkedin.com/company/pakesda/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="bg-[#1A1E2D] p-2 rounded-full hover:bg-[#252936] transition-colors"
-          >
-            <Linkedin size={20} />
-          </a>
-          <a 
-            href="https://x.com/pakesda" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="bg-[#1A1E2D] p-2 rounded-full hover:bg-[#252936] transition-colors"
-          >
-            <X size={20} />
-          </a>
-          <a 
-            href="https://pakistanenergydata.com/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="bg-[#1A1E2D] p-2 rounded-full hover:bg-[#252936] transition-colors"
-          >
-            <Globe size={20} />
-          </a>
-          <a 
-            href="#"
-            onClick={handleEmailClick}
-            className="bg-[#1A1E2D] p-2 rounded-full hover:bg-[#252936] transition-colors"
-          >
-            <Mail size={20} />
-          </a>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          © 2025 PakESDA. All rights reserved.
-        </p>
-      </footer>
+      >
+        <footer className="mt-auto pt-8 pb-4 text-center bg-[#0F1117]">
+          <div className="flex justify-center space-x-4 mb-3">
+            <a 
+              href="https://www.linkedin.com/company/pakesda/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="bg-[#1A1E2D] p-2 rounded-full hover:bg-[#252936] transition-colors"
+            >
+              <Linkedin size={20} />
+            </a>
+            <a 
+              href="https://x.com/pakesda" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="bg-[#1A1E2D] p-2 rounded-full hover:bg-[#252936] transition-colors"
+            >
+              <X size={20} />
+            </a>
+            <a 
+              href="https://pakistanenergydata.com/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="bg-[#1A1E2D] p-2 rounded-full hover:bg-[#252936] transition-colors"
+            >
+              <Globe size={20} />
+            </a>
+            <a 
+              href="#"
+              onClick={handleEmailClick}
+              className="bg-[#1A1E2D] p-2 rounded-full hover:bg-[#252936] transition-colors"
+            >
+              <Mail size={20} />
+            </a>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            © 2025 PakESDA. All rights reserved.
+          </p>
+        </footer>
+      </Hero>
     </div>
   );
 }
