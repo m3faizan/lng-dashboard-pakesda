@@ -14,8 +14,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 const CHART_MARGIN = { 
   top: 10, 
-  right: 20, 
-  left: 50, 
+  right: 30, 
+  left: 60, 
   bottom: 20 
 };
 
@@ -62,7 +62,7 @@ export function LNGDESPriceChart() {
 
   return (
     <ChartContainer title="LNG DES Price">
-      <div className="h-[200px] md:h-[280px] transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-2">
+      <div className="h-[250px] md:h-[320px] transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-2 md:p-4">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart 
             data={chartData}
@@ -71,7 +71,7 @@ export function LNGDESPriceChart() {
             <XAxis
               dataKey="date"
               stroke="#525252"
-              fontSize={11}
+              fontSize={12}
               tickLine={false}
               axisLine={false}
               height={50}
@@ -81,11 +81,11 @@ export function LNGDESPriceChart() {
             />
             <YAxis
               stroke="#525252"
-              fontSize={11}
+              fontSize={12}
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `$${value}`}
-              width={45}
+              width={50}
             />
             <Tooltip
               content={({ active, payload }) => (

@@ -12,12 +12,12 @@ interface ChartContainerProps {
 
 export function ChartContainer({ title, children, headerContent, className }: ChartContainerProps) {
   return (
-    <Card className={cn("bg-dashboard-navy border-0 h-[400px] md:h-[450px] mx-auto max-w-[900px]", className)}>
+    <Card className={cn("bg-dashboard-navy border-0 h-[450px] md:h-[450px]", className)}>
       <CardHeader className="flex flex-col items-center pb-2">
         <CardTitle className="text-lg font-semibold mb-4">{title}</CardTitle>
         {headerContent}
       </CardHeader>
-      <CardContent className="h-[200px] md:h-[280px] pt-4 md:pt-6">
+      <CardContent className="h-[250px] md:h-[320px] pt-4 md:pt-8">
         {children}
       </CardContent>
     </Card>
