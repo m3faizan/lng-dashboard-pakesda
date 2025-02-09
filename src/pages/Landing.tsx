@@ -42,7 +42,7 @@ export default function Landing() {
           },
         ]}
       >
-        <footer className="mt-auto pt-8 pb-4 text-center bg-[#0F1117]">
+        <footer className="mt-auto pt-8 pb-4 text-center">
           <div className="flex justify-center space-x-4 mb-3">
             <a 
               href="https://www.linkedin.com/company/pakesda/" 
