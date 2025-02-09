@@ -3,7 +3,7 @@ import { Hero } from "@/components/blocks/hero";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Linkedin, X } from "lucide-react";
+import { Linkedin, X, Globe, Mail } from "lucide-react";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -23,6 +23,11 @@ export default function Landing() {
     }
   };
 
+  const handleEmailClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    window.location.href = "mailto:pakenergydata@gmail.com";
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#0F1117] w-full absolute inset-0">
       <Hero
@@ -38,10 +43,10 @@ export default function Landing() {
         ]}
       />
       
-      <footer className="mt-auto pt-8 pb-4 text-center">
+      <footer className="mt-auto pt-8 pb-4 text-center bg-[#0F1117]">
         <div className="flex justify-center space-x-4 mb-3">
           <a 
-            href="https://linkedin.com" 
+            href="https://www.linkedin.com/company/pakesda/" 
             target="_blank" 
             rel="noopener noreferrer"
             className="bg-[#1A1E2D] p-2 rounded-full hover:bg-[#252936] transition-colors"
@@ -49,12 +54,27 @@ export default function Landing() {
             <Linkedin size={20} />
           </a>
           <a 
-            href="https://x.com" 
+            href="https://x.com/pakesda" 
             target="_blank" 
             rel="noopener noreferrer"
             className="bg-[#1A1E2D] p-2 rounded-full hover:bg-[#252936] transition-colors"
           >
             <X size={20} />
+          </a>
+          <a 
+            href="https://pakistanenergydata.com/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="bg-[#1A1E2D] p-2 rounded-full hover:bg-[#252936] transition-colors"
+          >
+            <Globe size={20} />
+          </a>
+          <a 
+            href="#"
+            onClick={handleEmailClick}
+            className="bg-[#1A1E2D] p-2 rounded-full hover:bg-[#252936] transition-colors"
+          >
+            <Mail size={20} />
           </a>
         </div>
         <p className="text-sm text-muted-foreground">
