@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import {
   Line,
@@ -11,7 +12,12 @@ import { ChartContainer } from "./shared/ChartContainer";
 import { ChartTooltip } from "./shared/ChartTooltip";
 import { supabase } from "@/integrations/supabase/client";
 
-const CHART_MARGIN = { top: 10, right: 30, left: 60, bottom: 20 };
+const CHART_MARGIN = { 
+  top: 10, 
+  right: 30, 
+  left: 60, 
+  bottom: 20 
+};
 
 export function LNGDESPriceChart() {
   const { data: chartData = [], isLoading, error } = useQuery({
@@ -56,7 +62,7 @@ export function LNGDESPriceChart() {
 
   return (
     <ChartContainer title="LNG DES Price">
-      <div className="h-[320px] transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-4">
+      <div className="h-[250px] md:h-[320px] transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-2 md:p-4">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart 
             data={chartData}
@@ -69,6 +75,9 @@ export function LNGDESPriceChart() {
               tickLine={false}
               axisLine={false}
               height={50}
+              angle={-45}
+              textAnchor="end"
+              interval="preserveStartEnd"
             />
             <YAxis
               stroke="#525252"
