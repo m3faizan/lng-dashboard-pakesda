@@ -17,9 +17,10 @@ export function ChartContainer({ title, children, headerContent, className }: Ch
         <CardTitle className="text-lg font-semibold mb-4">{title}</CardTitle>
         {headerContent}
       </CardHeader>
-      <CardContent className="h-[250px] md:h-[320px] pt-4 md:pt-8">
+      <CardContent className="h-[250px] md:h-[320px] pt-4 md:pt-8 pb-12">
         {children}
       </CardContent>
     </Card>
   );
 }
+
