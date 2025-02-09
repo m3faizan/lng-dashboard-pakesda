@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import {
   Line,
@@ -11,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ChartContainer } from "./shared/ChartContainer";
 import { ChartTooltip } from "./shared/ChartTooltip";
 
-const CHART_MARGIN = { top: 10, right: 30, left: 60, bottom: 20 };
+const CHART_MARGIN = { top: 10, right: 20, left: 50, bottom: 20 };
 
 export function ContractSlopeChart() {
   const { data: chartData = [], isLoading } = useQuery({
@@ -46,7 +47,7 @@ export function ContractSlopeChart() {
 
   return (
     <ChartContainer title="Contract Slope">
-      <div className="h-[320px] transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-4">
+      <div className="h-[200px] md:h-[280px] transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-2">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart 
             data={chartData}
@@ -55,18 +56,21 @@ export function ContractSlopeChart() {
             <XAxis
               dataKey="date"
               stroke="#525252"
-              fontSize={12}
+              fontSize={11}
               tickLine={false}
               axisLine={false}
               height={50}
+              angle={-45}
+              textAnchor="end"
+              interval="preserveStartEnd"
             />
             <YAxis
               stroke="#525252"
-              fontSize={12}
+              fontSize={11}
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `${value}%`}
-              width={50}
+              width={45}
             />
             <Tooltip
               content={({ active, payload }) => (
