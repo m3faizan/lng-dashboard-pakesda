@@ -23,3 +23,4 @@ export function ChartContainer({ title, children, headerContent, className }: Ch
     </Card>
   );
 }
+
