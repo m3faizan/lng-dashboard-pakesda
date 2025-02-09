@@ -24,7 +24,7 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#0F1117] w-full absolute inset-0">
       <Hero
         title="LNG"
         subtitle="Explore real-time LNG market insights and analytics"
