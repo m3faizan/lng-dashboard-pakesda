@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   LineChart,
@@ -20,7 +19,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 
 type ChartData = {
-  month: string;
+  period: string;
   value: number;
 };
 
@@ -72,7 +71,7 @@ export function LNGBarChart() {
         const value = showDESSlope ? Number(item.DES_Slope) : Number(item.wAvg_DES);
 
         return {
-          month: date.toLocaleString('default', { month: 'short', year: '2-digit' }),
+          period: date.toLocaleString('default', { month: 'short', year: '2-digit' }),
           value,
         };
       });
@@ -127,12 +126,15 @@ export function LNGBarChart() {
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
-              dataKey="month"
+              dataKey="period"
               stroke="#525252"
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              height={50}
+              angle={-45}
+              textAnchor="end"
+              height={60}
+              interval="preserveStartEnd"
             />
             <YAxis
               stroke="#525252"

@@ -148,7 +148,13 @@ export function ImportVolumeChart() {
             <XAxis
               dataKey="month"
               stroke="#94a3b8"
-              tick={{ fill: "#94a3b8" }}
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              angle={-45}
+              textAnchor="end"
+              height={60}
+              interval="preserveStartEnd"
             />
             <YAxis
               stroke="#94a3b8"

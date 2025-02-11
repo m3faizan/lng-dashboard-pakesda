@@ -90,6 +90,10 @@ export function ContractVolumesChart() {
               dataKey="date"
               stroke="#94a3b8"
               tick={{ fill: "#94a3b8" }}
+              angle={-45}
+              textAnchor="end"
+              height={60}
+              interval="preserveStartEnd"
             />
             <YAxis
               stroke="#94a3b8"
