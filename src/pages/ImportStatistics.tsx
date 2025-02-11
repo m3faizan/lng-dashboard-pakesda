@@ -1,3 +1,4 @@
+
 import { ImportVolumeChart } from "@/components/ImportVolumeChart";
 import { LNGBarChart } from "@/components/LNGBarChart";
 import { KPICard } from "@/components/KPICard";
@@ -8,6 +9,7 @@ import { ContractVolumesChart } from "@/components/ContractVolumesChart";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface KPIData {
   payment: { value: number; trend: number };
@@ -20,6 +22,7 @@ export default function ImportStatistics() {
   const [isLoading, setIsLoading] = useState(true);
   const [latestDate, setLatestDate] = useState<string | null>(null);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchLatestDate = async () => {
@@ -74,7 +77,7 @@ export default function ImportStatistics() {
 
           setKpiData({
             payment: {
-              value: (powerGenData[0]?.importPayment || 0) / 1000, // Convert to millions
+              value: (powerGenData[0]?.importPayment || 0) / 1000,
               trend: calculateTrend(
                 powerGenData[0]?.importPayment || 0,
                 powerGenData[1]?.importPayment || 0
@@ -111,21 +114,14 @@ export default function ImportStatistics() {
     fetchKPIData();
   }, [toast]);
 
-  const formatNumber = (value: number) => {
-    if (value >= 1000000) {
-      return `${(value / 1000000).toFixed(1)}M`;
-    }
-    return value.toFixed(1);
-  };
-
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
-        <main className="flex-1 p-8 overflow-auto">
-          <div className="space-y-8 animate-fade-in max-w-[1400px] mx-auto">
-            <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-left">Import Statistics</h1>
+        <main className="flex-1 p-4 md:p-8 overflow-auto">
+          <div className="space-y-6 md:space-y-8 animate-fade-in max-w-[1400px] mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
+              <h1 className="text-xl md:text-2xl font-bold text-left">Import Statistics</h1>
               {latestDate && (
                 <div className="bg-[#1A1E2D] rounded-md px-3 py-1.5 text-xs">
                   <span className="text-muted-foreground">As of: {latestDate}</span>
@@ -133,7 +129,7 @@ export default function ImportStatistics() {
               )}
             </div>
             
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               <KPICard
                 title="Import Payment"
                 value={`$${(kpiData?.payment.value || 0).toFixed(1)}M`}
@@ -166,7 +162,7 @@ export default function ImportStatistics() {
               />
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2">
               <ImportVolumeChart />
               <ContractVolumesChart />
             </div>
