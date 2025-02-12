@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import {
   Line,
@@ -11,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ChartContainer } from "./shared/ChartContainer";
 import { ChartTooltip } from "./shared/ChartTooltip";
 
-const CHART_MARGIN = { top: 10, right: 30, left: 60, bottom: 20 };
+const CHART_MARGIN = { top: 10, right: 30, left: 60, bottom: 40 };
 
 export function ContractSlopeChart() {
   const { data: chartData = [], isLoading } = useQuery({
@@ -58,7 +59,10 @@ export function ContractSlopeChart() {
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              height={50}
+              angle={-45}
+              textAnchor="end"
+              height={60}
+              interval="preserveStartEnd"
             />
             <YAxis
               stroke="#525252"
