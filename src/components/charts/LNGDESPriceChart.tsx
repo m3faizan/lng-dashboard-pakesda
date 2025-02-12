@@ -36,8 +36,8 @@ export function LNGDESPriceChart() {
   });
 
   const chartMargin = isMobile
-    ? { top: 10, right: 10, left: 40, bottom: 60 }
-    : { top: 10, right: 30, left: 60, bottom: 20 };
+    ? { top: 5, right: 5, left: 35, bottom: 50 }
+    : { top: 10, right: 30, left: 60, bottom: 40 };
 
   if (isLoading) {
     return (
@@ -61,7 +61,7 @@ export function LNGDESPriceChart() {
 
   return (
     <ChartContainer title="LNG DES Price">
-      <div className="h-full w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-2 md:p-4">
+      <div className="h-full w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart 
             data={chartData}
@@ -73,10 +73,11 @@ export function LNGDESPriceChart() {
               fontSize={isMobile ? 10 : 12}
               tickLine={false}
               axisLine={false}
-              height={60}
               angle={-45}
               textAnchor="end"
-              interval={isMobile ? 1 : "preserveStartEnd"}
+              height={45}
+              interval={isMobile ? "preserveEnd" : "preserveStartEnd"}
+              tickCount={isMobile ? 6 : undefined}
             />
             <YAxis
               stroke="#525252"
@@ -84,7 +85,7 @@ export function LNGDESPriceChart() {
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `$${value}`}
-              width={isMobile ? 40 : 50}
+              width={35}
             />
             <Tooltip
               content={({ active, payload }) => (

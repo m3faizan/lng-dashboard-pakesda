@@ -78,8 +78,8 @@ export function PriceTrendChart() {
   };
 
   const chartMargin = isMobile
-    ? { top: 10, right: 10, left: 40, bottom: 60 }
-    : { top: 10, right: 30, left: 60, bottom: 20 };
+    ? { top: 5, right: 5, left: 35, bottom: 50 }
+    : { top: 10, right: 30, left: 60, bottom: 40 };
 
   const YearSelector = (
     <Select
@@ -124,7 +124,7 @@ export function PriceTrendChart() {
       title="Price Trend" 
       headerContent={YearSelector}
     >
-      <div className="h-full w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-2 md:p-4">
+      <div className="h-full w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart 
             data={chartData}
@@ -138,8 +138,9 @@ export function PriceTrendChart() {
               axisLine={false}
               angle={-45}
               textAnchor="end"
-              height={60}
-              interval={isMobile ? 1 : "preserveStartEnd"}
+              height={45}
+              interval={isMobile ? "preserveEnd" : "preserveStartEnd"}
+              tickCount={isMobile ? 6 : undefined}
             />
             <YAxis
               stroke="#525252"
@@ -147,7 +148,7 @@ export function PriceTrendChart() {
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `$${value}`}
-              width={isMobile ? 40 : 50}
+              width={35}
             />
             <Tooltip
               content={({ active, payload }) => (
@@ -160,7 +161,10 @@ export function PriceTrendChart() {
             />
             <Legend 
               onClick={handleLegendClick}
-              wrapperStyle={{ paddingTop: isMobile ? "1rem" : "2rem" }}
+              wrapperStyle={{ 
+                paddingTop: isMobile ? "0.5rem" : "1rem",
+                marginBottom: isMobile ? "-0.5rem" : "0"
+              }}
               iconSize={isMobile ? 8 : 12}
               fontSize={isMobile ? 10 : 12}
             />
