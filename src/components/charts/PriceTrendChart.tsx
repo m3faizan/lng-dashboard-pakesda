@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import {
   Bar,
@@ -12,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState, useMemo } from "react";
 import { ChartContainer } from "./shared/ChartContainer";
 import { ChartTooltip } from "./shared/ChartTooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Select,
   SelectContent,
@@ -20,11 +22,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const CHART_MARGIN = { top: 10, right: 30, left: 60, bottom: 20 };
-
 export function PriceTrendChart() {
   const [selectedYear, setSelectedYear] = useState<string>("all");
   const [hiddenSeries, setHiddenSeries] = useState<string[]>([]);
+  const isMobile = useIsMobile();
 
   const { data: rawData = [], isLoading, error } = useQuery({
     queryKey: ["price-trend"],
@@ -76,32 +77,16 @@ export function PriceTrendChart() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <ChartContainer title="Price Trend">
-        <div className="h-full w-full flex items-center justify-center">
-          <p className="text-gray-500">Loading...</p>
-        </div>
-      </ChartContainer>
-    );
-  }
-
-  if (error) {
-    return (
-      <ChartContainer title="Price Trend">
-        <div className="h-full w-full flex items-center justify-center">
-          <p className="text-red-500">Error loading data</p>
-        </div>
-      </ChartContainer>
-    );
-  }
+  const chartMargin = isMobile
+    ? { top: 10, right: 10, left: 40, bottom: 60 }
+    : { top: 10, right: 30, left: 60, bottom: 20 };
 
   const YearSelector = (
     <Select
       value={selectedYear}
       onValueChange={setSelectedYear}
     >
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-[140px] md:w-[180px]">
         <SelectValue placeholder="Select year" />
       </SelectTrigger>
       <SelectContent>
@@ -114,30 +99,55 @@ export function PriceTrendChart() {
     </Select>
   );
 
+  if (isLoading) {
+    return (
+      <ChartContainer title="Price Trend" headerContent={YearSelector}>
+        <div className="h-full w-full flex items-center justify-center">
+          <p className="text-gray-500">Loading...</p>
+        </div>
+      </ChartContainer>
+    );
+  }
+
+  if (error) {
+    return (
+      <ChartContainer title="Price Trend" headerContent={YearSelector}>
+        <div className="h-full w-full flex items-center justify-center">
+          <p className="text-red-500">Error loading data</p>
+        </div>
+      </ChartContainer>
+    );
+  }
+
   return (
     <ChartContainer 
       title="Price Trend" 
       headerContent={YearSelector}
     >
-      <div className="h-[320px] transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-4">
+      <div className="h-full w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-2 md:p-4">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart 
             data={chartData}
-            margin={CHART_MARGIN}
+            margin={chartMargin}
           >
             <XAxis
               dataKey="date"
               stroke="#525252"
-              fontSize={12}
+              fontSize={isMobile ? 10 : 12}
               tickLine={false}
               axisLine={false}
+              angle={-45}
+              textAnchor="end"
+              height={60}
+              interval={isMobile ? 1 : "preserveStartEnd"}
             />
             <YAxis
               stroke="#525252"
-              fontSize={12}
+              fontSize={isMobile ? 10 : 12}
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `$${value}`}
+              width={isMobile ? 40 : 50}
             />
             <Tooltip
               content={({ active, payload }) => (
@@ -150,7 +160,9 @@ export function PriceTrendChart() {
             />
             <Legend 
               onClick={handleLegendClick}
-              wrapperStyle={{ paddingTop: "2rem" }}
+              wrapperStyle={{ paddingTop: isMobile ? "1rem" : "2rem" }}
+              iconSize={isMobile ? 8 : 12}
+              fontSize={isMobile ? 10 : 12}
             />
             <Bar
               dataKey="longTerm"

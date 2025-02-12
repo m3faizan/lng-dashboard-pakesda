@@ -11,10 +11,10 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { ChartContainer } from "./shared/ChartContainer";
 import { ChartTooltip } from "./shared/ChartTooltip";
-
-const CHART_MARGIN = { top: 10, right: 30, left: 60, bottom: 40 };
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function ContractSlopeChart() {
+  const isMobile = useIsMobile();
   const { data: chartData = [], isLoading } = useQuery({
     queryKey: ["contract-slope"],
     queryFn: async () => {
@@ -35,6 +35,10 @@ export function ContractSlopeChart() {
     },
   });
 
+  const chartMargin = isMobile
+    ? { top: 10, right: 10, left: 40, bottom: 60 }
+    : { top: 10, right: 30, left: 60, bottom: 40 };
+
   if (isLoading) {
     return (
       <ChartContainer title="Contract Slope">
@@ -47,30 +51,30 @@ export function ContractSlopeChart() {
 
   return (
     <ChartContainer title="Contract Slope">
-      <div className="h-[320px] transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-4">
+      <div className="h-full w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg rounded-lg p-2 md:p-4">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart 
             data={chartData}
-            margin={CHART_MARGIN}
+            margin={chartMargin}
           >
             <XAxis
               dataKey="date"
               stroke="#525252"
-              fontSize={12}
+              fontSize={isMobile ? 10 : 12}
               tickLine={false}
               axisLine={false}
               angle={-45}
               textAnchor="end"
               height={60}
-              interval="preserveStartEnd"
+              interval={isMobile ? 1 : "preserveStartEnd"}
             />
             <YAxis
               stroke="#525252"
-              fontSize={12}
+              fontSize={isMobile ? 10 : 12}
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `${value}%`}
-              width={50}
+              width={isMobile ? 40 : 50}
             />
             <Tooltip
               content={({ active, payload }) => (
