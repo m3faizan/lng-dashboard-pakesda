@@ -7,9 +7,10 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ChartContainer } from "./charts/shared/ChartContainer";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const timeframes = [
   { label: "3M", months: 3 },
@@ -24,6 +25,7 @@ export function TotalCargoesChart() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,74 +79,83 @@ export function TotalCargoesChart() {
     fetchData();
   }, [selectedTimeframe]);
 
+  const chartMargin = isMobile
+    ? { top: 5, right: 5, left: 35, bottom: 50 }
+    : { top: 10, right: 30, left: 50, bottom: 40 };
+
+  const timeframeButtons = (
+    <div className="flex gap-2">
+      {timeframes.map((tf) => (
+        <button
+          key={tf.label}
+          onClick={() => setSelectedTimeframe(tf.months)}
+          className={`px-3 py-1 rounded-md text-sm ${
+            selectedTimeframe === tf.months
+              ? "bg-dashboard-green text-black"
+              : "bg-dashboard-dark/50 text-muted-foreground hover:bg-dashboard-dark"
+          }`}
+        >
+          {tf.label}
+        </button>
+      ))}
+    </div>
+  );
+
   if (isLoading) {
     return (
-      <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all hover:ring-1 hover:ring-dashboard-blue/20">
+      <ChartContainer title="Total Number of Cargoes">
         <div className="flex items-center justify-center h-full">
           <p className="text-muted-foreground">Loading...</p>
         </div>
-      </Card>
+      </ChartContainer>
     );
   }
 
   return (
-    <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden">
-      <div className="flex flex-col items-center pt-6 pb-2">
-        <CardTitle className="text-lg font-semibold mb-4">Total Number of Cargoes</CardTitle>
-        <div className="flex gap-2">
-          {timeframes.map((tf) => (
-            <button
-              key={tf.label}
-              onClick={() => setSelectedTimeframe(tf.months)}
-              className={`px-3 py-1 rounded-md text-sm ${
-                selectedTimeframe === tf.months
-                  ? "bg-dashboard-green text-black"
-                  : "bg-dashboard-dark/50 text-muted-foreground hover:bg-dashboard-dark"
-              }`}
-            >
-              {tf.label}
-            </button>
-          ))}
-        </div>
-      </div>
-      <CardContent className="h-[400px] px-4">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart 
-            data={data}
-            margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
-          >
-            <XAxis
-              dataKey="month"
-              stroke="#525252"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
-            />
-            <YAxis
-              stroke="#525252"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1A1E2D",
-                border: "none",
-                borderRadius: "8px",
-              }}
-              formatter={(value: number) => [`${value}`, 'LNG Cargoes']}
-            />
-            <Line
-              type="monotone"
-              dataKey="cargoes"
-              stroke="#39FF14"
-              strokeWidth={2}
-              dot={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+    <ChartContainer 
+      title="Total Number of Cargoes"
+      headerContent={timeframeButtons}
+    >
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart 
+          data={data}
+          margin={chartMargin}
+        >
+          <XAxis
+            dataKey="month"
+            stroke="#525252"
+            fontSize={isMobile ? 10 : 12}
+            tickLine={false}
+            axisLine={false}
+            angle={-45}
+            textAnchor="end"
+            height={45}
+            interval={isMobile ? "preserveEnd" : "preserveStartEnd"}
+          />
+          <YAxis
+            stroke="#525252"
+            fontSize={isMobile ? 10 : 12}
+            tickLine={false}
+            axisLine={false}
+            width={isMobile ? 35 : 50}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "#1A1E2D",
+              border: "none",
+              borderRadius: "8px",
+            }}
+            formatter={(value: number) => [`${value}`, 'LNG Cargoes']}
+          />
+          <Line
+            type="monotone"
+            dataKey="cargoes"
+            stroke="#39FF14"
+            strokeWidth={2}
+            dot={false}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </ChartContainer>
   );
 }
-
