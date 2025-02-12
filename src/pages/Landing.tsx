@@ -33,7 +33,7 @@ export default function Landing() {
       <div className="container max-w-5xl mx-auto px-4">
         <Hero
           title="LNG"
-          subtitle="Explore real-time LNG market insights and analytics"
+          subtitle="Explore Pakistan's LNG market insights and analytics"
           actions={[
             {
               label: "Get Started",
