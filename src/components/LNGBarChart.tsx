@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   LineChart,
@@ -17,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type ChartData = {
   period: string;
@@ -27,6 +29,7 @@ export function LNGBarChart() {
   const [showDESSlope, setShowDESSlope] = useState(false);
   const [data, setData] = useState<ChartData[]>([]);
   const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,17 +102,21 @@ export function LNGBarChart() {
     { label: "Max", months: 120 },
   ];
 
+  const chartMargin = isMobile 
+    ? { top: 20, right: 10, left: 40, bottom: 60 }
+    : { top: 20, right: 30, left: 60, bottom: 20 };
+
   return (
-    <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden">
-      <div className="flex flex-col items-center pt-6">
-        <CardTitle className="text-xl font-semibold text-center mb-4">
+    <Card className="bg-dashboard-navy border-0 h-[350px] md:h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden">
+      <div className="flex flex-col items-center pt-4 md:pt-6">
+        <CardTitle className="text-lg md:text-xl font-semibold text-center mb-2 md:mb-4">
           LNG Price
         </CardTitle>
         <Select
           value={showDESSlope ? "slope" : "price"}
           onValueChange={(value) => setShowDESSlope(value === "slope")}
         >
-          <SelectTrigger className="w-[180px] mb-4 hover:bg-dashboard-navy/80">
+          <SelectTrigger className="w-[160px] md:w-[180px] mb-2 md:mb-4 hover:bg-dashboard-navy/80">
             <SelectValue placeholder="Select metric" />
           </SelectTrigger>
           <SelectContent>
@@ -118,35 +125,38 @@ export function LNGBarChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent className="h-[400px] px-4">
+      <CardContent className="h-[250px] md:h-[400px] px-2 md:px-4">
         <ResponsiveContainer width="100%" height="75%">
           <LineChart 
             data={data}
-            margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
+            margin={chartMargin}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="period"
               stroke="#525252"
-              fontSize={12}
+              fontSize={isMobile ? 10 : 12}
               tickLine={false}
               axisLine={false}
               angle={-45}
               textAnchor="end"
               height={60}
-              interval="preserveStartEnd"
+              interval={isMobile ? 1 : "preserveStartEnd"}
             />
             <YAxis
               stroke="#525252"
-              fontSize={12}
+              fontSize={isMobile ? 10 : 12}
               tickLine={false}
               axisLine={false}
-              width={60}
+              width={isMobile ? 40 : 60}
               label={{
                 value: getYAxisLabel(),
                 angle: -90,
                 position: 'insideLeft',
-                style: { fill: '#94a3b8' }
+                style: { 
+                  fill: '#94a3b8',
+                  fontSize: isMobile ? 10 : 12
+                }
               }}
             />
             <Tooltip
@@ -154,6 +164,7 @@ export function LNGBarChart() {
                 backgroundColor: "#1A1E2D",
                 border: "none",
                 borderRadius: "8px",
+                fontSize: isMobile ? "12px" : "14px",
               }}
               formatter={(value: number) => [formatValue(value)]}
             />
@@ -166,12 +177,12 @@ export function LNGBarChart() {
             />
           </LineChart>
         </ResponsiveContainer>
-        <div className="flex justify-center gap-2 mt-8 mb-8">
+        <div className="flex flex-wrap justify-center gap-1 md:gap-2 mt-4 md:mt-8 mb-4 md:mb-8">
           {timeframes.map((tf) => (
             <button
               key={tf.label}
               onClick={() => setSelectedTimeframe(tf.months)}
-              className={`px-3 py-1 rounded-md text-sm ${
+              className={`px-2 md:px-3 py-1 rounded-md text-xs md:text-sm ${
                 selectedTimeframe === tf.months
                   ? "bg-dashboard-blue text-white"
                   : "bg-dashboard-dark/50 text-muted-foreground hover:bg-dashboard-dark"
