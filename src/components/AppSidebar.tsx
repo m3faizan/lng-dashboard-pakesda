@@ -21,6 +21,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Link, useLocation } from "react-router-dom";
 import {
   Drawer,
   DrawerClose,
@@ -39,11 +40,7 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const isMobile = useIsMobile();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [currentPath, setCurrentPath] = useState("");
-
-  useEffect(() => {
-    setCurrentPath(window.location.pathname);
-  }, []);
+  const location = useLocation();
 
   const handleItemClick = (item: any) => {
     if (item.isLogout && onLogout) {
@@ -85,7 +82,7 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
                     onClick={() => handleItemClick(item)}
                     className={cn(
                       "transition-all duration-200 hover:bg-dashboard-navy/50 group-hover:translate-x-1",
-                      currentPath === item.url && "bg-dashboard-navy/50 font-medium"
+                      location.pathname === item.url && "bg-dashboard-navy/50 font-medium"
                     )}
                   >
                     {item.isLogout ? (
@@ -94,10 +91,10 @@ export function AppSidebar({ onLogout }: AppSidebarProps) {
                         <span className="transition-all duration-200 group-hover:font-medium">{item.title}</span>
                       </button>
                     ) : (
-                      <a href={item.url}>
+                      <Link to={item.url} className="flex items-center gap-2">
                         <item.icon className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
                         <span className="transition-all duration-200 group-hover:font-medium">{item.title}</span>
-                      </a>
+                      </Link>
                     )}
                   </SidebarMenuButton>
                 )}
