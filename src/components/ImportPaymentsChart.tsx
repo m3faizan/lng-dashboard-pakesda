@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   ComposedChart,
@@ -19,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type Period = "monthly" | "quarterly" | "yearly";
 
@@ -26,6 +28,7 @@ export function ImportPaymentsChart() {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("monthly");
   const [data, setData] = useState<any[]>([]);
   const [hiddenSeries, setHiddenSeries] = useState<string[]>([]);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -101,14 +104,18 @@ export function ImportPaymentsChart() {
     return [`$${value.toFixed(2)}/bbl`, name];
   };
 
+  const chartMargin = isMobile
+    ? { top: 10, right: 5, left: 40, bottom: 60 }
+    : { top: 20, right: 30, left: 60, bottom: 20 };
+
   return (
-    <Card className="bg-dashboard-navy border-0 h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden">
-      <div className="flex flex-col items-center pt-6">
-        <CardTitle className="text-xl font-semibold mb-4">
+    <Card className="bg-dashboard-navy border-0 h-[350px] md:h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden">
+      <div className="flex flex-col items-center pt-4 md:pt-6">
+        <CardTitle className="text-lg md:text-xl font-semibold mb-2 md:mb-4">
           LNG Import Payments
         </CardTitle>
         <Select value={selectedPeriod} onValueChange={(value: Period) => setSelectedPeriod(value)}>
-          <SelectTrigger className="w-[180px] mb-4 hover:bg-dashboard-navy/80">
+          <SelectTrigger className="w-[140px] md:w-[180px] mb-2 md:mb-4 hover:bg-dashboard-navy/80">
             <SelectValue placeholder="Select period" />
           </SelectTrigger>
           <SelectContent>
@@ -118,45 +125,56 @@ export function ImportPaymentsChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent className="h-[400px] px-4">
+      <CardContent className="h-[250px] md:h-[400px] px-2 md:px-4">
         <ResponsiveContainer width="100%" height="75%">
           <ComposedChart
             data={data}
-            margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
+            margin={chartMargin}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
             <XAxis
               dataKey="period"
               stroke="#94a3b8"
               tick={{ fill: "#94a3b8" }}
-              height={50}
+              fontSize={isMobile ? 10 : 12}
+              height={60}
+              angle={-45}
+              textAnchor="end"
+              interval={isMobile ? "preserveEnd" : "preserveStartEnd"}
+              tickCount={isMobile ? 6 : undefined}
             />
             <YAxis
               yAxisId="left"
               stroke="#94a3b8"
               tick={{ fill: "#94a3b8" }}
               tickFormatter={formatImportPayment}
-              width={60}
+              width={isMobile ? 40 : 60}
+              fontSize={isMobile ? 10 : 12}
             />
             <YAxis
               yAxisId="right"
               orientation="right"
               stroke="#94a3b8"
               tick={{ fill: "#94a3b8" }}
-              width={60}
+              width={isMobile ? 35 : 60}
+              fontSize={isMobile ? 10 : 12}
             />
             <Tooltip
               contentStyle={{
                 backgroundColor: "#1A1E2D",
                 border: "none",
                 borderRadius: "8px",
-                fontSize: "12px",
+                fontSize: isMobile ? "12px" : "14px",
               }}
               formatter={formatTooltipValue}
             />
             <Legend 
               onClick={handleLegendClick}
-              wrapperStyle={{ paddingTop: "2rem" }}
+              wrapperStyle={{ 
+                paddingTop: isMobile ? "0.5rem" : "2rem",
+                marginBottom: isMobile ? "-0.5rem" : "0",
+                fontSize: isMobile ? "10px" : "12px"
+              }}
             />
             <Bar
               yAxisId="left"
@@ -171,7 +189,7 @@ export function ImportPaymentsChart() {
               dataKey="brentAvg"
               name="Avg. Brent Price"
               stroke="#FEF7CD"
-              strokeWidth={3}
+              strokeWidth={isMobile ? 2 : 3}
               dot={false}
               hide={hiddenSeries.includes("brentAvg")}
             />
