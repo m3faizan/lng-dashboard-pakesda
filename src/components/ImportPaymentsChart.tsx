@@ -105,11 +105,11 @@ export function ImportPaymentsChart() {
   };
 
   const chartMargin = isMobile
-    ? { top: 10, right: 5, left: 40, bottom: 60 }
+    ? { top: 20, right: 10, left: 45, bottom: 80 }
     : { top: 20, right: 30, left: 60, bottom: 20 };
 
   return (
-    <Card className="bg-dashboard-navy border-0 h-[350px] md:h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden">
+    <Card className="bg-dashboard-navy border-0 h-[400px] md:h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden">
       <div className="flex flex-col items-center pt-4 md:pt-6">
         <CardTitle className="text-lg md:text-xl font-semibold mb-2 md:mb-4">
           LNG Import Payments
@@ -125,8 +125,8 @@ export function ImportPaymentsChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent className="h-[250px] md:h-[400px] px-2 md:px-4">
-        <ResponsiveContainer width="100%" height="75%">
+      <CardContent className="h-[300px] md:h-[400px] px-2 md:px-4">
+        <ResponsiveContainer width="100%" height="85%">
           <ComposedChart
             data={data}
             margin={chartMargin}
@@ -136,45 +136,54 @@ export function ImportPaymentsChart() {
               dataKey="period"
               stroke="#94a3b8"
               tick={{ fill: "#94a3b8" }}
-              fontSize={isMobile ? 10 : 12}
-              height={60}
-              angle={-45}
+              fontSize={isMobile ? 11 : 12}
+              height={80}
+              angle={-30}
               textAnchor="end"
-              interval={isMobile ? "preserveEnd" : "preserveStartEnd"}
-              tickCount={isMobile ? 6 : undefined}
+              interval={isMobile ? 1 : "preserveStartEnd"}
+              tickCount={isMobile ? 4 : undefined}
+              tickMargin={isMobile ? 25 : 10}
             />
             <YAxis
               yAxisId="left"
               stroke="#94a3b8"
               tick={{ fill: "#94a3b8" }}
               tickFormatter={formatImportPayment}
-              width={isMobile ? 40 : 60}
-              fontSize={isMobile ? 10 : 12}
+              width={isMobile ? 45 : 60}
+              fontSize={isMobile ? 11 : 12}
+              tickMargin={8}
             />
             <YAxis
               yAxisId="right"
               orientation="right"
               stroke="#94a3b8"
               tick={{ fill: "#94a3b8" }}
-              width={isMobile ? 35 : 60}
-              fontSize={isMobile ? 10 : 12}
+              width={isMobile ? 40 : 60}
+              fontSize={isMobile ? 11 : 12}
+              tickMargin={8}
             />
             <Tooltip
               contentStyle={{
                 backgroundColor: "#1A1E2D",
                 border: "none",
                 borderRadius: "8px",
-                fontSize: isMobile ? "12px" : "14px",
+                fontSize: isMobile ? "13px" : "14px",
+                padding: "8px 12px",
               }}
               formatter={formatTooltipValue}
+              wrapperStyle={{ zIndex: 1000 }}
             />
             <Legend 
               onClick={handleLegendClick}
               wrapperStyle={{ 
-                paddingTop: isMobile ? "0.5rem" : "2rem",
-                marginBottom: isMobile ? "-0.5rem" : "0",
-                fontSize: isMobile ? "10px" : "12px"
+                paddingTop: isMobile ? "1rem" : "2rem",
+                marginBottom: isMobile ? "0.5rem" : "0",
+                fontSize: isMobile ? "11px" : "12px",
+                width: "90%",
+                margin: "0 auto"
               }}
+              iconSize={isMobile ? 12 : 14}
+              verticalAlign={isMobile ? "bottom" : "top"}
             />
             <Bar
               yAxisId="left"
