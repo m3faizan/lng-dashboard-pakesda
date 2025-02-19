@@ -105,11 +105,11 @@ export function ImportPaymentsChart() {
   };
 
   const chartMargin = isMobile
-    ? { top: 20, right: 10, left: 45, bottom: 80 }
+    ? { top: 20, right: 20, left: 55, bottom: 100 }
     : { top: 20, right: 30, left: 60, bottom: 20 };
 
   return (
-    <Card className="bg-dashboard-navy border-0 h-[400px] md:h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden">
+    <Card className="bg-dashboard-navy border-0 h-[450px] md:h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden">
       <div className="flex flex-col items-center pt-4 md:pt-6">
         <CardTitle className="text-lg md:text-xl font-semibold mb-2 md:mb-4">
           LNG Import Payments
@@ -125,8 +125,8 @@ export function ImportPaymentsChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent className="h-[300px] md:h-[400px] px-2 md:px-4">
-        <ResponsiveContainer width="100%" height="85%">
+      <CardContent className="h-[350px] md:h-[400px] px-4 md:px-4">
+        <ResponsiveContainer width="100%" height="90%">
           <ComposedChart
             data={data}
             margin={chartMargin}
@@ -136,39 +136,42 @@ export function ImportPaymentsChart() {
               dataKey="period"
               stroke="#94a3b8"
               tick={{ fill: "#94a3b8" }}
-              fontSize={isMobile ? 11 : 12}
-              height={80}
-              angle={-30}
+              fontSize={isMobile ? 12 : 12}
+              height={90}
+              angle={-45}
               textAnchor="end"
-              interval={isMobile ? 1 : "preserveStartEnd"}
-              tickCount={isMobile ? 4 : undefined}
-              tickMargin={isMobile ? 25 : 10}
+              interval={isMobile ? 2 : "preserveStartEnd"}
+              tickCount={isMobile ? 3 : undefined}
+              tickMargin={isMobile ? 30 : 10}
             />
             <YAxis
               yAxisId="left"
               stroke="#94a3b8"
               tick={{ fill: "#94a3b8" }}
               tickFormatter={formatImportPayment}
-              width={isMobile ? 45 : 60}
-              fontSize={isMobile ? 11 : 12}
-              tickMargin={8}
+              width={isMobile ? 55 : 60}
+              fontSize={isMobile ? 12 : 12}
+              tickMargin={12}
+              tickCount={5}
             />
             <YAxis
               yAxisId="right"
               orientation="right"
               stroke="#94a3b8"
               tick={{ fill: "#94a3b8" }}
-              width={isMobile ? 40 : 60}
-              fontSize={isMobile ? 11 : 12}
-              tickMargin={8}
+              width={isMobile ? 50 : 60}
+              fontSize={isMobile ? 12 : 12}
+              tickMargin={12}
+              tickCount={5}
             />
             <Tooltip
               contentStyle={{
                 backgroundColor: "#1A1E2D",
                 border: "none",
                 borderRadius: "8px",
-                fontSize: isMobile ? "13px" : "14px",
-                padding: "8px 12px",
+                fontSize: isMobile ? "14px" : "14px",
+                padding: "12px 16px",
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
               }}
               formatter={formatTooltipValue}
               wrapperStyle={{ zIndex: 1000 }}
@@ -176,13 +179,18 @@ export function ImportPaymentsChart() {
             <Legend 
               onClick={handleLegendClick}
               wrapperStyle={{ 
-                paddingTop: isMobile ? "1rem" : "2rem",
-                marginBottom: isMobile ? "0.5rem" : "0",
-                fontSize: isMobile ? "11px" : "12px",
-                width: "90%",
-                margin: "0 auto"
+                paddingTop: "0.5rem",
+                position: "absolute",
+                bottom: isMobile ? "-85px" : "auto",
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: "100%",
+                fontSize: isMobile ? "12px" : "12px",
+                display: "flex",
+                justifyContent: "center",
+                gap: "1rem"
               }}
-              iconSize={isMobile ? 12 : 14}
+              iconSize={isMobile ? 16 : 14}
               verticalAlign={isMobile ? "bottom" : "top"}
             />
             <Bar
@@ -191,6 +199,7 @@ export function ImportPaymentsChart() {
               name="Import Payments"
               fill="#4ADE80"
               hide={hiddenSeries.includes("importPayment")}
+              radius={[4, 4, 0, 0]}
             />
             <Line
               yAxisId="right"
@@ -198,7 +207,7 @@ export function ImportPaymentsChart() {
               dataKey="brentAvg"
               name="Avg. Brent Price"
               stroke="#FEF7CD"
-              strokeWidth={isMobile ? 2 : 3}
+              strokeWidth={isMobile ? 3 : 3}
               dot={false}
               hide={hiddenSeries.includes("brentAvg")}
             />
