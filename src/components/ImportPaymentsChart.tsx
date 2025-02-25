@@ -95,7 +95,7 @@ export function ImportPaymentsChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent className="h-[350px] md:h-[400px] px-4 md:px-4 my-0 mx-0">
+      <CardContent className="h-[350px] md:h-[400px] px-4 md:px-4 my-0 mx-0 py-[5px]">
         <ResponsiveContainer width="100%" height="90%">
           <ComposedChart data={data} margin={chartMargin}>
             <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
