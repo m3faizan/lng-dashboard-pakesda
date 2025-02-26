@@ -160,7 +160,7 @@ export default function Index() {
   return <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar onLogout={handleLogout} />
-        <main className="flex-1 p-8 overflow-auto py-[44px]">
+        <main className="flex-1 p-8 overflow-auto py-[45px]">
           <div className="space-y-8 animate-fade-in max-w-[1400px] mx-auto">
             <div className="flex justify-between items-center">
               <h1 className="text-2xl font-bold text-left">LNG Dashboard</h1>
