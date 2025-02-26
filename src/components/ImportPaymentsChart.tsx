@@ -101,8 +101,8 @@ export function ImportPaymentsChart() {
   };
 
   const chartMargin = isMobile
-    ? { top: 20, right: 30, left: 60, bottom: 120 }
-    : { top: 20, right: 30, left: 60, bottom: 20 };
+    ? { top: 20, right: 30, left: 60, bottom: 140 }
+    : { top: 20, right: 30, left: 60, bottom: 80 };
 
   return (
     <Card className="bg-dashboard-navy border-0 h-[500px] md:h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg">
@@ -135,12 +135,12 @@ export function ImportPaymentsChart() {
               dataKey="period"
               stroke="#94a3b8"
               tick={{ fill: "#94a3b8" }}
-              fontSize={isMobile ? 11 : 12}
-              height={60}
-              angle={-45}
+              fontSize={isMobile ? 10 : 11}
+              height={90}
+              angle={-60}
               textAnchor="end"
-              interval={isMobile ? "preserveStartEnd" : 0}
-              tickMargin={25}
+              interval={isMobile ? 1 : 0}
+              tickMargin={35}
               tickSize={8}
             />
             <YAxis
@@ -184,7 +184,7 @@ export function ImportPaymentsChart() {
               wrapperStyle={{
                 paddingTop: "1rem",
                 position: "absolute",
-                bottom: isMobile ? "-90px" : "-20px",
+                bottom: isMobile ? "-110px" : "-60px",
                 left: "50%",
                 transform: "translateX(-50%)",
                 width: "100%",
