@@ -1,7 +1,6 @@
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useIsMobile } from "@/hooks/use-mobile";
 const timeframes = [{
   label: "3M",
   months: 3
@@ -25,7 +24,6 @@ export function LNGChart() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<number>(12);
   const [data, setData] = useState<any[]>([]);
   const [showPercentage, setShowPercentage] = useState(false);
-  const isMobile = useIsMobile();
   useEffect(() => {
     const fetchData = async () => {
       let queryBuilder = supabase.from('LNG Information').select('date, import_Volume').order('date', {
@@ -90,16 +88,13 @@ export function LNGChart() {
     }
     return `${(value / 1000000).toFixed(2)}M MMBtu`;
   };
-  return <div className="space-y-4 md:space-y-6 mx-3 md:mx-[19px]">
-      <div className="flex flex-col items-center space-y-4">
-        
-        
-        <div className="flex flex-wrap justify-center gap-2 px-2">
-          {timeframes.map(tf => <button key={tf.label} onClick={() => setSelectedTimeframe(tf.months)} className={`px-3 py-1.5 rounded-md text-sm font-medium min-w-[48px] ${selectedTimeframe === tf.months ? "bg-dashboard-green text-black" : "bg-dashboard-dark/50 text-muted-foreground hover:bg-dashboard-dark"}`}>
+  return <div className="space-y-6 mx-[19px]">
+      <div className="flex flex-col items-center space-y-5">
+        <div className="flex gap-2">
+          {timeframes.map(tf => <button key={tf.label} onClick={() => setSelectedTimeframe(tf.months)} className={`px-3 py-1 rounded-md text-sm font-medium ${selectedTimeframe === tf.months ? "bg-dashboard-green text-black" : "bg-dashboard-dark/50 text-muted-foreground hover:bg-dashboard-dark"}`}>
               {tf.label}
             </button>)}
         </div>
-
         <div className="flex gap-2">
           <button onClick={() => setShowPercentage(false)} className={`px-4 py-2 rounded-md text-sm font-medium ${!showPercentage ? "bg-dashboard-green text-black" : "bg-dashboard-dark/50 text-muted-foreground hover:bg-dashboard-dark"}`}>
             MMBtu
@@ -109,8 +104,8 @@ export function LNGChart() {
           </button>
         </div>
       </div>
-
-      <div className="h-[320px] md:h-[350px]">
+      
+      <div className="h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>
             <defs>
@@ -119,19 +114,14 @@ export function LNGChart() {
                 <stop offset="95%" stopColor="#4ADE80" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <XAxis dataKey="month" stroke="#525252" fontSize={isMobile ? 11 : 12} tickLine={false} axisLine={false} interval={isMobile ? 2 : "preserveStartEnd"} angle={-30} textAnchor="end" height={60} tickMargin={20} />
-            <YAxis stroke="#525252" fontSize={isMobile ? 11 : 12} tickLine={false} axisLine={false} tickFormatter={value => showPercentage ? `${value.toFixed(1)}%` : `${(value / 1000000).toFixed(1)}M`} width={isMobile ? 50 : 60} tickMargin={8} tickCount={5} />
+            <XAxis dataKey="month" stroke="#525252" fontSize={12} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+            <YAxis stroke="#525252" fontSize={12} tickLine={false} axisLine={false} tickFormatter={value => showPercentage ? `${value.toFixed(1)}%` : `${(value / 1000000).toFixed(1)}M`} />
             <Tooltip contentStyle={{
             backgroundColor: "#1A1E2D",
             border: "none",
-            borderRadius: "8px",
-            fontSize: isMobile ? "13px" : "14px",
-            padding: "12px 16px",
-            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
-          }} formatter={(value: number) => [formatValue(value), showPercentage ? "Change" : "Volume"]} wrapperStyle={{
-            zIndex: 1000
-          }} />
-            <Area type="monotone" dataKey={showPercentage ? "percentageChange" : "volume"} stroke="#4ADE80" strokeWidth={isMobile ? 2.5 : 2} fillOpacity={1} fill="url(#colorVolume)" />
+            borderRadius: "8px"
+          }} formatter={(value: number) => [formatValue(value), showPercentage ? "Change" : "Volume"]} />
+            <Area type="monotone" dataKey={showPercentage ? "percentageChange" : "volume"} stroke="#4ADE80" fillOpacity={1} fill="url(#colorVolume)" />
           </AreaChart>
         </ResponsiveContainer>
       </div>
