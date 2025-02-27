@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const yearColors: Record<string, string> = {
   "2019": "#0EA5E9", // blue
@@ -31,6 +32,7 @@ export function ImportVolumeChart() {
   const [years, setYears] = useState<string[]>([]);
   const [selectedYears, setSelectedYears] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,9 +70,17 @@ export function ImportVolumeChart() {
         }, {});
 
         // Convert to array and sort by date
-        const chartData = Object.values(transformedData).sort(
+        let chartData = Object.values(transformedData).sort(
           (a: any, b: any) => a.fullDate - b.fullDate
         );
+        
+        // For mobile, reduce data points
+        if (isMobile) {
+          // Keep every other month or at least one per quarter
+          chartData = chartData.filter((_: any, index: number) => 
+            index % 2 === 0 || index === chartData.length - 1
+          );
+        }
 
         // Get unique years from data
         const uniqueYears = Array.from(
@@ -78,7 +88,12 @@ export function ImportVolumeChart() {
         ).sort();
 
         setYears(uniqueYears);
-        setSelectedYears(uniqueYears);
+        // For mobile, limit initial selected years to last 2-3 years for better clarity
+        if (isMobile && uniqueYears.length > 2) {
+          setSelectedYears(uniqueYears.slice(-2));
+        } else {
+          setSelectedYears(uniqueYears);
+        }
         setData(chartData);
       } catch (error) {
         console.error('Error processing data:', error);
@@ -88,7 +103,7 @@ export function ImportVolumeChart() {
     };
 
     fetchData();
-  }, []);
+  }, [isMobile]);
 
   const toggleYear = (year: string) => {
     setSelectedYears((prev) => {
@@ -103,11 +118,11 @@ export function ImportVolumeChart() {
 
   if (isLoading) {
     return (
-      <Card className="bg-dashboard-navy border-0 h-[400px]">
+      <Card className="bg-dashboard-navy border-0 h-[350px]">
         <CardHeader className="text-center pb-2">
           <CardTitle className="text-lg font-semibold">Import Volume</CardTitle>
         </CardHeader>
-        <CardContent className="h-[320px] flex items-center justify-center">
+        <CardContent className="h-[280px] flex items-center justify-center">
           <div className="text-muted-foreground">Loading data...</div>
         </CardContent>
       </Card>
@@ -134,48 +149,52 @@ export function ImportVolumeChart() {
   };
 
   return (
-    <Card className="bg-dashboard-navy border-0 h-[400px]">
+    <Card className="bg-dashboard-navy border-0 h-[350px]">
       <CardHeader className="text-center pb-2">
         <CardTitle className="text-lg font-semibold">Import Volume</CardTitle>
       </CardHeader>
-      <CardContent className="h-[320px]">
-        <ResponsiveContainer width="100%" height="100%">
+      <CardContent className="h-[280px]">
+        <div className="mb-2 flex flex-wrap justify-center gap-1">
+          {years.map((year) => (
+            <button
+              key={year}
+              onClick={() => toggleYear(year)}
+              className={`px-2 py-1 text-xs rounded-md ${
+                selectedYears.includes(year)
+                  ? `bg-[${yearColors[year]}]`
+                  : 'bg-gray-700 text-gray-400'
+              }`}
+              style={{ 
+                backgroundColor: selectedYears.includes(year) ? yearColors[year] : '',
+                color: selectedYears.includes(year) ? 'black' : ''
+              }}
+            >
+              {year}
+            </button>
+          ))}
+        </div>
+        <ResponsiveContainer width="100%" height="90%">
           <LineChart
             data={data}
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            margin={{ top: 5, right: 10, left: 5, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
             <XAxis
               dataKey="month"
               stroke="#94a3b8"
-              fontSize={12}
+              fontSize={isMobile ? 9 : 12}
               tickLine={false}
               axisLine={false}
-              angle={-45}
-              textAnchor="end"
-              height={60}
-              interval="preserveStartEnd"
+              interval={isMobile ? 1 : 0}
             />
             <YAxis
               stroke="#94a3b8"
               tick={{ fill: "#94a3b8" }}
               tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
+              fontSize={isMobile ? 9 : 12}
+              width={40}
             />
             <Tooltip content={<CustomTooltip />} />
-            <Legend
-              onClick={(e) => toggleYear(e.value)}
-              formatter={(value) => (
-                <span
-                  style={{
-                    color: selectedYears.includes(value)
-                      ? "#fff"
-                      : "#4b5563",
-                  }}
-                >
-                  {value}
-                </span>
-              )}
-            />
             {years.map((year) => (
               <Line
                 key={year}
@@ -183,9 +202,10 @@ export function ImportVolumeChart() {
                 dataKey={year}
                 name={year}
                 stroke={yearColors[year]}
-                strokeWidth={year === "2024" ? 3 : 2}
+                strokeWidth={year === new Date().getFullYear().toString() ? 3 : 2}
                 dot={false}
                 opacity={selectedYears.includes(year) ? 1 : 0.2}
+                isAnimationActive={false}
               />
             ))}
           </LineChart>

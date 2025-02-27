@@ -7,21 +7,34 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  Legend,
 } from "recharts";
 import { ChartContainer } from "./shared/ChartContainer";
 import { ChartTooltip } from "./shared/ChartTooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useState } from "react";
 
 export function LNGDESPriceChart() {
   const isMobile = useIsMobile();
+  const [selectedYear, setSelectedYear] = useState<string>("all");
+  
   const { data: chartData = [], isLoading, error } = useQuery({
-    queryKey: ["lng-des-price"],
+    queryKey: ["lng-des-price", selectedYear],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("LNG Port_Price_Import")
         .select("date, wAvg_DES")
         .order("date");
+      
+      if (selectedYear !== "all") {
+        const year = parseInt(selectedYear);
+        const startDate = new Date(year, 0, 1).toISOString();
+        const endDate = new Date(year, 11, 31).toISOString();
+        query = query.gte("date", startDate).lte("date", endDate);
+      }
+      
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -35,6 +48,18 @@ export function LNGDESPriceChart() {
     },
   });
 
+  // Get available years from data
+  const getAvailableYears = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = currentYear; i >= currentYear - 5; i--) {
+      years.push(i.toString());
+    }
+    return years;
+  };
+  
+  const years = getAvailableYears();
+  
   const chartMargin = isMobile
     ? { top: 5, right: 5, left: 35, bottom: 50 }
     : { top: 10, right: 30, left: 60, bottom: 40 };
@@ -58,9 +83,37 @@ export function LNGDESPriceChart() {
       </ChartContainer>
     );
   }
+  
+  const yearSelector = (
+    <div className="flex gap-2 flex-wrap justify-center">
+      <button
+        onClick={() => setSelectedYear("all")}
+        className={`px-2 py-1 text-xs rounded-md ${
+          selectedYear === "all"
+            ? "bg-dashboard-green text-black"
+            : "bg-dashboard-dark/50 text-muted-foreground"
+        }`}
+      >
+        All
+      </button>
+      {years.map((year) => (
+        <button
+          key={year}
+          onClick={() => setSelectedYear(year)}
+          className={`px-2 py-1 text-xs rounded-md ${
+            selectedYear === year
+              ? "bg-dashboard-green text-black"
+              : "bg-dashboard-dark/50 text-muted-foreground"
+          }`}
+        >
+          {year}
+        </button>
+      ))}
+    </div>
+  );
 
   return (
-    <ChartContainer title="LNG DES Price">
+    <ChartContainer title="LNG DES Price" headerContent={yearSelector} className="h-[350px]">
       <div className="h-full w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart 
@@ -77,7 +130,7 @@ export function LNGDESPriceChart() {
               textAnchor="end"
               height={45}
               interval={isMobile ? "preserveEnd" : "preserveStartEnd"}
-              tickCount={isMobile ? 6 : undefined}
+              tickCount={isMobile ? 4 : undefined}
             />
             <YAxis
               stroke="#525252"
