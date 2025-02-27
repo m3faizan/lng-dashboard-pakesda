@@ -83,8 +83,8 @@ export function LNGBarChart() {
 
       // For mobile view, reduce data points based on timeframe
       if (isMobile) {
-        if (selectedTimeframe > 6) {
-          // For longer timeframes, show quarterly data
+        if (selectedTimeframe > 12) {
+          // For longer timeframes (1Y+), show quarterly data
           processedData = processedData.filter((item, index, array) => {
             const quarter = Math.floor(item.monthIndex / 3);
             const previousItem = index > 0 ? array[index - 1] : null;
@@ -95,9 +95,17 @@ export function LNGBarChart() {
                    index === array.length - 1 || 
                    quarter !== previousQuarter;
           });
-        } else {
-          // For shorter timeframes, show bi-monthly data
+        } else if (selectedTimeframe > 6) {
+          // For medium timeframes (6M-12M), show bi-monthly data
           processedData = processedData.filter((item, index, array) => 
+            index === 0 || 
+            index === array.length - 1 || 
+            item.monthIndex % 2 === 0
+          );
+        }
+        // For shorter timeframes (≤6M), keep more data points but still filter some
+        else if (processedData.length > 8) {
+          processedData = processedData.filter((_, index, array) => 
             index === 0 || 
             index === array.length - 1 || 
             index % 2 === 0
@@ -116,6 +124,18 @@ export function LNGBarChart() {
     fetchData();
   }, [showDESSlope, selectedTimeframe, isMobile]);
 
+  // Calculate appropriate min/max y-axis values with 10% padding
+  const getYAxisDomain = () => {
+    if (data.length === 0) return [0, 10];
+    
+    const values = data.map(item => item.value);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const padding = (max - min) * 0.1;
+    
+    return [Math.max(0, min - padding), max + padding];
+  };
+
   const getYAxisLabel = () => {
     return showDESSlope ? "%" : "$/MMBtu";
   };
@@ -133,21 +153,22 @@ export function LNGBarChart() {
     { label: "Max", months: 120 },
   ];
 
+  // Mobile-specific margins with sufficient left padding for y-axis
   const chartMargin = isMobile 
-    ? { top: 10, right: 5, left: 40, bottom: 40 }
+    ? { top: 10, right: 10, left: 24, bottom: 45 } 
     : { top: 20, right: 30, left: 60, bottom: 20 };
 
   return (
-    <Card className="bg-dashboard-navy border-0 h-[350px] md:h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden">
-      <div className="flex flex-col items-center pt-4 md:pt-6">
-        <CardTitle className="text-lg md:text-xl font-semibold text-center mb-2 md:mb-4">
+    <Card className="bg-dashboard-navy border-0 min-h-[280px] md:h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden chart-container">
+      <div className="flex flex-col items-center pt-3 md:pt-6">
+        <CardTitle className="text-lg md:text-xl font-semibold text-center mb-1 md:mb-4">
           LNG Price
         </CardTitle>
         <Select
           value={showDESSlope ? "slope" : "price"}
           onValueChange={(value) => setShowDESSlope(value === "slope")}
         >
-          <SelectTrigger className="w-[160px] md:w-[180px] mb-2 md:mb-4 hover:bg-dashboard-navy/80">
+          <SelectTrigger className="w-[90%] md:w-[180px] h-10 rounded-full mb-2 md:mb-4 hover:bg-dashboard-navy/80 text-sm">
             <SelectValue placeholder="Select metric" />
           </SelectTrigger>
           <SelectContent>
@@ -156,8 +177,8 @@ export function LNGBarChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent className={isMobile ? "h-[160px] px-3" : "h-[250px] md:h-[400px] px-2 md:px-4"}>
-        <ResponsiveContainer width="100%" height="75%">
+      <CardContent className="px-2 md:px-4 chart-svg h-[200px] md:h-[400px]">
+        <ResponsiveContainer width="100%" height={isMobile ? 200 : "100%"} className="my-2">
           <LineChart 
             data={data}
             margin={chartMargin}
@@ -167,29 +188,35 @@ export function LNGBarChart() {
             <XAxis
               dataKey="period"
               stroke="#525252"
-              fontSize={10}
+              fontSize={11}
               tickLine={false}
               axisLine={false}
               angle={-45}
               textAnchor="end"
-              height={40}
+              height={45}
               interval={isMobile ? "preserveStartEnd" : 0}
               minTickGap={15}
+              tick={{ 
+                letterSpacing: isMobile ? -0.5 : 0,
+                transform: isMobile ? "rotate(-45)" : undefined,
+                transformOrigin: "top right" 
+              }}
             />
             <YAxis
               stroke="#525252"
-              fontSize={10}
+              fontSize={11}
               tickLine={false}
               axisLine={false}
-              width={isMobile ? 40 : 60}
+              width={isMobile ? 24 : 60}
               tickCount={4}
+              domain={getYAxisDomain()}
               label={{
                 value: getYAxisLabel(),
                 angle: -90,
                 position: 'insideLeft',
                 style: { 
                   fill: '#94a3b8',
-                  fontSize: 10
+                  fontSize: 11
                 },
                 offset: 5
               }}
@@ -222,12 +249,12 @@ export function LNGBarChart() {
             />
           </LineChart>
         </ResponsiveContainer>
-        <div className="flex flex-wrap justify-center gap-1 md:gap-2 mt-2 md:mt-8 mb-2 md:mb-8">
+        <div className="flex flex-wrap justify-center gap-2 mt-1 md:mt-8 mb-2 md:mb-8">
           {timeframes.map((tf) => (
             <button
               key={tf.label}
               onClick={() => setSelectedTimeframe(tf.months)}
-              className={`px-2 md:px-3 py-1 rounded-md text-xs md:text-sm ${
+              className={`min-w-[40px] px-3 py-2 rounded-md text-xs md:text-sm ${
                 selectedTimeframe === tf.months
                   ? "bg-dashboard-blue text-white"
                   : "bg-dashboard-dark/50 text-muted-foreground hover:bg-dashboard-dark"
@@ -238,6 +265,17 @@ export function LNGBarChart() {
           ))}
         </div>
       </CardContent>
+      <style jsx global>{`
+        @media (max-width: 480px) {
+          .chart-container {
+            margin: 0;
+            padding: 12px 8px;
+          }
+          .chart-svg {
+            height: 200px !important;
+          }
+        }
+      `}</style>
     </Card>
   );
 }
