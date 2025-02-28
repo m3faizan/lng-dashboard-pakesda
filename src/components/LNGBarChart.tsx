@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   LineChart,
@@ -159,7 +160,7 @@ export function LNGBarChart() {
     : { top: 20, right: 30, left: 60, bottom: 20 };
 
   return (
-    <Card className="bg-dashboard-navy border-0 min-h-[280px] md:h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg overflow-hidden chart-container">
+    <Card className="bg-dashboard-navy border-0 min-h-[330px] md:h-[480px] w-full transition-all duration-300 hover:ring-2 hover:ring-dashboard-blue/20 hover:shadow-lg">
       <div className="flex flex-col items-center pt-3 md:pt-6">
         <CardTitle className="text-lg md:text-xl font-semibold text-center mb-1 md:mb-4">
           LNG Price
@@ -177,79 +178,84 @@ export function LNGBarChart() {
           </SelectContent>
         </Select>
       </div>
-      <CardContent className="px-2 md:px-4 chart-svg h-[200px] md:h-[400px]">
-        <ResponsiveContainer width="100%" height={isMobile ? 200 : "100%"} className="my-2">
-          <LineChart 
-            data={data}
-            margin={chartMargin}
-            onClick={isMobile ? (data) => console.log("Chart clicked:", data) : undefined}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="period"
-              stroke="#525252"
-              fontSize={11}
-              tickLine={false}
-              axisLine={false}
-              angle={-45}
-              textAnchor="end"
-              height={45}
-              interval={isMobile ? "preserveStartEnd" : 0}
-              minTickGap={15}
-              tick={{ 
-                letterSpacing: isMobile ? -0.5 : 0,
-                transform: isMobile ? "rotate(-45)" : undefined,
-                transformOrigin: "top right" 
-              }}
-            />
-            <YAxis
-              stroke="#525252"
-              fontSize={11}
-              tickLine={false}
-              axisLine={false}
-              width={isMobile ? 24 : 60}
-              tickCount={4}
-              domain={getYAxisDomain()}
-              label={{
-                value: getYAxisLabel(),
-                angle: -90,
-                position: 'insideLeft',
-                style: { 
-                  fill: '#94a3b8',
-                  fontSize: 11
-                },
-                offset: 5
-              }}
-            />
-            <Tooltip
-              position={{ y: -50 }}  /* Position tooltip above the touch point */
-              contentStyle={{
-                backgroundColor: "#1A1E2D",
-                border: "none",
-                borderRadius: "8px",
-                fontSize: "12px",
-                padding: "8px 12px",
-                touchAction: "none"  /* Prevent touch events from bubbling */
-              }}
-              wrapperStyle={{
-                zIndex: 1000,
-                pointerEvents: "none"  /* Ensure tooltip doesn't interfere with touch */
-              }}
-              formatter={(value: number) => [formatValue(value)]}
-              cursor={{ strokeWidth: 2 }}  /* Enhanced cursor for better touch interaction */
-            />
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke="#0EA5E9"
-              strokeWidth={2}
-              dot={isMobile ? { r: 3, strokeWidth: 1 } : false}  /* Slightly larger dots for touch targets */
-              activeDot={{ r: 6, strokeWidth: 2 }}  /* Larger active dot for better touch interaction */
-              isAnimationActive={!isMobile}  /* Disable animations on mobile for performance */
-            />
-          </LineChart>
-        </ResponsiveContainer>
-        <div className="flex flex-wrap justify-center gap-2 mt-1 md:mt-8 mb-2 md:mb-8">
+      {/* Adjusted for mobile: Reduced chart height, ensured timeframe selector is visible */}
+      <CardContent className="flex flex-col px-2 md:px-4">
+        <div className="h-[170px] md:h-[330px] mb-2 md:mb-4">
+          <ResponsiveContainer width="100%" height="100%" className="my-2">
+            <LineChart 
+              data={data}
+              margin={chartMargin}
+              onClick={isMobile ? (data) => console.log("Chart clicked:", data) : undefined}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="period"
+                stroke="#525252"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+                angle={-45}
+                textAnchor="end"
+                height={45}
+                interval={isMobile ? "preserveStartEnd" : 0}
+                minTickGap={15}
+                tick={{ 
+                  letterSpacing: isMobile ? -0.5 : 0,
+                  transform: isMobile ? "rotate(-45)" : undefined,
+                  transformOrigin: "top right" 
+                }}
+              />
+              <YAxis
+                stroke="#525252"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+                width={isMobile ? 24 : 60}
+                tickCount={4}
+                domain={getYAxisDomain()}
+                label={{
+                  value: getYAxisLabel(),
+                  angle: -90,
+                  position: 'insideLeft',
+                  style: { 
+                    fill: '#94a3b8',
+                    fontSize: 11
+                  },
+                  offset: 5
+                }}
+              />
+              <Tooltip
+                position={{ y: -50 }}
+                contentStyle={{
+                  backgroundColor: "#1A1E2D",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "12px",
+                  padding: "8px 12px",
+                  touchAction: "none"
+                }}
+                wrapperStyle={{
+                  zIndex: 1000,
+                  pointerEvents: "none"
+                }}
+                formatter={(value: number) => [formatValue(value)]}
+                cursor={{ strokeWidth: 2 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="#0EA5E9"
+                strokeWidth={2}
+                dot={isMobile ? { r: 3, strokeWidth: 1 } : false}
+                activeDot={{ r: 6, strokeWidth: 2 }}
+                isAnimationActive={!isMobile}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+        
+        {/* Time selector positioned with adequate spacing */}
+        <div className="flex flex-wrap justify-center gap-2 mt-1 md:mt-4 mb-3 md:mb-4">
           {timeframes.map((tf) => (
             <button
               key={tf.label}
@@ -265,14 +271,12 @@ export function LNGBarChart() {
           ))}
         </div>
       </CardContent>
+
       <style jsx global>{`
         @media (max-width: 480px) {
           .chart-container {
             margin: 0;
             padding: 12px 8px;
-          }
-          .chart-svg {
-            height: 200px !important;
           }
         }
       `}</style>
