@@ -56,7 +56,7 @@ export function ContractVolumesChart() {
       name: "Total",
       color: "#FEF7CD"
     }];
-    return <div className="flex justify-center items-center gap-4 mt-1 mb-2 mx-[30px]">
+    return <div className="flex justify-center items-center gap-4 mt-1 mb-2 mx-[30px] my-0">
         {items.map(item => <div key={item.name} className="flex items-center cursor-pointer" onClick={() => handleLegendClick(item.name)}>
             <div className="w-3 h-3 mr-2 rounded-sm" style={{
           backgroundColor: item.color,
