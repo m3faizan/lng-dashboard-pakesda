@@ -20,6 +20,8 @@ type PriceDataPoint = {
   price: number;
   formattedDate: string;
   originalDate: Date;
+  // For aggregated data points
+  dataPointCount?: number;
 };
 
 export function LNGDESPriceChart() {
@@ -87,13 +89,18 @@ export function LNGDESPriceChart() {
               ...item,
               date: `Q${quarter + 1} ${date.getFullYear()}`,
               price: item.price,
-              count: 1
+              dataPointCount: 1
             };
           } else {
-            quarterlyData[quarterKey].price = 
-              (quarterlyData[quarterKey].price * quarterlyData[quarterKey].count + item.price) / 
-              (quarterlyData[quarterKey].count + 1);
-            quarterlyData[quarterKey].count += 1;
+            const currentPoint = quarterlyData[quarterKey];
+            const updatedPrice = (currentPoint.price * (currentPoint.dataPointCount || 1) + item.price) / 
+              ((currentPoint.dataPointCount || 1) + 1);
+            
+            quarterlyData[quarterKey] = {
+              ...currentPoint,
+              price: updatedPrice,
+              dataPointCount: (currentPoint.dataPointCount || 1) + 1
+            };
           }
         });
         
