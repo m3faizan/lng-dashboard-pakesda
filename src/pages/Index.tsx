@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import { BarChart3, Ship, DollarSign, Zap, LayoutDashboard, MapPin, LineChart as LineChartIcon, Gauge as GaugeIcon, UserCircle2, LogOut } from "lucide-react";
+
 export const sidebarItems = [{
   title: "Dashboard",
   icon: LayoutDashboard,
@@ -41,6 +42,7 @@ export const sidebarItems = [{
   url: "#logout",
   isLogout: true
 }];
+
 interface KPIData {
   imports: {
     value: number;
@@ -59,6 +61,7 @@ interface KPIData {
     trend: number;
   };
 }
+
 export default function Index() {
   const navigate = useNavigate();
   const {
@@ -67,6 +70,7 @@ export default function Index() {
   const [kpiData, setKpiData] = useState<KPIData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [latestDate, setLatestDate] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchKPIData = async () => {
       try {
@@ -133,6 +137,7 @@ export default function Index() {
     };
     fetchKPIData();
   }, [toast]);
+
   const handleLogout = async () => {
     const {
       error
@@ -151,25 +156,27 @@ export default function Index() {
       navigate("/");
     }
   };
+
   const formatNumber = (value: number) => {
     if (value >= 1000000) {
       return `${(value / 1000000).toFixed(1)}M`;
     }
     return value.toFixed(1);
   };
+
   return <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar onLogout={handleLogout} />
-        <main className="flex-1 p-8 overflow-auto">
-          <div className="space-y-8 animate-fade-in max-w-[1400px] mx-auto">
+        <main className="flex-1 p-4 md:p-8 overflow-auto">
+          <div className="space-y-6 md:space-y-8 animate-fade-in max-w-[1400px] mx-auto">
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-left">LNG Dashboard</h1>
+              <h1 className="text-xl md:text-2xl font-bold text-left">LNG Dashboard</h1>
               {latestDate && <div className="bg-[#1A1E2D] rounded-md px-3 py-1.5 text-xs">
                   <span className="text-muted-foreground">As of: {latestDate}</span>
                 </div>}
             </div>
             
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-3 md:gap-4 grid-cols-2 md:grid-cols-4">
               <KPICard title="Total LNG Imports" value={`${formatNumber(kpiData?.imports.value || 0)} MMBtu`} icon={<Ship className="h-4 w-4 text-dashboard-green" />} trend={{
               value: Math.abs(kpiData?.imports.trend || 0),
               isPositive: (kpiData?.imports.trend || 0) > 0
@@ -188,13 +195,13 @@ export default function Index() {
             }} type="share" />
             </div>
 
-            <div className="space-y-6">
-              <div className="p-6 bg-dashboard-navy rounded-lg border-0">
-                <h2 className="text-xl font-semibold mb-4 text-center">LNG Import Volume</h2>
+            <div className="space-y-4 md:space-y-6">
+              <div className="p-4 md:p-6 bg-dashboard-navy rounded-lg border-0">
+                <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-center">LNG Import Volume</h2>
                 <LNGChart />
               </div>
               
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid md:grid-cols-2 gap-4 md:gap-8">
                 <LNGBarChart />
                 <CargoTypesChart />
               </div>
